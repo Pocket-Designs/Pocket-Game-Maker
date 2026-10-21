@@ -1,0 +1,9 @@
+# Sample Monster Quest licence
+
+This sample game was made with Pocket-Game-Maker by project-tech-me.
+
+- The art, music and sounds are original and released under CC0 1.0 (public domain).
+- You may copy, change and share this game, for free or for money.
+- Credit is appreciated but not required.
+
+Replace this file with your own game's licence in Database > Menus & screens.

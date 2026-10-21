@@ -1,0 +1,404 @@
+[
+  {
+    "id": "capture_orb",
+    "name": "Capture Orb",
+    "kind": "ball",
+    "catchBonus": 1,
+    "price": 200,
+    "battleUsable": true,
+    "fieldUsable": false,
+    "description": "A device for catching wild monsters."
+  },
+  {
+    "id": "great_orb",
+    "name": "Great Orb",
+    "kind": "ball",
+    "catchBonus": 1.5,
+    "price": 600,
+    "battleUsable": true,
+    "fieldUsable": false,
+    "description": "A better catch rate than a Capture Orb."
+  },
+  {
+    "id": "master_orb",
+    "name": "Master Orb",
+    "kind": "ball",
+    "catchBonus": 255,
+    "price": 0,
+    "battleUsable": true,
+    "fieldUsable": false,
+    "description": "Catches any wild monster without fail."
+  },
+  {
+    "id": "potion",
+    "name": "Potion",
+    "kind": "heal",
+    "healAmount": 20,
+    "price": 300,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Restores 20 HP."
+  },
+  {
+    "id": "super_potion",
+    "name": "Super Potion",
+    "kind": "heal",
+    "healAmount": 50,
+    "price": 700,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Restores 50 HP."
+  },
+  {
+    "id": "antidote",
+    "name": "Antidote",
+    "kind": "heal",
+    "cureStatus": "psn",
+    "price": 100,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Cures poison."
+  },
+  {
+    "id": "full_heal",
+    "name": "Full Heal",
+    "kind": "heal",
+    "cureStatus": "all",
+    "price": 400,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Cures any status problem."
+  },
+  {
+    "id": "revive",
+    "name": "Revive",
+    "kind": "revive",
+    "revivePercent": 50,
+    "price": 1500,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Revives a fainted monster with half HP."
+  },
+  {
+    "id": "ether",
+    "name": "Ether",
+    "kind": "pp",
+    "ppAmount": 10,
+    "price": 1200,
+    "battleUsable": true,
+    "fieldUsable": true,
+    "description": "Restores 10 PP to every move."
+  },
+  {
+    "id": "storage_box",
+    "name": "Storage Box",
+    "kind": "tool",
+    "toolAction": "storage",
+    "price": 0,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "A portable box that links to your monster storage. Use it from the bag."
+  },
+  {
+    "id": "fire_stone",
+    "name": "Fire Stone",
+    "kind": "evolution",
+    "price": 2100,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Makes certain monsters evolve."
+  },
+  {
+    "id": "bed",
+    "name": "Bed",
+    "kind": "decoration",
+    "price": 1200,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/bed.png",
+      "w": 1,
+      "h": 2,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "table",
+    "name": "Wooden Table",
+    "kind": "decoration",
+    "price": 900,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/table.png",
+      "w": 2,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "chair",
+    "name": "Chair",
+    "kind": "decoration",
+    "price": 300,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/chair.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "plant",
+    "name": "Potted Plant",
+    "kind": "decoration",
+    "price": 400,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/plant.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "bookshelf",
+    "name": "Bookshelf",
+    "kind": "decoration",
+    "price": 1000,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/bookshelf.png",
+      "w": 2,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "rug",
+    "name": "Round Rug",
+    "kind": "decoration",
+    "price": 600,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/rug.png",
+      "w": 2,
+      "h": 2,
+      "blocks": false,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "lamp",
+    "name": "Floor Lamp",
+    "kind": "decoration",
+    "price": 350,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/lamp.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "sofa",
+    "name": "Sofa",
+    "kind": "decoration",
+    "price": 1500,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/sofa.png",
+      "w": 2,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "tv",
+    "name": "Television",
+    "kind": "decoration",
+    "price": 2000,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/tv.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "plush",
+    "name": "Monster Plush",
+    "kind": "decoration",
+    "price": 250,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/plush.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "trophy",
+    "name": "Trophy",
+    "kind": "decoration",
+    "price": 3000,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Furniture for your room. Place it from the bag or the Decorate menu.",
+    "decor": {
+      "image": "decorations/trophy.png",
+      "w": 1,
+      "h": 1,
+      "blocks": true,
+      "turn": "rotate"
+    }
+  },
+  {
+    "id": "outfit_hero_casual",
+    "name": "Casual Clothes",
+    "kind": "clothing",
+    "price": 0,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "A whole outfit. Change in the Wardrobe.",
+    "wear": {
+      "slot": "outfit",
+      "sheet": "characters/outfit-hero-casual.png"
+    }
+  },
+  {
+    "id": "outfit_hero_cool",
+    "name": "Blue Jacket Outfit",
+    "kind": "clothing",
+    "price": 1200,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "A whole outfit. Change in the Wardrobe.",
+    "wear": {
+      "slot": "outfit",
+      "sheet": "characters/outfit-hero-cool.png"
+    }
+  },
+  {
+    "id": "outfit_hero_explorer",
+    "name": "Explorer Outfit",
+    "kind": "clothing",
+    "price": 1500,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "A whole outfit. Change in the Wardrobe.",
+    "wear": {
+      "slot": "outfit",
+      "sheet": "characters/outfit-hero-explorer.png"
+    }
+  },
+  {
+    "id": "wear_cap_blue",
+    "name": "Blue Cap",
+    "kind": "clothing",
+    "price": 400,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "hat",
+      "sheet": "characters/wear-cap-blue.png"
+    }
+  },
+  {
+    "id": "wear_cap_green",
+    "name": "Green Cap",
+    "kind": "clothing",
+    "price": 400,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "hat",
+      "sheet": "characters/wear-cap-green.png"
+    }
+  },
+  {
+    "id": "wear_cap_yellow",
+    "name": "Yellow Cap",
+    "kind": "clothing",
+    "price": 400,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "hat",
+      "sheet": "characters/wear-cap-yellow.png"
+    }
+  },
+  {
+    "id": "wear_shirt_white",
+    "name": "White Shirt",
+    "kind": "clothing",
+    "price": 500,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "top",
+      "sheet": "characters/wear-shirt-white.png"
+    }
+  },
+  {
+    "id": "wear_shirt_green",
+    "name": "Green Shirt",
+    "kind": "clothing",
+    "price": 500,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "top",
+      "sheet": "characters/wear-shirt-green.png"
+    }
+  },
+  {
+    "id": "wear_trousers_black",
+    "name": "Black Trousers",
+    "kind": "clothing",
+    "price": 500,
+    "battleUsable": false,
+    "fieldUsable": true,
+    "description": "Something to wear. Change in the Wardrobe.",
+    "wear": {
+      "slot": "bottom",
+      "sheet": "characters/wear-trousers-black.png"
+    }
+  }
+]

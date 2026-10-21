@@ -1,0 +1,281 @@
+{
+  "name": "Interior",
+  "description": "Floors, walls, furniture, counters, a healing machine, stairs and kitchen pieces.",
+  "image": "interior.png",
+  "tileSize": 16,
+  "columns": 8,
+  "author": "project-tech-me",
+  "licence": "CC0-1.0",
+  "legend": {
+    "pass": "player can walk on it",
+    "enc": "wild monsters can appear here",
+    "over": "drawn above the player",
+    "layer": "suggested layer: ground, detail or above",
+    "auto": "autotile: this tile starts a 2x3 block that joins up with its neighbours",
+    "anim": "number of animation frames, placed side by side to the right",
+    "part": "part of an autotile block or an animation frame (not painted directly)"
+  },
+  "animSpeed": 300,
+  "tiles": [
+    {
+      "id": 0,
+      "name": "Wooden floor",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 1,
+      "name": "Tiled floor",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 2,
+      "name": "Carpet (red)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 3,
+      "name": "Carpet (blue)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 4,
+      "name": "Wall top",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 5,
+      "name": "Wallpaper",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 6,
+      "name": "Wall with window",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 7,
+      "name": "Wall with picture",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 8,
+      "name": "Bookshelf (top)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Bookshelf 1x2"
+    },
+    {
+      "id": 9,
+      "name": "Bookshelf (bottom)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Bookshelf 1x2"
+    },
+    {
+      "id": 10,
+      "name": "Bed (top)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Bed 1x2"
+    },
+    {
+      "id": 11,
+      "name": "Bed (bottom)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Bed 1x2"
+    },
+    {
+      "id": 12,
+      "name": "Table",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 13,
+      "name": "Chair",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 14,
+      "name": "House plant",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 15,
+      "name": "Television",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 16,
+      "name": "Counter (left)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 17,
+      "name": "Counter (middle)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 18,
+      "name": "Counter (right)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 19,
+      "name": "Healing machine",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 20,
+      "name": "Computer",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 21,
+      "name": "Stairs up",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 22,
+      "name": "Stairs down",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 23,
+      "name": "Door mat",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 24,
+      "name": "Cupboard",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 25,
+      "name": "Fridge",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 26,
+      "name": "Stove",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 27,
+      "name": "Sink",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 28,
+      "name": "Crate",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 29,
+      "name": "Wall clock",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 30,
+      "name": "Floor lamp",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 31,
+      "name": "Vase",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    }
+  ]
+}

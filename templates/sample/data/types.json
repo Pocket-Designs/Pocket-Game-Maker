@@ -1,0 +1,77 @@
+{
+  "types": [
+    {
+      "id": "normal",
+      "name": "Normal",
+      "color": "#a8a77a"
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "color": "#ee8130"
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "color": "#6390f0"
+    },
+    {
+      "id": "grass",
+      "name": "Grass",
+      "color": "#7ac74c"
+    },
+    {
+      "id": "electric",
+      "name": "Electric",
+      "color": "#f7d02c"
+    },
+    {
+      "id": "rock",
+      "name": "Rock",
+      "color": "#b6a136"
+    },
+    {
+      "id": "poison",
+      "name": "Poison",
+      "color": "#a33ea1"
+    }
+  ],
+  "chart": {
+    "normal": {
+      "rock": 0.5
+    },
+    "fire": {
+      "fire": 0.5,
+      "water": 0.5,
+      "grass": 2,
+      "rock": 0.5
+    },
+    "water": {
+      "fire": 2,
+      "water": 0.5,
+      "grass": 0.5,
+      "rock": 2
+    },
+    "grass": {
+      "fire": 0.5,
+      "water": 2,
+      "grass": 0.5,
+      "rock": 2,
+      "poison": 0.5
+    },
+    "electric": {
+      "water": 2,
+      "grass": 0.5,
+      "electric": 0.5,
+      "rock": 1
+    },
+    "rock": {
+      "fire": 2
+    },
+    "poison": {
+      "grass": 2,
+      "poison": 0.5,
+      "rock": 0.5
+    }
+  }
+}

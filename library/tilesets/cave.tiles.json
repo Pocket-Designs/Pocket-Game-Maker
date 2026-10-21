@@ -1,0 +1,213 @@
+{
+  "name": "Cave",
+  "description": "Cave floors and walls, rough floor for encounters, rocks, crystals, ladders, water and mine rails.",
+  "image": "cave.png",
+  "tileSize": 16,
+  "columns": 8,
+  "author": "project-tech-me",
+  "licence": "CC0-1.0",
+  "legend": {
+    "pass": "player can walk on it",
+    "enc": "wild monsters can appear here",
+    "over": "drawn above the player",
+    "layer": "suggested layer: ground, detail or above",
+    "auto": "autotile: this tile starts a 2x3 block that joins up with its neighbours",
+    "anim": "number of animation frames, placed side by side to the right",
+    "part": "part of an autotile block or an animation frame (not painted directly)"
+  },
+  "animSpeed": 300,
+  "tiles": [
+    {
+      "id": 0,
+      "name": "Cave floor",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 1,
+      "name": "Rough floor",
+      "pass": true,
+      "enc": true,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 2,
+      "name": "Cave wall (top)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 3,
+      "name": "Cave wall (face)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 4,
+      "name": "Rock",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 5,
+      "name": "Boulder",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 6,
+      "name": "Crystal",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 7,
+      "name": "Stalagmite",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 8,
+      "name": "Ladder up",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 9,
+      "name": "Hole down",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 10,
+      "name": "Cave water",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 11,
+      "name": "Puddle",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 12,
+      "name": "Rubble",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 13,
+      "name": "Glowing mushrooms",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 14,
+      "name": "Old bones",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 15,
+      "name": "Cave entrance",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 16,
+      "name": "Cave wall (right half)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 17,
+      "name": "Cave wall (left half)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 18,
+      "name": "Sand floor",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 19,
+      "name": "Rough sand",
+      "pass": true,
+      "enc": true,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 20,
+      "name": "Gem vein",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 21,
+      "name": "Rails (left-right)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 22,
+      "name": "Rails (up-down)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 23,
+      "name": "Lantern",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "title": "Sample Monster Quest",
+  "screen": {
+    "width": 320,
+    "height": 240,
+    "scale": 2
+  },
+  "start": {
+    "mapId": "map001",
+    "x": 9,
+    "y": 8,
+    "dir": "up"
+  },
+  "respawn": {
+    "mapId": "map001",
+    "x": 4,
+    "y": 11,
+    "dir": "down",
+    "message": "You hurried back to town and your team was healed."
+  },
+  "player": {
+    "name": "Red",
+    "sprite": "characters/hero.png",
+    "moveSpeed": 4
+  },
+  "currency": "Coins",
+  "startMoney": 500,
+  "startingParty": [],
+  "startingItems": {
+    "potion": 2,
+    "storage_box": 1,
+    "bed": 1,
+    "plant": 1,
+    "rug": 1,
+    "wear_cap_blue": 1
+  },
+  "defaultBattleback": "battlebacks/field.png",
+  "switches": [
+    "",
+    "Chose starter",
+    "Got orbs from Professor",
+    "Lakeside lever"
+  ],
+  "battle": {
+    "maxParty": 6,
+    "wildActive": 1,
+    "trainerActive": 1,
+    "maxMoves": 4,
+    "maxLevel": 100,
+    "critChance": 0.0417,
+    "critMultiplier": 1.5,
+    "stab": 1.5,
+    "expMultiplier": 1,
+    "trainerExpBonus": 1.5,
+    "allowRunFromTrainer": false
+  },
+  "statusImmunity": {
+    "brn": [
+      "fire"
+    ],
+    "psn": [
+      "poison"
+    ],
+    "par": [
+      "electric"
+    ]
+  },
+  "audio": {
+    "bgmVolume": 80,
+    "sfxVolume": 80,
+    "sfx": {
+      "cursor": "sounds/cursor.mp3",
+      "confirm": "sounds/confirm.mp3",
+      "cancel": "sounds/cancel.mp3",
+      "buzzer": "sounds/buzzer.mp3",
+      "hit": "sounds/hit.mp3",
+      "hitStrong": "sounds/hit-strong.mp3",
+      "faint": "sounds/faint.mp3",
+      "throw": "sounds/throw.mp3",
+      "shake": "sounds/shake.mp3",
+      "catch": "sounds/catch.mp3",
+      "breakFree": "sounds/break-free.mp3",
+      "levelUp": "sounds/level-up.mp3",
+      "runAway": "sounds/run-away.mp3",
+      "encounter": "sounds/encounter.mp3",
+      "door": "sounds/door.mp3",
+      "bump": "sounds/bump.mp3",
+      "coin": "sounds/coin.mp3",
+      "heal": "sounds/heal.mp3",
+      "save": "sounds/save.mp3"
+    },
+    "title": "music/title-dawn-of-adventure.mp3",
+    "battleWild": "music/battle-wild-clash.mp3",
+    "battleTrainer": "music/battle-rival-showdown.mp3",
+    "victory": "music/victory-fanfare.mp3",
+    "heal": "music/jingle-rest-well.mp3",
+    "item": "music/jingle-found-it.mp3",
+    "monster": "music/jingle-new-friend.mp3"
+  },
+  "terms": {
+    "dex": "DB",
+    "dexLong": "Database",
+    "pp": "EP",
+    "ppLong": "Energy Points"
+  },
+  "titleScreen": {
+    "showTitle": true,
+    "subtitle": "A Pocket-Game-Maker sample",
+    "background": "pictures/title-sunrise.png",
+    "menuPosition": "centre",
+    "textColour": "#ffffff",
+    "menu": [
+      {
+        "id": "new",
+        "label": "New Game",
+        "on": true
+      },
+      {
+        "id": "continue",
+        "label": "Continue",
+        "on": true
+      },
+      {
+        "id": "credits",
+        "label": "Credits",
+        "on": true
+      },
+      {
+        "id": "licence",
+        "label": "Licence",
+        "on": true
+      },
+      {
+        "id": "quit",
+        "label": "Quit",
+        "on": false
+      }
+    ],
+    "credits": {
+      "source": "auto",
+      "file": "",
+      "heading": "Credits"
+    },
+    "licence": {
+      "file": "text/licence.txt",
+      "heading": "Licence"
+    }
+  },
+  "menus": {
+    "main": [
+      {
+        "id": "dex",
+        "label": "{dex}",
+        "on": true
+      },
+      {
+        "id": "party",
+        "label": "Monsters",
+        "on": true
+      },
+      {
+        "id": "bag",
+        "label": "Bag",
+        "on": true
+      },
+      {
+        "id": "storage",
+        "label": "Storage",
+        "on": true
+      },
+      {
+        "id": "decorate",
+        "label": "Decorate",
+        "on": true
+      },
+      {
+        "id": "wardrobe",
+        "label": "Wardrobe",
+        "on": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "on": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "on": true
+      }
+    ],
+    "bag": [
+      {
+        "id": "storage",
+        "label": "Storage",
+        "on": false
+      },
+      {
+        "id": "dex",
+        "label": "{dex}",
+        "on": false
+      },
+      {
+        "id": "party",
+        "label": "Monsters",
+        "on": false
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "on": false
+      }
+    ],
+    "showMoney": true
+  },
+  "follower": {
+    "enabled": true,
+    "talk": true
+  },
+  "touchControls": "auto",
+  "decorating": {
+    "enabled": true
+  },
+  "wardrobe": {
+    "enabled": true,
+    "start": {}
+  }
+}

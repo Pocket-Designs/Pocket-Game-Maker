@@ -1,0 +1,100 @@
+{
+  "name": "pocket-game-maker",
+  "productName": "Pocket-Game-Maker",
+  "version": "0.9.0",
+  "description": "A game maker for monster-taming and monster-capturing RPGs.",
+  "main": "main.js",
+  "author": {
+    "name": "project-tech-me",
+    "email": "project-tech-me@protonmail.com"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/engine.test.js && node test/exporter.test.js",
+    "gen-sample": "node tools/gen-library.js && node tools/gen-sample.js",
+    "dist:win": "electron-builder --win --x64",
+    "dist:linux": "electron-builder --linux AppImage",
+    "gen-library": "node tools/gen-library.js",
+    "gen-audio": "node tools/gen-audio.js",
+    "test:export": "electron test/export-main.js",
+    "test:editing": "electron test/editing-main.js",
+    "test:home": "electron test/home-main.js"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.pocketgamemaker.editor",
+    "productName": "Pocket-Game-Maker",
+    "icon": "build/icon.ico",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "lib/**/*",
+      "src/**/*",
+      "templates/**/*",
+      "package.json",
+      "library/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Pocket-Game-Maker",
+      "artifactName": "Pocket-Game-Maker-Setup-${version}.${ext}",
+      "license": "LICENSE"
+    },
+    "portable": {
+      "artifactName": "Pocket-Game-Maker-Portable-${version}.${ext}"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Development"
+    },
+    "publish": null,
+    "asarUnpack": [
+      "node_modules/rcedit/bin/**"
+    ],
+    "compression": "maximum",
+    "extraFiles": [
+      {
+        "from": "LICENSE",
+        "to": "LICENSE.txt"
+      },
+      {
+        "from": "THIRD-PARTY-NOTICES.txt",
+        "to": "THIRD-PARTY-NOTICES.txt"
+      }
+    ],
+    "copyright": "Copyright \u00a9 2026 project-tech-me"
+  },
+  "dependencies": {
+    "rcedit": "^4.0.1",
+    "yauzl": "^3.2.0",
+    "yazl": "^2.5.1"
+  }
+}

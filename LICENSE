@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Projects-me-design
+Copyright (c) 2026 project-tech-me <project-tech-me@protonmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,78 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+Games and projects you make with Pocket-Game-Maker belong to you. This licence
+covers the Pocket-Game-Maker software only; it does not apply to your own maps,
+data, artwork or games, and places no conditions on how you use or sell them.
+
+-------------------------------------------------------------------------------
+
+PRODUCT ICON
+
+Icon Artist: MJO-Art · workmjo@gmail.com
+The product Icon files are custom images created by MJO-Art for this project.
+These icons can not be altered or used without the express permission of the
+Artist.
+
+The icon files are not covered by the MIT Licence above. They are:
+  build/icon-source.png, build/icon-1024.png, build/icon.png, build/icon.ico
+  and src/editor/icon.png
+
+-------------------------------------------------------------------------------
+
+MUSIC AND SOUND EFFECTS
+
+The preset music, jingles and sound effects that come with Pocket-Game-Maker (the
+music/ and sounds/ folders of the Asset Library, and the sample project) are
+original works by project-tech-me <project-tech-me@protonmail.com>, composed
+and synthesised from scratch for Pocket-Game-Maker (tools/gen-audio.js). They contain
+no samples, loops or recordings from any other source.
+
+They are dedicated to the public domain under Creative Commons Zero
+(CC0 1.0 Universal): https://creativecommons.org/publicdomain/zero/1.0/
+You can use, change and include them in free or commercial games without asking
+permission and without giving credit. Credit is appreciated but not required.
+
+Music and jingles (MP3):
+  music/title-dawn-of-adventure.mp3         Dawn of Adventure (title screen)
+  music/town-sunny-town.mp3                 Sunny Town (towns and villages)
+  music/route-open-road.mp3                 Open Road (routes and the overworld)
+  music/cave-echoing-depths.mp3             Echoing Depths (caves and dungeons)
+  music/battle-wild-clash.mp3               Wild Clash (wild monster battles)
+  music/battle-rival-showdown.mp3           Rival Showdown (trainer battles)
+  music/victory-fanfare.mp3                 Victory Fanfare (after winning a battle)
+  music/jingle-rest-well.mp3                Rest Well (healing the party)
+  music/jingle-found-it.mp3                 Found It! (getting an item)
+  music/jingle-new-friend.mp3               New Friend (catching or receiving a monster)
+
+Sound effects (MP3):
+  sounds/cursor.mp3                         Cursor
+  sounds/confirm.mp3                        Confirm
+  sounds/cancel.mp3                         Cancel
+  sounds/buzzer.mp3                         Buzzer
+  sounds/hit.mp3                            Hit
+  sounds/hit-strong.mp3                     Strong hit
+  sounds/faint.mp3                          Faint
+  sounds/throw.mp3                          Throw
+  sounds/shake.mp3                          Ball shake
+  sounds/catch.mp3                          Caught
+  sounds/break-free.mp3                     Break free
+  sounds/level-up.mp3                       Level up
+  sounds/run-away.mp3                       Run away
+  sounds/door.mp3                           Door
+  sounds/bump.mp3                           Bump
+  sounds/coin.mp3                           Coins
+  sounds/heal.mp3                           Heal
+  sounds/encounter.mp3                      Encounter
+  sounds/save.mp3                           Save
+
+Music or sounds you import yourself (MP3 or FLAC) stay under their own
+licences. Record where they came from in Database > Credits.
+
+-------------------------------------------------------------------------------
+
+Pocket-Game-Maker includes third-party components under their own licences.
+See THIRD-PARTY-NOTICES.txt.

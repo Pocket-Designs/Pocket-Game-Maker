@@ -1,0 +1,590 @@
+{
+  "id": "map004",
+  "name": "Your Room",
+  "width": 10,
+  "height": 8,
+  "tilesetId": "interior",
+  "battleback": "battlebacks/town.png",
+  "bgm": "",
+  "edges": {},
+  "layers": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      23,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      5,
+      5,
+      5,
+      5,
+      6,
+      5,
+      5,
+      4,
+      20,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      24,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4
+    ],
+    [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ]
+  ],
+  "layerInfo": [
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Ground",
+      "collision": "walk",
+      "above": false,
+      "encounters": "tile"
+    },
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Obstacles",
+      "collision": "block",
+      "above": false,
+      "encounters": "none"
+    },
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Grass & overhead",
+      "collision": "walk",
+      "above": true,
+      "encounters": "tile"
+    }
+  ],
+  "encounters": {
+    "chance": 0,
+    "list": []
+  },
+  "events": [
+    {
+      "id": 29,
+      "name": "Door out",
+      "x": 4,
+      "y": 7,
+      "quick": {
+        "type": "exit",
+        "how": "step",
+        "mapId": "map001",
+        "x": 3,
+        "y": 13,
+        "dir": "down",
+        "sound": true,
+        "fade": true,
+        "sprite": ""
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "transfer",
+              "mapId": "map001",
+              "x": 3,
+              "y": 13,
+              "dir": "down",
+              "sound": true,
+              "fade": "black"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Furniture catalogue",
+      "x": 1,
+      "y": 2,
+      "quick": {
+        "type": "shop",
+        "sprite": "",
+        "dir": "down",
+        "greeting": "Welcome to the Home & Style catalogue! Furniture for your room, and clothes for you.",
+        "farewell": "Your order will be delivered straight to your bag!",
+        "goods": [
+          {
+            "itemId": "bed",
+            "price": null
+          },
+          {
+            "itemId": "table",
+            "price": null
+          },
+          {
+            "itemId": "chair",
+            "price": null
+          },
+          {
+            "itemId": "plant",
+            "price": null
+          },
+          {
+            "itemId": "bookshelf",
+            "price": null
+          },
+          {
+            "itemId": "rug",
+            "price": null
+          },
+          {
+            "itemId": "lamp",
+            "price": null
+          },
+          {
+            "itemId": "sofa",
+            "price": null
+          },
+          {
+            "itemId": "tv",
+            "price": null
+          },
+          {
+            "itemId": "plush",
+            "price": null
+          },
+          {
+            "itemId": "trophy",
+            "price": null
+          },
+          {
+            "itemId": "outfit_hero_cool",
+            "price": null
+          },
+          {
+            "itemId": "outfit_hero_explorer",
+            "price": null
+          },
+          {
+            "itemId": "wear_cap_blue",
+            "price": null
+          },
+          {
+            "itemId": "wear_cap_green",
+            "price": null
+          },
+          {
+            "itemId": "wear_cap_yellow",
+            "price": null
+          },
+          {
+            "itemId": "wear_shirt_white",
+            "price": null
+          },
+          {
+            "itemId": "wear_shirt_green",
+            "price": null
+          },
+          {
+            "itemId": "wear_trousers_black",
+            "price": null
+          }
+        ],
+        "sell": true,
+        "sellRate": 50
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "shop",
+              "greeting": "Welcome to the Home & Style catalogue! Furniture for your room, and clothes for you.",
+              "farewell": "Your order will be delivered straight to your bag!",
+              "goods": [
+                {
+                  "itemId": "bed",
+                  "price": null
+                },
+                {
+                  "itemId": "table",
+                  "price": null
+                },
+                {
+                  "itemId": "chair",
+                  "price": null
+                },
+                {
+                  "itemId": "plant",
+                  "price": null
+                },
+                {
+                  "itemId": "bookshelf",
+                  "price": null
+                },
+                {
+                  "itemId": "rug",
+                  "price": null
+                },
+                {
+                  "itemId": "lamp",
+                  "price": null
+                },
+                {
+                  "itemId": "sofa",
+                  "price": null
+                },
+                {
+                  "itemId": "tv",
+                  "price": null
+                },
+                {
+                  "itemId": "plush",
+                  "price": null
+                },
+                {
+                  "itemId": "trophy",
+                  "price": null
+                },
+                {
+                  "itemId": "outfit_hero_cool",
+                  "price": null
+                },
+                {
+                  "itemId": "outfit_hero_explorer",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_cap_blue",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_cap_green",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_cap_yellow",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_shirt_white",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_shirt_green",
+                  "price": null
+                },
+                {
+                  "itemId": "wear_trousers_black",
+                  "price": null
+                }
+              ],
+              "sell": true,
+              "sellRate": 50
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Wardrobe",
+      "x": 8,
+      "y": 2,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "Your wardrobe. What will you wear today?"
+            },
+            {
+              "cmd": "openScreen",
+              "screen": "wardrobe"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Mum's note",
+      "x": 6,
+      "y": 2,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/sign-post.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Note",
+              "text": "I put a bed, a plant and a rug in your bag. Open the menu (X) and choose Decorate to place them. Face anything you have placed and press Z to turn it, move it or put it away. Love, Mum"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "decoratable": true
+}

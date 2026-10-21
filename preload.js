@@ -1,0 +1,40 @@
+const { contextBridge, ipcRenderer } = require('electron');
+const { pathToFileURL } = require('url');
+const path = require('path');
+
+contextBridge.exposeInMainWorld('api', {
+  newProject: opts => ipcRenderer.invoke('project:new', opts),
+  openProject: dir => ipcRenderer.invoke('project:open', dir),
+  saveProject: (dir, data) => ipcRenderer.invoke('project:save', dir, data),
+  recent: () => ipcRenderer.invoke('app:recent'),
+  reveal: p => ipcRenderer.invoke('app:reveal', p),
+  forceClose: () => ipcRenderer.invoke('app:forceClose'),
+  listAssets: (dir, kind) => ipcRenderer.invoke('asset:list', dir, kind),
+  importAssets: (dir, kind) => ipcRenderer.invoke('asset:import', dir, kind),
+  readAsset: (dir, rel) => ipcRenderer.invoke('asset:read', dir, rel),
+  writeText: (dir, name, text) => ipcRenderer.invoke('asset:writeText', dir, name, text),
+  saveScreenshot: (dir, dataUrl) => ipcRenderer.invoke('playtest:screenshot', dir, dataUrl),
+  quitGame: () => ipcRenderer.invoke('app:quitGame'),
+  assetUrl: (dir, rel) => pathToFileURL(path.join(dir, 'assets', rel)).href,
+  playtest: (dir, data, start) => ipcRenderer.invoke('playtest:start', dir, data, start),
+  getPlaytestData: () => ipcRenderer.invoke('playtest:getData'),
+  saveGame: (proj, slot, obj) => ipcRenderer.invoke('save:write', proj, slot, obj),
+  loadGame: (proj, slot) => ipcRenderer.invoke('save:read', proj, slot),
+  listSaves: proj => ipcRenderer.invoke('save:list', proj),
+  libraryList: () => ipcRenderer.invoke('library:list'),
+  libraryAdd: (proj, keys, overwrite, ids) => ipcRenderer.invoke('library:add', proj, keys, overwrite, ids),
+  libraryOpen: () => ipcRenderer.invoke('library:open'),
+  libraryRestore: () => ipcRenderer.invoke('library:restore'),
+  libraryMapping: rel => ipcRenderer.invoke('library:mapping', rel),
+  librarySaveMapping: (proj, tileset) => ipcRenderer.invoke('library:saveMapping', proj, tileset),
+  librarySetCredit: (kind, key, fields) => ipcRenderer.invoke('library:setCredit', kind, key, fields),
+  exportGame: (dir, settings, art, outDir) => ipcRenderer.invoke('export:run', dir, settings, art, outDir),
+  exportChooseFolder: current => ipcRenderer.invoke('export:chooseFolder', current),
+  exportDefaultFolder: dir => ipcRenderer.invoke('export:defaultFolder', dir),
+  exportOpenFolder: p => ipcRenderer.invoke('export:openFolder', p),
+  exportAndroidBuild: dir => ipcRenderer.invoke('export:androidBuild', dir),
+  onExportProgress: fn => { const h = (e, m) => fn(m); ipcRenderer.on('export:progress', h); return () => ipcRenderer.removeListener('export:progress', h); },
+  fileUrl: abs => pathToFileURL(abs).href,
+  onMenu: fn => ipcRenderer.on('menu', (e, ch) => fn(ch)),
+  onCloseRequest: fn => ipcRenderer.on('app:closeRequest', () => fn())
+});

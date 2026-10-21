@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data: blob:; media-src 'self' file: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Pocket-Game-Maker</title>
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <div id="app">
+    <header id="topbar">
+      <div class="brand"><img class="logo" src="icon.png" alt=""> Pocket-Game-Maker <span id="proj-name"></span></div>
+      <div class="tb-group">
+        <button data-act="new" title="New project (Ctrl+N)">New</button>
+        <button data-act="open" title="Open project (Ctrl+O)">Open</button>
+        <button data-act="save" title="Save project (Ctrl+S)" id="btn-save">Save</button>
+      </div>
+      <div class="tb-group seg" id="mode-seg">
+        <button data-mode="map" title="Paint tiles (M)">Map</button>
+        <button data-mode="event" title="Place and edit events (E)">Events</button>
+      </div>
+      <div class="tb-group seg" id="tool-seg">
+        <button data-tool="pencil" title="Pencil (B)">✎ Pencil</button>
+        <button data-tool="rect" title="Rectangle (R)">▭ Rect</button>
+        <button data-tool="fill" title="Flood fill (F)">◧ Fill</button>
+        <button data-tool="erase" title="Eraser (X)">⌫ Erase</button>
+      </div>
+      <div class="tb-group" id="layer-seg">
+        <span class="tb-layer" id="tb-layer" title="Layer you are painting on — change it in the Layers panel or with keys 1–9"></span>
+        <label class="tb-check" title="Fade the other layers while painting (D)"><input type="checkbox" id="chk-dim"> Dim other layers</label>
+      </div>
+      <div class="tb-group">
+        <label class="tb-check" title="Show passability (P)"><input type="checkbox" id="chk-pass"> Passability</label>
+        <label class="tb-check"><input type="checkbox" id="chk-grid" checked> Grid</label>
+        <select id="zoom" title="Zoom">
+          <option value="1">100%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option>
+        </select>
+      </div>
+      <div class="tb-spacer"></div>
+      <div class="tb-group">
+        <button data-act="library" title="Free pixel-art asset library (F10)">Assets</button>
+        <button data-act="import" title="Import your own images, music, sounds and text files (Ctrl+I)">Import</button>
+        <button data-act="database" title="Database (F9)">Database</button>
+        <button data-act="export" title="Export your game for Windows, Linux, the web, Android and game stores (Ctrl+E)">Export</button>
+        <button data-act="playtest" class="primary" title="Playtest (F5)">▶ Playtest</button>
+      </div>
+    </header>
+
+    <aside id="left">
+      <div class="panel" id="palette-panel">
+        <div class="panel-head"><span>Tileset</span><span id="tileset-name" class="muted"></span></div>
+        <div id="palette-wrap"><canvas id="palette"></canvas></div>
+        <div class="panel-foot muted" id="palette-hint">Click a tile, or drag to pick a multi-tile stamp.</div>
+      </div>
+      <div class="panel" id="layers-panel">
+        <div class="panel-head"><span>Layers</span><span class="muted" style="text-transform:none;letter-spacing:0">1–9 to select</span></div>
+        <div id="layers-list"></div>
+        <div class="list-tools" id="layer-tools"></div>
+      </div>
+      <div class="panel" id="maps-panel">
+        <div class="panel-head"><span>Maps</span>
+          <span><button class="icon-btn" id="btn-add-map" title="New map">＋</button><button class="icon-btn" id="btn-del-map" title="Delete the selected map">－</button></span>
+        </div>
+        <div id="map-list" class="list"></div>
+      </div>
+    </aside>
+
+    <main id="center">
+      <div id="map-scroll"><canvas id="map-canvas"></canvas></div>
+      <div id="welcome" class="hidden"></div>
+    </main>
+
+    <aside id="right">
+      <div class="panel grow" id="inspector"></div>
+    </aside>
+
+    <footer id="status">
+      <span id="st-pos">—</span>
+      <span id="st-tile"></span>
+      <span class="tb-spacer"></span>
+      <span id="st-dirty"></span>
+    </footer>
+  </div>
+
+  <script src="../shared/core.js"></script>
+  <script src="../shared/battle.js"></script>
+  <script src="../shared/quick.js"></script>
+  <script src="../shared/layers.js"></script>
+  <script src="../shared/tiles.js"></script>
+  <script src="../shared/audio.js"></script>
+  <script src="../shared/gameconfig.js"></script>
+  <script src="ui.js"></script>
+  <script src="editor.js"></script>
+  <script src="mapeditor.js"></script>
+  <script src="events.js"></script>
+  <script src="database.js"></script>
+  <script src="library.js"></script>
+  <script src="quickevents.js"></script>
+  <script src="layers-panel.js"></script>
+  <script src="export.js"></script>
+  <script src="importer.js"></script>
+</body>
+</html>

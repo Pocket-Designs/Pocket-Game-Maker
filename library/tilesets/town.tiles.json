@@ -1,0 +1,277 @@
+{
+  "name": "Town buildings",
+  "description": "Roofs in three colours, walls, doors, shop and healer signs, paving, hedges and street furniture.",
+  "image": "town.png",
+  "tileSize": 16,
+  "columns": 8,
+  "author": "project-tech-me",
+  "licence": "CC0-1.0",
+  "legend": {
+    "pass": "player can walk on it",
+    "enc": "wild monsters can appear here",
+    "over": "drawn above the player",
+    "layer": "suggested layer: ground, detail or above",
+    "auto": "autotile: this tile starts a 2x3 block that joins up with its neighbours",
+    "anim": "number of animation frames, placed side by side to the right",
+    "part": "part of an autotile block or an animation frame (not painted directly)"
+  },
+  "animSpeed": 300,
+  "tiles": [
+    {
+      "id": 0,
+      "name": "Roof red (left)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 1,
+      "name": "Roof red (middle)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 2,
+      "name": "Roof red (right)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 3,
+      "name": "Roof red (bottom edge)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 4,
+      "name": "Roof blue (left)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 5,
+      "name": "Roof blue (middle)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 6,
+      "name": "Roof blue (right)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 7,
+      "name": "Roof blue (bottom edge)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 8,
+      "name": "Roof green (left)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 9,
+      "name": "Roof green (middle)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 10,
+      "name": "Roof green (right)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 11,
+      "name": "Roof green (bottom edge)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 12,
+      "name": "Chimney",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 13,
+      "name": "Wall",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 14,
+      "name": "Wall with window",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 15,
+      "name": "Brick wall",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 16,
+      "name": "Door (wood)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 17,
+      "name": "Door (shop)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 18,
+      "name": "Door (healer)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 19,
+      "name": "Shop sign",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 20,
+      "name": "Healer sign",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 21,
+      "name": "Big window",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 22,
+      "name": "Stone wall",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 23,
+      "name": "Paving",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 24,
+      "name": "Hedge",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 25,
+      "name": "Flower bed",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 26,
+      "name": "Bench",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 27,
+      "name": "Crates",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 28,
+      "name": "Flower pot",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 29,
+      "name": "Steps",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 30,
+      "name": "Awning (red)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 31,
+      "name": "Awning (blue)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    }
+  ]
+}

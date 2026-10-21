@@ -1,0 +1,605 @@
+[
+  {
+    "id": "outdoor",
+    "name": "Outdoor",
+    "image": "tilesets/outdoor.png",
+    "tileSize": 16,
+    "library": "tilesets/outdoor.png",
+    "animSpeed": 300,
+    "flags": [
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": true,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": true
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": true,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": true
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": true
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": true
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false,
+        "auto": true,
+        "anim": 3
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false,
+        "auto": true
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      }
+    ],
+    "names": [
+      "Grass",
+      "Tall grass",
+      "Dirt path",
+      "Water",
+      "Tree",
+      "Rock",
+      "Flowers",
+      "Fence",
+      "Roof (red)",
+      "House wall with windows",
+      "House door",
+      "Wooden floor",
+      "Sand",
+      "Sign",
+      "Tree top",
+      "Table",
+      "Grass (variant)",
+      "Tall grass (dark)",
+      "Stone path",
+      "Shore (top)",
+      "Big tree (top left)",
+      "Big tree (top right)",
+      "Bush",
+      "Tree stump",
+      "Lily pad",
+      "Shore (bottom)",
+      "Ledge",
+      "Boulder",
+      "Big tree (bottom left)",
+      "Big tree (bottom right)",
+      "Mushrooms",
+      "Log",
+      "Bridge (left-right)",
+      "Bridge (up-down)",
+      "Fence (up-down)",
+      "Well",
+      "Lamp post (bottom)",
+      "Lamp post (top)",
+      "Mailbox",
+      "Barrel",
+      "Water (autotile, animated)",
+      "Water (autotile, animated) (part)",
+      "Water frame 2 (part)",
+      "Water frame 2 (part)",
+      "Water frame 3 (part)",
+      "Water frame 3 (part)",
+      "Dirt path (autotile)",
+      "Dirt path (autotile) (part)",
+      "Water (autotile, animated) (part)",
+      "Water (autotile, animated) (part)",
+      "Water frame 2 (part)",
+      "Water frame 2 (part)",
+      "Water frame 3 (part)",
+      "Water frame 3 (part)",
+      "Dirt path (autotile) (part)",
+      "Dirt path (autotile) (part)",
+      "Water (autotile, animated) (part)",
+      "Water (autotile, animated) (part)",
+      "Water frame 2 (part)",
+      "Water frame 2 (part)",
+      "Water frame 3 (part)",
+      "Water frame 3 (part)",
+      "Dirt path (autotile) (part)",
+      "Dirt path (autotile) (part)"
+    ]
+  },
+  {
+    "id": "interior",
+    "name": "Interior",
+    "image": "tilesets/interior.png",
+    "tileSize": 16,
+    "library": "tilesets/interior.png",
+    "animSpeed": 300,
+    "flags": [
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": true,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      },
+      {
+        "pass": false,
+        "enc": false,
+        "over": false
+      }
+    ],
+    "names": [
+      "Wooden floor",
+      "Tiled floor",
+      "Carpet (red)",
+      "Carpet (blue)",
+      "Wall top",
+      "Wallpaper",
+      "Wall with window",
+      "Wall with picture",
+      "Bookshelf (top)",
+      "Bookshelf (bottom)",
+      "Bed (top)",
+      "Bed (bottom)",
+      "Table",
+      "Chair",
+      "House plant",
+      "Television",
+      "Counter (left)",
+      "Counter (middle)",
+      "Counter (right)",
+      "Healing machine",
+      "Computer",
+      "Stairs up",
+      "Stairs down",
+      "Door mat",
+      "Cupboard",
+      "Fridge",
+      "Stove",
+      "Sink",
+      "Crate",
+      "Wall clock",
+      "Floor lamp",
+      "Vase"
+    ]
+  }
+]

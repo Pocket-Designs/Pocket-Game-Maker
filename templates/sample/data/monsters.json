@@ -1,0 +1,425 @@
+[
+  {
+    "id": "embercub",
+    "name": "Embercub",
+    "types": [
+      "fire"
+    ],
+    "baseStats": {
+      "hp": 45,
+      "atk": 55,
+      "def": 40,
+      "spa": 60,
+      "spd": 45,
+      "spe": 60
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 62,
+    "front": "monsters/embercub_front.png",
+    "back": "monsters/embercub_back.png",
+    "category": "Ember Cub",
+    "description": "Its tail flickers when it is happy.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "growl"
+      },
+      {
+        "level": 5,
+        "moveId": "ember"
+      },
+      {
+        "level": 12,
+        "moveId": "quick_jab"
+      },
+      {
+        "level": 18,
+        "moveId": "flame_burst"
+      }
+    ],
+    "evolution": {
+      "method": "level",
+      "level": 16,
+      "into": "blazebear"
+    }
+  },
+  {
+    "id": "blazebear",
+    "name": "Blazebear",
+    "types": [
+      "fire"
+    ],
+    "baseStats": {
+      "hp": 75,
+      "atk": 85,
+      "def": 65,
+      "spa": 85,
+      "spd": 65,
+      "spe": 70
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 142,
+    "front": "monsters/blazebear_front.png",
+    "back": "monsters/blazebear_back.png",
+    "category": "Blaze",
+    "description": "Roars with a heat haze.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "ember"
+      },
+      {
+        "level": 18,
+        "moveId": "flame_burst"
+      },
+      {
+        "level": 24,
+        "moveId": "body_slam"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "splashling",
+    "name": "Splashling",
+    "types": [
+      "water"
+    ],
+    "baseStats": {
+      "hp": 50,
+      "atk": 48,
+      "def": 60,
+      "spa": 50,
+      "spd": 60,
+      "spe": 45
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 63,
+    "front": "monsters/splashling_front.png",
+    "back": "monsters/splashling_back.png",
+    "category": "Puddle",
+    "description": "Sprays bubbles to say hello.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "growl"
+      },
+      {
+        "level": 5,
+        "moveId": "bubble"
+      },
+      {
+        "level": 10,
+        "moveId": "harden"
+      },
+      {
+        "level": 16,
+        "moveId": "water_jet"
+      }
+    ],
+    "evolution": {
+      "method": "level",
+      "level": 16,
+      "into": "tidalisk"
+    }
+  },
+  {
+    "id": "tidalisk",
+    "name": "Tidalisk",
+    "types": [
+      "water"
+    ],
+    "baseStats": {
+      "hp": 80,
+      "atk": 70,
+      "def": 85,
+      "spa": 75,
+      "spd": 85,
+      "spe": 60
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 142,
+    "front": "monsters/tidalisk_front.png",
+    "back": "monsters/tidalisk_back.png",
+    "category": "Tide",
+    "description": "Rides its own wake.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "bubble"
+      },
+      {
+        "level": 16,
+        "moveId": "water_jet"
+      },
+      {
+        "level": 26,
+        "moveId": "body_slam"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "sproutle",
+    "name": "Sproutle",
+    "types": [
+      "grass"
+    ],
+    "baseStats": {
+      "hp": 48,
+      "atk": 50,
+      "def": 50,
+      "spa": 55,
+      "spd": 55,
+      "spe": 50
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 62,
+    "front": "monsters/sproutle_front.png",
+    "back": "monsters/sproutle_back.png",
+    "category": "Seedling",
+    "description": "Basks all day in the sun.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "growl"
+      },
+      {
+        "level": 5,
+        "moveId": "vine_lash"
+      },
+      {
+        "level": 9,
+        "moveId": "leech_seed"
+      },
+      {
+        "level": 14,
+        "moveId": "spore"
+      }
+    ],
+    "evolution": {
+      "method": "level",
+      "level": 16,
+      "into": "thornox"
+    }
+  },
+  {
+    "id": "thornox",
+    "name": "Thornox",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "baseStats": {
+      "hp": 78,
+      "atk": 80,
+      "def": 78,
+      "spa": 75,
+      "spd": 75,
+      "spe": 60
+    },
+    "growth": "medium",
+    "catchRate": 45,
+    "expYield": 142,
+    "front": "monsters/thornox_front.png",
+    "back": "monsters/thornox_back.png",
+    "category": "Thorn",
+    "description": "Its thorns drip with toxin.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "vine_lash"
+      },
+      {
+        "level": 1,
+        "moveId": "leech_seed"
+      },
+      {
+        "level": 16,
+        "moveId": "toxic_spit"
+      },
+      {
+        "level": 22,
+        "moveId": "body_slam"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "zapmouse",
+    "name": "Zapmouse",
+    "types": [
+      "electric"
+    ],
+    "baseStats": {
+      "hp": 38,
+      "atk": 50,
+      "def": 35,
+      "spa": 55,
+      "spd": 45,
+      "spe": 85
+    },
+    "growth": "fast",
+    "catchRate": 190,
+    "expYield": 55,
+    "front": "monsters/zapmouse_front.png",
+    "back": "monsters/zapmouse_back.png",
+    "category": "Static",
+    "description": "Stores static in its cheeks.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "quick_jab"
+      },
+      {
+        "level": 3,
+        "moveId": "jolt"
+      },
+      {
+        "level": 7,
+        "moveId": "spark"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "pebblit",
+    "name": "Pebblit",
+    "types": [
+      "rock"
+    ],
+    "baseStats": {
+      "hp": 45,
+      "atk": 65,
+      "def": 85,
+      "spa": 25,
+      "spd": 40,
+      "spe": 20
+    },
+    "growth": "slow",
+    "catchRate": 190,
+    "expYield": 58,
+    "front": "monsters/pebblit_front.png",
+    "back": "monsters/pebblit_back.png",
+    "category": "Pebble",
+    "description": "Often mistaken for a rock.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "harden"
+      },
+      {
+        "level": 6,
+        "moveId": "rock_toss"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "fluffkin",
+    "name": "Fluffkin",
+    "types": [
+      "normal"
+    ],
+    "baseStats": {
+      "hp": 55,
+      "atk": 45,
+      "def": 40,
+      "spa": 35,
+      "spd": 40,
+      "spe": 55
+    },
+    "growth": "fast",
+    "catchRate": 255,
+    "expYield": 45,
+    "front": "monsters/fluffkin_front.png",
+    "back": "monsters/fluffkin_back.png",
+    "category": "Fluff",
+    "description": "Soft, friendly, and everywhere.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 1,
+        "moveId": "growl"
+      },
+      {
+        "level": 8,
+        "moveId": "quick_jab"
+      },
+      {
+        "level": 14,
+        "moveId": "rest_up"
+      }
+    ],
+    "evolution": null
+  },
+  {
+    "id": "toxifrog",
+    "name": "Toxifrog",
+    "types": [
+      "poison"
+    ],
+    "baseStats": {
+      "hp": 48,
+      "atk": 50,
+      "def": 45,
+      "spa": 55,
+      "spd": 50,
+      "spe": 55
+    },
+    "growth": "medium",
+    "catchRate": 150,
+    "expYield": 60,
+    "front": "monsters/toxifrog_front.png",
+    "back": "monsters/toxifrog_back.png",
+    "category": "Toad",
+    "description": "Bright colours warn predators.",
+    "learnset": [
+      {
+        "level": 1,
+        "moveId": "tackle"
+      },
+      {
+        "level": 3,
+        "moveId": "toxic_spit"
+      },
+      {
+        "level": 9,
+        "moveId": "harden"
+      }
+    ],
+    "evolution": null
+  }
+]

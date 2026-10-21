@@ -1,0 +1,288 @@
+[
+  {
+    "id": "tackle",
+    "name": "Tackle",
+    "type": "normal",
+    "category": "physical",
+    "power": 40,
+    "accuracy": 100,
+    "pp": 35,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "A full-body charge."
+  },
+  {
+    "id": "growl",
+    "name": "Growl",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 40,
+    "priority": 0,
+    "target": "allEnemies",
+    "effect": {
+      "kind": "stat",
+      "stat": "atk",
+      "stages": -1,
+      "who": "target",
+      "chance": 100
+    },
+    "description": "Lowers foes' Attack."
+  },
+  {
+    "id": "quick_jab",
+    "name": "Quick Jab",
+    "type": "normal",
+    "category": "physical",
+    "power": 40,
+    "accuracy": 100,
+    "pp": 30,
+    "priority": 1,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "Always strikes first."
+  },
+  {
+    "id": "ember",
+    "name": "Ember",
+    "type": "fire",
+    "category": "special",
+    "power": 40,
+    "accuracy": 100,
+    "pp": 25,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "status",
+      "status": "brn",
+      "who": "target",
+      "chance": 10
+    },
+    "description": "May burn the target."
+  },
+  {
+    "id": "flame_burst",
+    "name": "Flame Burst",
+    "type": "fire",
+    "category": "special",
+    "power": 70,
+    "accuracy": 100,
+    "pp": 15,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "A burst of fire."
+  },
+  {
+    "id": "bubble",
+    "name": "Bubble",
+    "type": "water",
+    "category": "special",
+    "power": 40,
+    "accuracy": 100,
+    "pp": 30,
+    "priority": 0,
+    "target": "allEnemies",
+    "effect": {
+      "kind": "stat",
+      "stat": "spe",
+      "stages": -1,
+      "who": "target",
+      "chance": 10
+    },
+    "description": "Hits all foes. May lower Speed."
+  },
+  {
+    "id": "water_jet",
+    "name": "Water Jet",
+    "type": "water",
+    "category": "physical",
+    "power": 65,
+    "accuracy": 100,
+    "pp": 20,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "A pressurised jet."
+  },
+  {
+    "id": "vine_lash",
+    "name": "Vine Lash",
+    "type": "grass",
+    "category": "physical",
+    "power": 45,
+    "accuracy": 100,
+    "pp": 25,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "Whips with vines."
+  },
+  {
+    "id": "leech_seed",
+    "name": "Leech Bite",
+    "type": "grass",
+    "category": "special",
+    "power": 40,
+    "accuracy": 100,
+    "pp": 15,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "drain",
+      "amount": 50
+    },
+    "description": "Restores half the damage dealt."
+  },
+  {
+    "id": "spore",
+    "name": "Sleep Spores",
+    "type": "grass",
+    "category": "status",
+    "power": 0,
+    "accuracy": 75,
+    "pp": 15,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "status",
+      "status": "slp",
+      "who": "target",
+      "chance": 100
+    },
+    "description": "Puts the target to sleep."
+  },
+  {
+    "id": "spark",
+    "name": "Spark",
+    "type": "electric",
+    "category": "physical",
+    "power": 65,
+    "accuracy": 100,
+    "pp": 20,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "status",
+      "status": "par",
+      "who": "target",
+      "chance": 30
+    },
+    "description": "May paralyze."
+  },
+  {
+    "id": "jolt",
+    "name": "Jolt Wave",
+    "type": "electric",
+    "category": "status",
+    "power": 0,
+    "accuracy": 90,
+    "pp": 20,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "status",
+      "status": "par",
+      "who": "target",
+      "chance": 100
+    },
+    "description": "Paralyzes the target."
+  },
+  {
+    "id": "rock_toss",
+    "name": "Rock Toss",
+    "type": "rock",
+    "category": "physical",
+    "power": 50,
+    "accuracy": 90,
+    "pp": 15,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "none"
+    },
+    "description": "Hurls a stone."
+  },
+  {
+    "id": "harden",
+    "name": "Harden",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 0,
+    "pp": 30,
+    "priority": 0,
+    "target": "self",
+    "effect": {
+      "kind": "stat",
+      "stat": "def",
+      "stages": 1,
+      "who": "self",
+      "chance": 100
+    },
+    "description": "Raises Defense."
+  },
+  {
+    "id": "toxic_spit",
+    "name": "Toxic Spit",
+    "type": "poison",
+    "category": "special",
+    "power": 35,
+    "accuracy": 100,
+    "pp": 25,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "status",
+      "status": "psn",
+      "who": "target",
+      "chance": 30
+    },
+    "description": "May poison."
+  },
+  {
+    "id": "body_slam",
+    "name": "Body Slam",
+    "type": "normal",
+    "category": "physical",
+    "power": 85,
+    "accuracy": 100,
+    "pp": 15,
+    "priority": 0,
+    "target": "enemy",
+    "effect": {
+      "kind": "recoil",
+      "amount": 25
+    },
+    "description": "Hits hard; user takes recoil."
+  },
+  {
+    "id": "rest_up",
+    "name": "Rest Up",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 0,
+    "pp": 10,
+    "priority": 0,
+    "target": "self",
+    "effect": {
+      "kind": "heal",
+      "amount": 50,
+      "who": "self"
+    },
+    "description": "Restores half max HP."
+  }
+]

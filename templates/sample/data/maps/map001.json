@@ -1,0 +1,1834 @@
+{
+  "id": "map001",
+  "name": "Starter Town",
+  "width": 20,
+  "height": 15,
+  "tilesetId": "outdoor",
+  "battleback": "battlebacks/town.png",
+  "bgm": "music/town-sunny-town.mp3",
+  "edges": {},
+  "layers": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11,
+      11,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      46,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      -1,
+      -1,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      9,
+      9,
+      9,
+      -1,
+      -1,
+      9,
+      9,
+      9,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      39,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      38,
+      -1,
+      -1,
+      15,
+      15,
+      15,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      7,
+      7,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      36,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      13,
+      -1,
+      36,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      4,
+      8,
+      8,
+      8,
+      8,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      40,
+      40,
+      40,
+      40,
+      -1,
+      4,
+      4,
+      9,
+      9,
+      10,
+      9,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      40,
+      40,
+      40,
+      40,
+      -1,
+      4,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      40,
+      40,
+      40,
+      40,
+      -1,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      37,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      37,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      6,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ]
+  ],
+  "layerInfo": [
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Ground",
+      "collision": "walk",
+      "above": false,
+      "encounters": "tile"
+    },
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Obstacles",
+      "collision": "block",
+      "above": false,
+      "encounters": "none"
+    },
+    {
+      "visible": true,
+      "locked": false,
+      "opacity": 1,
+      "hideInGame": false,
+      "name": "Grass & overhead",
+      "collision": "walk",
+      "above": true,
+      "encounters": "tile"
+    }
+  ],
+  "encounters": {
+    "chance": 0,
+    "list": []
+  },
+  "events": [
+    {
+      "id": 1,
+      "name": "Starter Embercub (Fire)",
+      "x": 8,
+      "y": 5,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "Inside this orb is Embercub (Fire). You chose it as your partner!"
+            },
+            {
+              "cmd": "giveMonster",
+              "speciesId": "embercub",
+              "level": 5,
+              "nickname": ""
+            },
+            {
+              "cmd": "setSwitch",
+              "switchId": 1,
+              "value": true
+            },
+            {
+              "cmd": "selfSwitch",
+              "value": true
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "You already chose your partner. Let this one find another trainer."
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": true
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": []
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Starter Splashling (Water)",
+      "x": 9,
+      "y": 5,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "Inside this orb is Splashling (Water). You chose it as your partner!"
+            },
+            {
+              "cmd": "giveMonster",
+              "speciesId": "splashling",
+              "level": 5,
+              "nickname": ""
+            },
+            {
+              "cmd": "setSwitch",
+              "switchId": 1,
+              "value": true
+            },
+            {
+              "cmd": "selfSwitch",
+              "value": true
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "You already chose your partner. Let this one find another trainer."
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": true
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Starter Sproutle (Grass)",
+      "x": 10,
+      "y": 5,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "Inside this orb is Sproutle (Grass). You chose it as your partner!"
+            },
+            {
+              "cmd": "giveMonster",
+              "speciesId": "sproutle",
+              "level": 5,
+              "nickname": ""
+            },
+            {
+              "cmd": "setSwitch",
+              "switchId": 1,
+              "value": true
+            },
+            {
+              "cmd": "selfSwitch",
+              "value": true
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "characters/ball.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "You already chose your partner. Let this one find another trainer."
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": true
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Professor",
+      "x": 9,
+      "y": 4,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/professor.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Professor",
+              "text": "Welcome! Pick one of the three monsters on the table. Face an orb and press Z."
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "characters/professor.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Professor",
+              "text": "A fine choice! Take these Capture Orbs. Weaken wild monsters, then throw one!"
+            },
+            {
+              "cmd": "giveItem",
+              "itemId": "capture_orb",
+              "amount": 5
+            },
+            {
+              "cmd": "setSwitch",
+              "switchId": 2,
+              "value": true
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 2,
+            "selfSwitch": false
+          },
+          "sprite": "characters/professor.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Professor",
+              "text": "Route 1 is north of town. The tall grass is full of wild monsters!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Healer",
+      "x": 4,
+      "y": 10,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/healer.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Healer",
+              "text": "Let me restore your team to full health."
+            },
+            {
+              "cmd": "heal"
+            },
+            {
+              "cmd": "text",
+              "speaker": "Healer",
+              "text": "Your monsters are fighting fit! Come back any time."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Town sign",
+      "x": 12,
+      "y": 8,
+      "quick": {
+        "type": "sign",
+        "title": "Starter Town",
+        "text": "North: Route 1",
+        "look": "tile",
+        "sprite": "characters/sign-post.png",
+        "frontOnly": true
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Starter Town",
+              "text": "North: Route 1"
+            }
+          ],
+          "frontOnly": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Treasure chest",
+      "x": 17,
+      "y": 6,
+      "quick": {
+        "type": "chest",
+        "contents": "item",
+        "itemId": "super_potion",
+        "amount": 2,
+        "money": 100,
+        "message": "",
+        "emptyMessage": "The chest is empty.",
+        "sprite": "characters/chest.png",
+        "openSprite": "characters/chest-open.png"
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/chest.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "selfSwitch",
+              "value": true
+            },
+            {
+              "cmd": "wait",
+              "frames": 12
+            },
+            {
+              "cmd": "text",
+              "speaker": "",
+              "text": "You opened the chest and found 2× Super Potion!"
+            },
+            {
+              "cmd": "giveItem",
+              "itemId": "super_potion",
+              "amount": 2,
+              "silent": true
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": true
+          },
+          "sprite": "characters/chest-open.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "",
+              "text": "The chest is empty."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Villager",
+      "x": 15,
+      "y": 9,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/villager.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "random",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "choice",
+              "speaker": "Villager",
+              "text": "Hello there! Would you like a tip about catching monsters?",
+              "yes": "Yes please",
+              "no": "No thanks",
+              "cancelIsNo": true,
+              "yesCmds": [
+                {
+                  "cmd": "text",
+                  "speaker": "Villager",
+                  "text": "Monsters in the tall grass get easier to catch when their HP is low. Status problems help too!"
+                }
+              ],
+              "noCmds": [
+                {
+                  "cmd": "text",
+                  "speaker": "Villager",
+                  "text": "Suit yourself! Enjoy the sunshine."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Jogger",
+      "x": 2,
+      "y": 2,
+      "quick": {
+        "type": "npc",
+        "role": "talk",
+        "sprite": "characters/lass.png",
+        "dir": "right",
+        "speaker": "Jogger",
+        "move": "route",
+        "steps": [
+          "right",
+          "right",
+          "down",
+          "down",
+          "left",
+          "left",
+          "up",
+          "up"
+        ],
+        "speed": "normal",
+        "text": "Two laps around the flowers every morning keeps me fit!"
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/lass.png",
+          "dir": "right",
+          "trigger": "action",
+          "move": "route",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Jogger",
+              "text": "Two laps around the flowers every morning keeps me fit!"
+            }
+          ],
+          "route": {
+            "steps": [
+              "right",
+              "right",
+              "down",
+              "down",
+              "left",
+              "left",
+              "up",
+              "up"
+            ],
+            "repeat": true
+          },
+          "speed": "normal"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Gardener",
+      "x": 11,
+      "y": 12,
+      "quick": {
+        "type": "npc",
+        "role": "gift",
+        "sprite": "characters/old-man.png",
+        "dir": "up",
+        "speaker": "Gardener",
+        "move": "turn",
+        "speed": "slow",
+        "text": "You look like you're setting off on a journey. Take this with you!",
+        "itemId": "super_potion",
+        "amount": 1,
+        "afterText": "Mind the tall grass out there."
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/old-man.png",
+          "dir": "up",
+          "trigger": "action",
+          "move": "turn",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Gardener",
+              "text": "You look like you're setting off on a journey. Take this with you!"
+            },
+            {
+              "cmd": "giveItem",
+              "itemId": "super_potion",
+              "amount": 1
+            },
+            {
+              "cmd": "selfSwitch",
+              "value": true
+            }
+          ],
+          "speed": "slow"
+        },
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": true
+          },
+          "sprite": "characters/old-man.png",
+          "dir": "up",
+          "trigger": "action",
+          "move": "turn",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Gardener",
+              "text": "Mind the tall grass out there."
+            }
+          ],
+          "speed": "slow"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Shopkeeper",
+      "x": 6,
+      "y": 12,
+      "quick": {
+        "type": "shop",
+        "sprite": "characters/shopkeeper.png",
+        "dir": "up",
+        "greeting": "Welcome to the Starter Town market! What can I do for you?",
+        "farewell": "Please come again!",
+        "goods": [
+          {
+            "itemId": "capture_orb",
+            "price": null
+          },
+          {
+            "itemId": "great_orb",
+            "price": null
+          },
+          {
+            "itemId": "potion",
+            "price": null
+          },
+          {
+            "itemId": "antidote",
+            "price": null
+          },
+          {
+            "itemId": "full_heal",
+            "price": null
+          }
+        ],
+        "sell": true,
+        "sellRate": 50
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/shopkeeper.png",
+          "dir": "up",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "shop",
+              "greeting": "Welcome to the Starter Town market! What can I do for you?",
+              "farewell": "Please come again!",
+              "goods": [
+                {
+                  "itemId": "capture_orb",
+                  "price": null
+                },
+                {
+                  "itemId": "great_orb",
+                  "price": null
+                },
+                {
+                  "itemId": "potion",
+                  "price": null
+                },
+                {
+                  "itemId": "antidote",
+                  "price": null
+                },
+                {
+                  "itemId": "full_heal",
+                  "price": null
+                }
+              ],
+              "sell": true,
+              "sellRate": 50
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Door to your room",
+      "x": 3,
+      "y": 12,
+      "quick": {
+        "type": "exit",
+        "how": "step",
+        "mapId": "map004",
+        "x": 4,
+        "y": 6,
+        "dir": "up",
+        "sound": true,
+        "fade": true,
+        "sprite": ""
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "transfer",
+              "mapId": "map004",
+              "x": 4,
+              "y": 6,
+              "dir": "up",
+              "sound": true,
+              "fade": "black"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "House sign",
+      "x": 2,
+      "y": 13,
+      "quick": {
+        "type": "sign",
+        "title": "Your house",
+        "text": "Your room is through this door. Decorate it with furniture from the catalogue!",
+        "look": "tile",
+        "sprite": "characters/sign-post.png",
+        "frontOnly": false
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "speaker": "Your house",
+              "text": "Your room is through this door. Decorate it with furniture from the catalogue!"
+            }
+          ],
+          "frontOnly": false
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "North exit",
+      "x": 9,
+      "y": 1,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "It's dangerous to go into the tall grass without a monster! Visit the Professor first."
+            },
+            {
+              "cmd": "transfer",
+              "mapId": "map001",
+              "x": 9,
+              "y": 3,
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "transfer",
+              "mapId": "map002",
+              "x": 9,
+              "y": 17,
+              "dir": "up",
+              "fade": "black"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "North exit",
+      "x": 10,
+      "y": 1,
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "text",
+              "text": "It's dangerous to go into the tall grass without a monster! Visit the Professor first."
+            },
+            {
+              "cmd": "transfer",
+              "mapId": "map001",
+              "x": 10,
+              "y": 3,
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "switchId": 1,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "touch",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "transfer",
+              "mapId": "map002",
+              "x": 10,
+              "y": 17,
+              "dir": "up",
+              "fade": "black"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

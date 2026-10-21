@@ -1,0 +1,564 @@
+{
+  "name": "Outdoor",
+  "description": "Grass, tall grass, paths, water, trees, rocks, fences, bridges and other outdoor pieces, plus an animated water autotile and a dirt path autotile. The first 16 tiles match the sample project.",
+  "image": "outdoor.png",
+  "tileSize": 16,
+  "columns": 8,
+  "author": "project-tech-me",
+  "licence": "CC0-1.0",
+  "legend": {
+    "pass": "player can walk on it",
+    "enc": "wild monsters can appear here",
+    "over": "drawn above the player",
+    "layer": "suggested layer: ground, detail or above",
+    "auto": "autotile: this tile starts a 2x3 block that joins up with its neighbours",
+    "anim": "number of animation frames, placed side by side to the right",
+    "part": "part of an autotile block or an animation frame (not painted directly)"
+  },
+  "animSpeed": 300,
+  "tiles": [
+    {
+      "id": 0,
+      "name": "Grass",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 1,
+      "name": "Tall grass",
+      "pass": true,
+      "enc": true,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 2,
+      "name": "Dirt path",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 3,
+      "name": "Water",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 4,
+      "name": "Tree",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 5,
+      "name": "Rock",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 6,
+      "name": "Flowers",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 7,
+      "name": "Fence",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 8,
+      "name": "Roof (red)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 9,
+      "name": "House wall with windows",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 10,
+      "name": "House door",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 11,
+      "name": "Wooden floor",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 12,
+      "name": "Sand",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 13,
+      "name": "Sign",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 14,
+      "name": "Tree top",
+      "pass": true,
+      "enc": false,
+      "over": true,
+      "layer": "above"
+    },
+    {
+      "id": 15,
+      "name": "Table",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 16,
+      "name": "Grass (variant)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 17,
+      "name": "Tall grass (dark)",
+      "pass": true,
+      "enc": true,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 18,
+      "name": "Stone path",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 19,
+      "name": "Shore (top)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 20,
+      "name": "Big tree (top left)",
+      "pass": true,
+      "enc": false,
+      "over": true,
+      "layer": "above",
+      "group": "Big tree 2x2"
+    },
+    {
+      "id": 21,
+      "name": "Big tree (top right)",
+      "pass": true,
+      "enc": false,
+      "over": true,
+      "layer": "above",
+      "group": "Big tree 2x2"
+    },
+    {
+      "id": 22,
+      "name": "Bush",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 23,
+      "name": "Tree stump",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 24,
+      "name": "Lily pad",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 25,
+      "name": "Shore (bottom)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 26,
+      "name": "Ledge",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 27,
+      "name": "Boulder",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 28,
+      "name": "Big tree (bottom left)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Big tree 2x2"
+    },
+    {
+      "id": 29,
+      "name": "Big tree (bottom right)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Big tree 2x2"
+    },
+    {
+      "id": 30,
+      "name": "Mushrooms",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 31,
+      "name": "Log",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 32,
+      "name": "Bridge (left-right)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 33,
+      "name": "Bridge (up-down)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground"
+    },
+    {
+      "id": 34,
+      "name": "Fence (up-down)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 35,
+      "name": "Well",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 36,
+      "name": "Lamp post (bottom)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail",
+      "group": "Lamp post 1x2"
+    },
+    {
+      "id": 37,
+      "name": "Lamp post (top)",
+      "pass": true,
+      "enc": false,
+      "over": true,
+      "layer": "above",
+      "group": "Lamp post 1x2"
+    },
+    {
+      "id": 38,
+      "name": "Mailbox",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 39,
+      "name": "Barrel",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "detail"
+    },
+    {
+      "id": 40,
+      "name": "Water (autotile, animated)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "auto": true,
+      "anim": 3
+    },
+    {
+      "id": 41,
+      "name": "Water (autotile, animated) (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 42,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 43,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 44,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 45,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 46,
+      "name": "Dirt path (autotile)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "auto": true
+    },
+    {
+      "id": 47,
+      "name": "Dirt path (autotile) (part)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 48,
+      "name": "Water (autotile, animated) (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 49,
+      "name": "Water (autotile, animated) (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 50,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 51,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 52,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 53,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 54,
+      "name": "Dirt path (autotile) (part)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 55,
+      "name": "Dirt path (autotile) (part)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 56,
+      "name": "Water (autotile, animated) (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 57,
+      "name": "Water (autotile, animated) (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 58,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 59,
+      "name": "Water frame 2 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 60,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 61,
+      "name": "Water frame 3 (part)",
+      "pass": false,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 62,
+      "name": "Dirt path (autotile) (part)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    },
+    {
+      "id": 63,
+      "name": "Dirt path (autotile) (part)",
+      "pass": true,
+      "enc": false,
+      "over": false,
+      "layer": "ground",
+      "part": true
+    }
+  ]
+}
