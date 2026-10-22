@@ -1,29 +1,35 @@
 {
   "name": "pocket-game-maker",
   "productName": "Pocket-Game-Maker",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A game maker for monster-taming and monster-capturing RPGs.",
+  "homepage": "https://github.com/Projects-me-design/pocket-game-maker",
   "main": "main.js",
+  "desktopName": "pocket-game-maker.desktop",
   "author": {
     "name": "project-tech-me",
     "email": "project-tech-me@protonmail.com"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "electron .",
     "test": "node test/engine.test.js && node test/exporter.test.js",
     "gen-sample": "node tools/gen-library.js && node tools/gen-sample.js",
-    "dist:win": "electron-builder --win --x64",
-    "dist:linux": "electron-builder --linux AppImage",
+    "dist:win": "electron-builder --win --x64 --publish never",
+    "dist:linux": "electron-builder --linux --publish never",
     "gen-library": "node tools/gen-library.js",
     "gen-audio": "node tools/gen-audio.js",
     "test:export": "electron test/export-main.js",
     "test:editing": "electron test/editing-main.js",
-    "test:home": "electron test/home-main.js"
+    "test:home": "electron test/home-main.js",
+    "dist:mac": "electron-builder --mac --publish never"
   },
   "devDependencies": {
-    "electron": "^33.4.11",
-    "electron-builder": "^25.1.8"
+    "electron": "^44.9.3",
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.pocketgamemaker.editor",
@@ -72,8 +78,17 @@
       "artifactName": "Pocket-Game-Maker-Portable-${version}.${ext}"
     },
     "linux": {
-      "target": "AppImage",
-      "category": "Development"
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development",
+      "icon": "build/icon.png",
+      "artifactName": "Pocket-Game-Maker-${version}-linux-${arch}.${ext}",
+      "synopsis": "A game maker for monster-taming RPGs",
+      "maintainer": "project-tech-me <project-tech-me@protonmail.com>",
+      "executableName": "pocket-game-maker",
+      "syncDesktopName": true
     },
     "publish": null,
     "asarUnpack": [
@@ -90,11 +105,35 @@
         "to": "THIRD-PARTY-NOTICES.txt"
       }
     ],
-    "copyright": "Copyright \u00a9 2026 project-tech-me"
+    "copyright": "Copyright \u00a9 2026 project-tech-me",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon-1024.png",
+      "artifactName": "Pocket-Game-Maker-${version}-mac.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "Pocket-Game-Maker ${version}"
+    }
   },
   "dependencies": {
     "rcedit": "^4.0.1",
-    "yauzl": "^3.2.0",
+    "yauzl": "^3.4.0",
     "yazl": "^2.5.1"
   }
 }

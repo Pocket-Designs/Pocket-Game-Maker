@@ -13,7 +13,7 @@ fs.cpSync(path.join(__dirname, '..', 'templates', 'sample'), proj, { recursive: 
 const errors = [];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 app.on('browser-window-created', (e, win) => {
-  win.webContents.on('console-message', (ev, level, msg, line, src) => { if (level >= 2) errors.push('[' + path.basename(src || '') + ':' + line + '] ' + msg); });
+  win.webContents.on('console-message', (ev, level, msg, line, src) => { if (ev && ev.message !== undefined) { level = { error: 3, warning: 2 }[ev.level] || 0; msg = ev.message; line = ev.lineNumber; src = ev.sourceId; } if (level >= 2) errors.push('[' + path.basename(src || '') + ':' + line + '] ' + msg); });
   win.webContents.on('preload-error', (ev, p, err) => errors.push('preload: ' + err));
 });
 

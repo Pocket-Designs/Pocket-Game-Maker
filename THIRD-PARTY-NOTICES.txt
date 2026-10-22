@@ -59,7 +59,7 @@ D3DCompiler                  Microsoft DirectX redistributable
 Libraries used by the game exporter
 -----------------------------------
 
-yazl 2.5.1, yauzl 3.2.0      MIT License, Copyright (c) 2014 Josh Wolfe
+yazl 2.5.1, yauzl 3.4.0      MIT License, Copyright (c) 2014 Josh Wolfe
   (zip files)
 buffer-crc32 0.2.13          MIT License, Copyright (c) 2013 Brian J. Brennan
 pend 1.2.0                   MIT License, Copyright (c) 2014 Andrew Kelley

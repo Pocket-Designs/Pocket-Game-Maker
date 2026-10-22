@@ -34,7 +34,7 @@
     async action(a) {
       if (a === 'new') return App.newProjectDialog();
       if (a === 'open') return App.openProject();
-      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.0 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
+      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.1 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
       if (!App.proj) return UI.toast('Open or create a project first');
       if (a === 'save') return App.save();
       if (a === 'playtest') return App.playtest();

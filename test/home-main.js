@@ -7,7 +7,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'mf-proj-'));
 fs.cpSync(path.join(__dirname, '..', 'templates', 'sample'), proj, { recursive: true });
 const errors = [];
-app.on('browser-window-created', (e, win) => win.webContents.on('console-message', (ev, level, msg, line, src) => { if (level >= 2) errors.push(path.basename(src || '') + ':' + line + ' ' + msg); }));
+app.on('browser-window-created', (e, win) => win.webContents.on('console-message', (ev, level, msg, line, src) => { if (ev && ev.message !== undefined) { level = { error: 3, warning: 2 }[ev.level] || 0; msg = ev.message; line = ev.lineNumber; src = ev.sourceId; } if (level >= 2) errors.push(path.basename(src || '') + ':' + line + ' ' + msg); }));
 require('../main.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const js = (w, c) => w.webContents.executeJavaScript(c, true);

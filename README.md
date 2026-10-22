@@ -6,7 +6,7 @@ Pocket-Game-Maker was called MonsterForge before version 0.8.1. Projects made un
 
 ## Run it
 
-Requires Node.js 18+ (Windows or Linux).
+Requires Node.js 24 or newer (Windows, macOS or Linux). The app runs on Electron 44, which also uses Node.js 24. An `.nvmrc` file is included, so `nvm use` picks the right version.
 
 ```
 npm install
@@ -15,8 +15,20 @@ npm start
 
 Choose **New project…**, pick *Sample project* (playable immediately) or *Blank project*, then choose a parent folder. Press **F5** to playtest.
 
-`npm test` runs the rules-engine tests (formulas, capture, 3,000 randomised battles).
-`npm run dist:win` / `npm run dist:linux` build an installer / AppImage with electron-builder.
+`npm test` runs the rules-engine and exporter tests (formulas, capture, 3,000 randomised battles, archives and icons).
+`npm run dist:win` / `npm run dist:mac` / `npm run dist:linux` build the installers with electron-builder on that system: a Windows installer and portable .exe, a macOS .dmg and .zip (Intel and Apple Silicon in one), or a Linux AppImage and .deb.
+
+### Building on GitHub (Windows, macOS and Linux)
+
+`.github/workflows/build.yml` builds all three on GitHub's computers, so you don't need a Mac or a Windows PC:
+
+1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Projects-me-design/pocket-game-maker`; change it if yours is different).
+2. Every push to `main`, every pull request, and **Actions → Build → Run workflow** runs the tests, then builds on Windows, macOS and Linux. The installers are under the run's **Artifacts**.
+3. To make a release, push a version tag: `git tag v0.9.0` then `git push origin v0.9.0`. The installers are attached to a **draft release**; check it and click **Publish**.
+
+All the actions it uses run on Node.js 24 (GitHub removed Node.js 20 from its runners in September 2026), and the app is built with Node.js 24.
+
+The builds are unsigned unless you add certificates as repository secrets (listed at the top of the workflow). Unsigned builds work, but Windows shows a SmartScreen warning (**More info → Run anyway**), and macOS needs a right-click on the app and **Open** the first time. If macOS says the app is damaged, run `xattr -cr /Applications/Pocket-Game-Maker.app` in Terminal.
 
 ## The editor
 
@@ -210,6 +222,7 @@ src/shared/audio.js        Music and sound slots and their presets
 src/runtime/               Game runtime: map, events, battle scene, menus, shop, audio
 templates/sample/          Sample project (regenerate with npm run gen-sample)
 test/                      Engine and exporter tests, an Electron smoke test and an export test
+.github/workflows/build.yml  GitHub build for Windows, macOS and Linux (tests, installers, draft releases)
 ```
 
 ## Not in this version yet
