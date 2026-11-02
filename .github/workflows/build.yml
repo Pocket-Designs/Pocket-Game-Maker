@@ -83,17 +83,18 @@ jobs:
     name: Build (${{ matrix.name }})
     needs: test
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Windows
-            os: windows-latest
+            os: windows-2025
             args: --win --x64 -c.win.signAndEditExecutable=true
             files: |
               dist/*.exe
           - name: macOS
-            os: macos-latest
+            os: macos-15
             args: --mac --universal
             files: |
               dist/*.dmg
