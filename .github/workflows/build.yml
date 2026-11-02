@@ -95,10 +95,10 @@ jobs:
               dist/*.exe
           - name: macOS
             os: macos-15
-            args: --mac --universal
+            args: --mac --x64 --arm64
             files: |
               dist/*.dmg
-              dist/*-mac.zip
+              dist/*-mac-*.zip
           - name: Linux
             os: ubuntu-24.04
             args: --linux --x64
@@ -128,8 +128,8 @@ jobs:
             echo "No signing certificate: building unsigned."
             unset CSC_LINK CSC_KEY_PASSWORD
             export CSC_IDENTITY_AUTO_DISCOVERY=false
-            # macOS: an ad-hoc signature so the app still opens on Apple Silicon Macs (with a Gatekeeper warning)
-            if [ "${{ runner.os }}" = "macOS" ]; then EXTRA="-c.mac.identity=- -c.mac.notarize=false"; fi
+            # macOS: an ad-hoc signature (no hardened runtime) so the app still opens on Apple Silicon Macs, with a Gatekeeper warning
+            if [ "${{ runner.os }}" = "macOS" ]; then EXTRA="-c.mac.identity=- -c.mac.hardenedRuntime=false -c.mac.notarize=false"; fi
           fi
           if [ "${{ runner.os }}" = "macOS" ] && [ -z "$APPLE_ID" ]; then EXTRA="$EXTRA -c.mac.notarize=false"; fi
           npx electron-builder ${{ matrix.args }} $EXTRA --publish never
