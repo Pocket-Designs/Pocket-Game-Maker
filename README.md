@@ -2,8 +2,6 @@
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
 
-Pocket-Game-Maker was called MonsterForge before version 0.8.1. Projects made under the old name open as they are, and on first start it moves the old `Documents/MonsterForge` asset library folder and recent projects list across.
-
 ## Run it
 
 Requires Node.js 24 or newer (Windows, macOS or Linux). The app runs on Electron 44, which also uses Node.js 24. An `.nvmrc` file is included, so `nvm use` picks the right version.
