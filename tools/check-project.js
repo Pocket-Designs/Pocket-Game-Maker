@@ -29,6 +29,7 @@ const NEED = [
   ['build/icon.ico', 1, 'the Windows icon'],
   ['build/icon.png', 1, 'the Linux icon'],
   ['build/icon-1024.png', 1, 'the macOS icon'],
+  ['build/adhoc-sign.js', 1, 'the macOS signing step for unsigned builds'],
   ['LICENSE', 1, 'the licence'],
   ['THIRD-PARTY-NOTICES.txt', 1, 'third-party notices'],
   ['test/engine.test.js', 1, 'the tests']

@@ -35,6 +35,7 @@
     "appId": "com.pocketgamemaker.editor",
     "productName": "Pocket-Game-Maker",
     "icon": "build/icon.ico",
+    "afterPack": "build/adhoc-sign.js",
     "directories": {
       "output": "dist",
       "buildResources": "build"
