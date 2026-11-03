@@ -2,6 +2,8 @@
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
 
+Pocket-Game-Maker was called MonsterForge before version 0.8.1. Projects made under the old name open as they are, and on first start it moves the old `Documents/MonsterForge` asset library folder and recent projects list across.
+
 ## Run it
 
 Requires Node.js 24 or newer (Windows, macOS or Linux). The app runs on Electron 44, which also uses Node.js 24. An `.nvmrc` file is included, so `nvm use` picks the right version.
@@ -14,7 +16,7 @@ npm start
 Choose **New project…**, pick *Sample project* (playable immediately) or *Blank project*, then choose a parent folder. Press **F5** to playtest.
 
 `npm test` runs the rules-engine and exporter tests (formulas, capture, 3,000 randomised battles, archives and icons).
-`npm run dist:win` / `npm run dist:mac` / `npm run dist:linux` build the installers with electron-builder on that system: a Windows installer and portable .exe, a macOS .dmg and .zip (Intel and Apple Silicon in one), or a Linux AppImage and .deb.
+`npm run dist:win` / `npm run dist:mac` / `npm run dist:linux` build the installers with electron-builder on that system: a Windows installer and portable .exe, a macOS .dmg and .zip for Intel and for Apple Silicon, or a Linux AppImage and .deb.
 
 ### Building on GitHub (Windows, macOS and Linux)
 
@@ -34,7 +36,7 @@ The builds are unsigned unless you add certificates as repository secrets (liste
 |---|---|
 | **Map mode** | Paint with Pencil, Rect, Fill, Erase on the layer selected in the **Layers** panel (see below). Drag in the tileset palette to pick a multi-tile stamp. Right-click the map to pick a tile. Ctrl+Z / Ctrl+Y undo/redo. |
 | **Events mode** | Double-click a tile to create an event, drag to move, Enter to edit, Ctrl+C then right-click to paste. Right-click → *Set player start here* or *Playtest from here*. |
-| **Inspector** | Map name, size (**Change size…**), tileset, battle background, **music**, **map edges** and the **wild encounter table** (monster, level range, weight, chance per step). |
+| **Inspector** | Map name, size (**Change size…**), tileset, battle background, **music**, **map edges** and the **wild encounter table** (monster, level range, weight, chance per step). Click a section's heading to fold it away. Tick **One at a time** to keep just one section open (opening one closes the others), or use **Expand all** / **Collapse all**. The editor remembers your choice. |
 | **Database (F9, or the Database menu)** | Monsters (types, base stats, growth, catch rate, sprites, learnset, evolution), Moves (power, accuracy, EP, priority, targets, status/stat/heal/drain/recoil effects), Types (click-to-cycle effectiveness chart), Items (balls, healing, revives, EP restores, evolution stones, tools, key items), Tilesets (passability, encounter, autotile and animation settings), **Music & sounds** (game music, jingles, sound effects, volumes), Menus & screens, System (screen size, start, blackout point, starting party/bag, battle rules, switches) and Credits. The **Database** menu in the menu bar opens any tab directly (Ctrl+Shift+1 to 9). |
 | **Passability** toggle | Red = blocked, green = wild-encounter tiles. |
 

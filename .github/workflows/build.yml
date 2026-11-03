@@ -129,10 +129,44 @@ jobs:
             unset CSC_LINK CSC_KEY_PASSWORD
             export CSC_IDENTITY_AUTO_DISCOVERY=false
             # macOS: an ad-hoc signature (no hardened runtime) so the app still opens on Apple Silicon Macs, with a Gatekeeper warning
-            if [ "${{ runner.os }}" = "macOS" ]; then EXTRA="-c.mac.identity=- -c.mac.hardenedRuntime=false -c.mac.notarize=false"; fi
+            if [ "${{ runner.os }}" = "macOS" ]; then EXTRA="-c.mac.identity=- -c.mac.hardenedRuntime=false"; fi
           fi
-          if [ "${{ runner.os }}" = "macOS" ] && [ -z "$APPLE_ID" ]; then EXTRA="$EXTRA -c.mac.notarize=false"; fi
-          npx electron-builder ${{ matrix.args }} $EXTRA --publish never
+          # Notarize only with a certificate and an Apple ID. (Give each -c option once: a repeated one becomes a list and is rejected.)
+          if [ "${{ runner.os }}" = "macOS" ] && { [ -z "$CSC_LINK" ] || [ -z "$APPLE_ID" ]; }; then EXTRA="$EXTRA -c.mac.notarize=false"; fi
+
+          # Runs electron-builder, keeps its output in build.log, and on failure copies the error lines
+          # into the run's Annotations (so they show on the run's summary page without opening the log).
+          build() {
+            set -o pipefail
+            if npx electron-builder "$@" --publish never 2>&1 | tee -a build.log; then return 0; fi
+            grep -E "⨯|[Ee]rror|failed|cannot|Cannot" build.log | grep -v "^\s*at " | tail -6 | while IFS= read -r line; do
+              echo "::error title=electron-builder (${{ matrix.name }})::${line:0:900}"
+            done
+            return 1
+          }
+
+          if [ "${{ runner.os }}" != "macOS" ]; then
+            build ${{ matrix.args }} $EXTRA
+            exit $?
+          fi
+
+          # macOS: the .zip first, then the .dmg disk images. Making a .dmg on GitHub's Mac machines sometimes fails
+          # with "hdiutil: Resource busy", so it is tried up to 3 times; if it still fails, the .zip files are kept.
+          build ${{ matrix.args }} $EXTRA -c.mac.target=zip || exit 1
+          for attempt in 1 2 3; do
+            echo "Making the .dmg files (attempt $attempt of 3)"
+            if build ${{ matrix.args }} $EXTRA -c.mac.target=dmg; then exit 0; fi
+            sleep 30
+          done
+          echo "::warning title=macOS .dmg not made::The .dmg disk images could not be made (see the errors above). The .zip downloads for Intel and Apple Silicon Macs were still built."
+      - name: Keep the build log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-log-${{ matrix.name }}
+          path: build.log
+          if-no-files-found: ignore
+          retention-days: 7
       - uses: actions/upload-artifact@v7
         with:
           name: Pocket-Game-Maker-${{ matrix.name }}

@@ -165,7 +165,7 @@ app.whenReady().then(async () => {
   console.log('editor audio preview plays:', await js(editor, `(async () => { const a = new Audio(UI.assetUrl('music/town-sunny-town.mp3')); try { await a.play(); await new Promise(r => setTimeout(r, 700)); const t = a.currentTime; a.pause(); return 'ok, t=' + t.toFixed(2); } catch (e) { return 'error ' + e.message; } })()`));
   await key(editor, 'Escape'); await sleep(300);
   await js(editor, `App.selectMap('map002'); App.setMode('map'); 0`); await sleep(700);
-  await js(editor, `(() => { const box = document.getElementById('inspector'); const h = [...box.querySelectorAll('h3')].find(x => x.textContent === 'Music'); box.scrollTop = h.parentNode.offsetTop - 8; })(); 0`); await sleep(300);
+  await js(editor, `(() => { const box = document.getElementById('inspector'); const s = box.querySelector('.insp-section[data-key="music"]'); box.scrollTop = s.offsetTop - 8; })(); 0`); await sleep(300);
   await shot(editor, 'X1-map-music-edges');
   await js(editor, `document.getElementById('inspector').scrollTop = 0; App.setMode('event'); 0`);
   await js(editor, `QuickEvent.open('exit', 5, 5); 0`); await sleep(800);

@@ -34,7 +34,7 @@
     async action(a) {
       if (a === 'new') return App.newProjectDialog();
       if (a === 'open') return App.openProject();
-      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.1 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
+      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.2 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
       if (!App.proj) return UI.toast('Open or create a project first');
       if (a === 'save') return App.save();
       if (a === 'playtest') return App.playtest();
@@ -414,25 +414,75 @@
     },
 
     /* ---------- inspector ---------- */
+    /* Collapsible inspector sections. "One at a time" keeps a single section open (opening one closes the
+       others); otherwise each opens and closes on its own. The choice is remembered between sessions. */
+    insp: (() => { let st = null; try { st = JSON.parse(localStorage.getItem('pgm.inspector')); } catch (e) { /* first run */ } return Object.assign({ one: false, closed: {}, current: 'map' }, st || {}); })(),
+    saveInsp() { try { localStorage.setItem('pgm.inspector', JSON.stringify(App.insp)); } catch (e) { /* storage unavailable */ } },
+    inspOpen(key) { return App.insp.one ? App.insp.current === key : !App.insp.closed[key]; },
+    inspKeys() { return [...document.querySelectorAll('#inspector .insp-section[data-key]')].map(s => s.dataset.key); },
+    inspApply() {
+      document.querySelectorAll('#inspector .insp-section[data-key]').forEach(s => {
+        const open = App.inspOpen(s.dataset.key);
+        s.classList.toggle('collapsed', !open);
+        const b = s.querySelector('.insp-toggle'); if (b) b.setAttribute('aria-expanded', String(open));
+      });
+      const one = document.querySelector('#insp-one'); if (one) one.checked = App.insp.one;
+      App.saveInsp();
+    },
+    inspToggle(key) {
+      const I = App.insp;
+      if (I.one) I.current = I.current === key ? null : key; else I.closed[key] = !I.closed[key];
+      App.inspApply();
+      if (App.inspOpen(key)) { const s = document.querySelector('#inspector .insp-section[data-key="' + key + '"]'); s && s.scrollIntoView({ block: 'nearest' }); }
+    },
+    inspSetOne(on) {
+      const I = App.insp, keys = App.inspKeys();
+      if (on && !I.one) I.current = keys.find(k => !I.closed[k] && k !== 'tips') || keys[0];   // keep the first open section open
+      if (!on && I.one) { I.closed = {}; keys.forEach(k => { if (k !== I.current) I.closed[k] = true; }); } // nothing jumps open
+      I.one = on; App.inspApply();
+    },
+    inspAll(open) {
+      const I = App.insp;
+      if (open) { I.one = false; I.closed = {}; }
+      else if (I.one) I.current = null;
+      else App.inspKeys().forEach(k => { I.closed[k] = true; });
+      App.inspApply();
+    },
+    inspSection(key, title, ...kids) {
+      const open = App.inspOpen(key);
+      return h('div', { class: 'insp-section' + (open ? '' : ' collapsed'), 'data-key': key },
+        h('h3', null, h('button', { class: 'insp-toggle', 'aria-expanded': String(open), title: 'Show or hide this section', onclick: () => App.inspToggle(key) }, h('span', { class: 'insp-chev' }, '▸'), title)),
+        h('div', { class: 'insp-body' }, kids));
+    },
+    inspBar() {
+      return h('div', { class: 'insp-bar' },
+        h('label', { title: 'Opening a section closes the others' }, h('input', { type: 'checkbox', id: 'insp-one', checked: App.insp.one, onchange: e => App.inspSetOne(e.target.checked) }), 'One at a time'),
+        h('span', { class: 'tb-spacer' }),
+        h('button', { class: 'small', title: 'Open every section', onclick: () => App.inspAll(true) }, 'Expand all'),
+        h('button', { class: 'small', title: 'Close every section', onclick: () => App.inspAll(false) }, 'Collapse all'));
+    },
+
     renderInspector() {
       const box = clear($('#inspector'));
       const m = App.map();
       if (!m) return;
+      box.appendChild(App.inspBar());
       const ev = App.mode === 'event' ? App.selectedEvent() : null;
       if (ev) {
-        box.appendChild(h('div', { class: 'insp-section' }, h('h3', null, 'Event'),
+        box.appendChild(App.inspSection('event', 'Event',
           field('Name', ev, 'name', { onChange: () => MapEditor.render() }),
           row(h('div', { class: 'field' }, h('span', null, 'Position'), h('div', null, ev.x + ', ' + ev.y)), h('div', { class: 'field' }, h('span', null, 'Pages'), h('div', null, String(ev.pages.length)))),
           ev.quick ? h('div', { class: 'qe-tag' }, (QuickEvent.TYPES[ev.quick.type] || {}).icon + ' Quick event: ' + (QuickEvent.TYPES[ev.quick.type] || {}).label) : null,
           h('div', { class: 'row' }, ev.quick ? h('button', { class: 'primary', onclick: () => QuickEvent.edit(ev) }, 'Edit ' + QuickEvent.TYPES[ev.quick.type].label.toLowerCase() + '…') : null,
             h('button', { class: ev.quick ? '' : 'primary', onclick: () => EventEditor.open(ev) }, ev.quick ? 'Full event editor…' : 'Edit event…'), h('button', { class: 'danger', onclick: () => App.deleteEvent(ev.id) }, 'Delete')),
           h('p', { class: 'muted' }, 'Drag to move. Double-click or Enter to edit. Ctrl+C to copy, right-click a tile to paste.')));
-        ev.pages.forEach((pg, i) => box.appendChild(h('div', { class: 'insp-section' }, h('h3', null, 'Page ' + (i + 1) + ' · ' + ({ action: 'action button', touch: 'touch', sight: 'trainer sight', auto: 'autorun', encounter: 'monster encounter area' }[pg.trigger] || pg.trigger)),
+        ev.pages.forEach((pg, i) => box.appendChild(App.inspSection('page' + (i + 1), 'Page ' + (i + 1) + ' · ' + ({ action: 'action button', touch: 'touch', sight: 'trainer sight', auto: 'autorun', encounter: 'monster encounter area' }[pg.trigger] || pg.trigger),
           pg.trigger === 'encounter' && pg.encounter ? h('div', { class: 'muted' }, pg.encounter.width + '×' + pg.encounter.height + ' squares · ' + pg.encounter.chance + '% per step · ' + (pg.encounter.list || []).map(e => (App.proj.monsters.find(m => m.id === e.speciesId) || { name: '?' }).name).join(', ')) :
           pg.commands && pg.commands.length ? h('ol', { style: { paddingLeft: '18px', margin: 0 } }, pg.commands.map(c => h('li', null, EventEditor.summary(c)))) : h('div', { class: 'muted' }, 'No commands'))));
         return;
       }
-      const sec = (title, ...kids) => h('div', { class: 'insp-section' }, h('h3', null, title), kids);
+      const KEY = { 'Map properties': 'map', 'Music': 'music', 'Map edges': 'edges', 'Wild encounters': 'encounters', 'Tips': 'tips' };
+      const sec = (title, ...kids) => App.inspSection(KEY[title] || title, title, ...kids);
       box.appendChild(sec('Map properties',
         field('Name', m, 'name', { onChange: v => { const info = App.proj.mapInfos.find(i => i.id === m.id); if (info) info.name = v; App.renderMapList(); } }),
         h('div', { class: 'muted', style: { fontSize: '11px', marginBottom: '8px' } }, 'ID: ' + m.id),

@@ -1,7 +1,7 @@
 {
   "name": "pocket-game-maker",
   "productName": "Pocket-Game-Maker",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "A game maker for monster-taming and monster-capturing RPGs.",
   "homepage": "https://github.com/Projects-me-design/pocket-game-maker",
   "main": "main.js",
