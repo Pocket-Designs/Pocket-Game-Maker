@@ -23,8 +23,11 @@ Choose **New project…**, pick *Sample project* (playable immediately) or *Blan
 `.github/workflows/build.yml` builds all three on GitHub's computers, so you don't need a Mac or a Windows PC:
 
 1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Projects-me-design/pocket-game-maker`; change it if yours is different).
-2. Every push to `main`, every pull request, and **Actions → Build → Run workflow** runs the tests, then builds on Windows, macOS and Linux. The installers are under the run's **Artifacts**.
-3. To make a release, push a version tag: `git tag v0.9.0` then `git push origin v0.9.0`. The installers are attached to a **draft release**; check it and click **Publish**.
+2. Every push to `main` and every pull request runs the tests and builds on Windows, macOS and Linux, to check everything still builds. These runs don't keep the installers, so they don't use up the account's Actions storage.
+3. To download installers, use **Actions → Build → Run workflow**. They appear under the run's **Artifacts** for 5 days.
+4. To make a release, push a version tag: `git tag v0.9.3` then `git push origin v0.9.3`. The installers are attached to a **draft release**; check it and click **Publish**. Release files don't count towards Actions storage.
+
+If a run says **"Artifact storage quota has been hit"**, the account's Actions storage is full of files kept by earlier runs. Delete old runs (Actions → a run → **…** → Delete workflow run) or just their artifacts (the bin icon next to each one under **Artifacts**). GitHub recounts the space used every few hours, so the next run may need to wait a little.
 
 All the actions it uses run on Node.js 24 (GitHub removed Node.js 20 from its runners in September 2026), and the app is built with Node.js 24.
 

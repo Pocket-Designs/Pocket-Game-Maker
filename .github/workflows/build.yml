@@ -1,9 +1,16 @@
 # Builds Pocket-Game-Maker for Windows, macOS and Linux on GitHub.
 #
-#   Push to main, open a pull request, or click "Run workflow" (Actions tab): tests run, then each system
-#   is built and the installers appear under the run's Artifacts.
-#   Push a version tag (for example: git tag v0.9.0 && git push origin v0.9.0): the same builds are
-#   attached to a draft GitHub Release named after the tag. Check it, then click Publish.
+#   Push to main or open a pull request: tests run and each system is built, to check it still builds.
+#   The installers are not kept, so they don't use up the account's Actions storage.
+#   Click "Run workflow" (Actions tab > Build): the same, and the installers appear under the run's
+#   Artifacts for 5 days.
+#   Push a version tag (for example: git tag v0.9.3 && git push origin v0.9.3): the installers are
+#   attached to a draft GitHub Release named after the tag (Release files don't count towards Actions storage).
+#   Check it, then click Publish.
+#
+# Storage: GitHub gives each account a fixed amount of Actions storage, and kept artifacts count towards it
+# until they expire. If a run says "Artifact storage quota has been hit", delete old runs or their artifacts
+# (Actions tab > a run > Artifacts > bin icon); GitHub recounts the space used every few hours.
 #
 # Every action used here runs on Node.js 24 (GitHub removed Node 20 from its runners in September 2026),
 # and the app itself is built with Node.js 24 and Electron 44 (which also uses Node.js 24).
@@ -72,12 +79,13 @@ jobs:
       - name: Run the smoke test
         run: xvfb-run -a --server-args="-screen 0 1440x900x24" npx electron --no-sandbox --disable-gpu test/smoke-main.js smoke-out
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: failure()
+        continue-on-error: true
         with:
           name: smoke-test-screenshots
           path: smoke-out/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 3
 
   build:
     name: Build (${{ matrix.name }})
@@ -160,20 +168,29 @@ jobs:
             sleep 30
           done
           echo "::warning title=macOS .dmg not made::The .dmg disk images could not be made (see the errors above). The .zip downloads for Intel and Apple Silicon Macs were still built."
-      - name: Keep the build log
-        if: always()
+      - name: Keep the build log (only when the build fails)
+        if: failure()
+        continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
           name: build-log-${{ matrix.name }}
           path: build.log
           if-no-files-found: ignore
-          retention-days: 7
-      - uses: actions/upload-artifact@v7
+          retention-days: 3
+      - name: Drop the Mac .zip files when the .dmg files were made (the same app, so no need to store both)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: if ls dist/*.dmg >/dev/null 2>&1; then rm -f dist/*-mac-*.zip; fi
+      - name: Keep the installers
+        # Only for "Run workflow" and version tags; pushes and pull requests just check that everything builds.
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v7
         with:
           name: Pocket-Game-Maker-${{ matrix.name }}
           path: ${{ matrix.files }}
           if-no-files-found: error
-          retention-days: 30
+          compression-level: 0
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && 1 || 5 }}
 
   release:
     name: Draft release
