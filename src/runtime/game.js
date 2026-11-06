@@ -12,6 +12,7 @@
 
   const G = window.G = {
     images: {},
+    dbg() {}, // replaced by the playtest debugger (debugger.js); does nothing in exported games
     scene: 'boot', busy: false, map: null, evs: [], player: null, erased: new Set(),
 
     async boot() {
@@ -26,6 +27,7 @@
       G.cfg = MF.Config.withDefaults(d.system);
       G.terms = G.cfg.terms;
       G.creditsData = d.credits || {};
+      if (pd.debug && window.Debug) Debug.init(G);
       if (window.TouchControls) TouchControls.init(G.cfg.touchControls);
       // F12 in a playtest saves a 1920×1080 screenshot (for store pages) into the project's screenshots folder.
       if (window.api.saveScreenshot) window.addEventListener('keydown', e => { if (e.key === 'F12') { e.preventDefault(); G.screenshot(); } });
@@ -38,9 +40,10 @@
       cv.width = G.screen.width; cv.height = G.screen.height;
       G.ctx = cv.getContext('2d'); G.ctx.imageSmoothingEnabled = false;
       const fit = () => {
-        const s = Math.min(innerWidth / G.screen.width, innerHeight / G.screen.height);
+        const w = innerWidth - (window.Debug && Debug.on ? Debug.panelWidth() : 0); // room left beside the debugger panel
+        const s = Math.min(w / G.screen.width, innerHeight / G.screen.height);
         stage.style.transform = 'scale(' + s + ')';
-        stage.style.left = ((innerWidth - G.screen.width * s) / 2) + 'px';
+        stage.style.left = ((w - G.screen.width * s) / 2) + 'px';
         stage.style.top = ((innerHeight - G.screen.height * s) / 2) + 'px';
       };
       window.addEventListener('resize', fit); fit();
@@ -57,11 +60,11 @@
     img(rel) {
       if (!rel) return null;
       let e = G.images[rel];
-      if (!e) { e = G.images[rel] = { img: new Image(), ok: false }; e.img.onload = () => { e.ok = true; }; e.img.src = G.asset(rel); }
+      if (!e) { e = G.images[rel] = { img: new Image(), ok: false }; e.img.onload = () => { e.ok = true; }; e.img.onerror = () => { if (window.Debug && Debug.on) Debug.imgFailed(rel); }; e.img.src = G.asset(rel); }
       return e.ok ? e.img : null;
     },
     loadImg(rel) {
-      return new Promise(res => { if (!rel) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = G.asset(rel); });
+      return new Promise(res => { if (!rel) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => { if (window.Debug && Debug.on) Debug.imgFailed(rel); res(null); }; i.src = G.asset(rel); });
     },
 
     /* ---------- state ---------- */
@@ -489,7 +492,7 @@
           ch.dir = st;
           let tries = 0;
           while (!(through || G.canMove(ch, ch.x + dx, ch.y + dy)) && tries++ < 10) await wait(150);
-          if (tries > 10) continue;
+          if (tries > 10) { if (window.Debug && Debug.on) Debug.routeStuck(ch, st); continue; }
           if (isPlayer) G.movePlayerTo(ch.x + dx, ch.y + dy); else { ch.x += dx; ch.y += dy; ch.moving = true; }
           await waitStill();
         }
@@ -739,6 +742,7 @@
       });
       g.drawImage(G.above, -cx, -cy);
       if (window.Home) Home.drawCursor(G, g, cx, cy);
+      if (window.Debug && Debug.overlay) Debug.drawOverlay(g, cx, cy);
       if (G.exclaim) {
         const e = G.exclaim.ev;
         Object.assign(G.exclaim.el.style, { left: (e.px * T + T / 2 - cx - 3) + 'px', top: (e.py * T - T - cy) + 'px' });

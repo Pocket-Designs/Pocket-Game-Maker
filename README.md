@@ -39,6 +39,7 @@ The builds are unsigned unless you add certificates as repository secrets (liste
 | **Inspector** | Map name, size (**Change size…**), tileset, battle background, **music**, **map edges** and the **wild encounter table** (monster, level range, weight, chance per step). Click a section's heading to fold it away. Tick **One at a time** to keep just one section open (opening one closes the others), or use **Expand all** / **Collapse all**. The editor remembers your choice. |
 | **Database (F9, or the Database menu)** | Monsters (types, base stats, growth, catch rate, sprites, learnset, evolution), Moves (power, accuracy, EP, priority, targets, status/stat/heal/drain/recoil effects), Types (click-to-cycle effectiveness chart), Items (balls, healing, revives, EP restores, evolution stones, tools, key items), Tilesets (passability, encounter, autotile and animation settings), **Music & sounds** (game music, jingles, sound effects, volumes), Menus & screens, System (screen size, start, blackout point, starting party/bag, battle rules, switches) and Credits. The **Database** menu in the menu bar opens any tab directly (Ctrl+Shift+1 to 9). |
 | **Passability** toggle | Red = blocked, green = wild-encounter tiles. |
+| **Zoom** | **−** and **+** either side of the zoom box (100–400%), the **−** / **+** keys, or Ctrl + mouse wheel over the map. Zoom only changes how big the map looks while you edit. |
 
 Keyboard: `M`/`E` modes · `B` `R` `F` `X` tools · `1`–`9` layers · `D` dim other layers · `P` passability · `Ctrl+S` save · `F5` playtest · `F9` database.
 
@@ -178,6 +179,17 @@ For 16 px tiles, a 320×240 screen at ×2 scale gives a classic handheld look. F
 
 Arrow keys / WASD move · **Z**, Enter or Space confirm · **X** or Esc cancel and open the menu · hold **Shift** to run · hold **Ctrl** in playtest to walk through walls and skip encounters.
 
+### The playtest debugger
+
+Every playtest runs a debugger that looks for things that don't work. A small 🐞 badge in the bottom-left corner counts the problems it has found; click it or press **F9** to open the panel (the game shrinks to fit beside it).
+
+- **Project check** when the playtest starts: maps, items, monsters and files that are missing, transfers to a map that was deleted or onto a blocked square, events the player can't reach, pages that can never appear (they need a switch that nothing turns on), and autorun events that never stop.
+- **While you play**: whenever you press the action button and nothing happens, it says why. For example, the event there has no active page (and which switch each page is waiting for), it starts by touch instead, or it only works from the front. It also reports commands that were skipped because what they point at is missing, move routes that got stuck, and pictures or sounds that wouldn't load.
+- Every problem says where it is (map, event, square, page, command) and how to fix it. **Problems** lists only those; **Activity** is a log of what happened (maps entered, events run, switches changed); **Copy report** copies everything, for notes or a bug report.
+- **F10** (or **Overlay**) draws a box round every event, coloured by how it starts (green action button, blue touch, orange trainer sight, purple autorun, teal encounter area, grey dashed for no active page), with its name, and shades the squares that block the player red. The panel also shows the player's square, what's in front of them and which switches are on.
+
+The debugger is only in playtests: exported games leave it out.
+
 The field menu has the DB (monster database: seen / caught), Monsters (summary, reorder), Bag (use items, evolution stones, tools and shortcuts), Storage (withdraw / deposit; captures go there when the party is full) and Save; each can be renamed, reordered or turned off. Saves are written to `<project>/saves/slot1-4.json`. If every monster faints you return to the blackout point, healed, with half your money.
 
 ## Exporting your game (File → Export Game…, Ctrl+E)
@@ -220,6 +232,7 @@ src/editor/                Editor UI: map editor, event editor, database
 src/shared/tiles.js        Tile drawing: autotiles and animated tiles (editor and game)
 src/shared/audio.js        Music and sound slots and their presets
 src/runtime/               Game runtime: map, events, battle scene, menus, shop, audio
+src/runtime/debugger.js    Playtest debugger (F9 panel, F10 overlay); left out of exported games
 templates/sample/          Sample project (regenerate with npm run gen-sample)
 test/                      Engine and exporter tests, an Electron smoke test and an export test
 .github/workflows/build.yml  GitHub build for Windows, macOS and Linux (tests, installers, draft releases)

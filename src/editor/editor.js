@@ -16,7 +16,10 @@
       $('#chk-dim').addEventListener('change', e => { App.dimOthers = e.target.checked; MapEditor.render(); });
       $('#chk-pass').addEventListener('change', e => { App.showPass = e.target.checked; MapEditor.render(); MapEditor.renderPalette(); });
       $('#chk-grid').addEventListener('change', e => { App.showGrid = e.target.checked; MapEditor.render(); });
-      $('#zoom').addEventListener('change', e => { App.zoom = +e.target.value; MapEditor.render(); });
+      $('#zoom').addEventListener('change', e => App.setZoom(+e.target.value));
+      $('#zoom-out').addEventListener('click', () => App.setZoom(App.zoom - 1));
+      $('#zoom-in').addEventListener('click', () => App.setZoom(App.zoom + 1));
+      App.setZoom(App.zoom, true);
       $('#btn-add-map').addEventListener('click', () => App.addMap());
       $('#btn-del-map').addEventListener('click', () => App.proj && App.deleteMap(App.mapId));
       window.api.onMenu(ch => App.action(ch));
@@ -34,7 +37,7 @@
     async action(a) {
       if (a === 'new') return App.newProjectDialog();
       if (a === 'open') return App.openProject();
-      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.2 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
+      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.3 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
       if (!App.proj) return UI.toast('Open or create a project first');
       if (a === 'save') return App.save();
       if (a === 'playtest') return App.playtest();
@@ -62,8 +65,19 @@
         d: () => { const c = $('#chk-dim'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); }, p: () => { const c = $('#chk-pass'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); } };
       if (/^[1-9]$/.test(k) && App.map() && +k <= App.map().layers.length) { App.setLayer(+k - 1); e.preventDefault(); return; }
       if (map[k]) { map[k](); e.preventDefault(); }
+      if (e.key === '+' || e.key === '=') { App.setZoom(App.zoom + 1); e.preventDefault(); }
+      if (e.key === '-' || e.key === '_') { App.setZoom(App.zoom - 1); e.preventDefault(); }
       if ((e.key === 'Delete' || e.key === 'Backspace') && App.mode === 'event' && App.selectedEventId) { e.preventDefault(); App.deleteEvent(App.selectedEventId); }
       if (e.key === 'Enter' && App.mode === 'event' && App.selectedEvent()) { e.preventDefault(); const se = App.selectedEvent(); se.quick ? QuickEvent.edit(se) : EventEditor.open(se); }
+    },
+
+    // Map zoom, 1× to 4× (100–400%). Changes only how big the map looks while editing, not the game.
+    setZoom(z, quiet) {
+      App.zoom = Math.max(1, Math.min(4, Math.round(z) || 1));
+      $('#zoom').value = String(App.zoom);
+      $('#zoom-out').disabled = App.zoom <= 1;
+      $('#zoom-in').disabled = App.zoom >= 4;
+      if (!quiet) MapEditor.render();
     },
 
     setMode(m) {
@@ -540,7 +554,7 @@
       box.appendChild(sec('Tips', h('ul', { class: 'muted', style: { paddingLeft: '16px', margin: 0 } },
         h('li', null, 'Right-click on the map picks a tile (Map mode) or opens the event menu (Events mode).'),
         h('li', null, 'Each layer has its own settings (Layers panel, double-click a layer): walkable or blocking, drawn above the player, wild encounters. If any layer blocks a square, it is blocked.'),
-        h('li', null, 'Shortcuts: B/R/F/X tools, 1–9 layers, D dim other layers, M/E modes, P passability, Ctrl+Z/Y undo/redo.'),
+        h('li', null, 'Shortcuts: B/R/F/X tools, 1–9 layers, D dim other layers, M/E modes, P passability, + / − zoom, Ctrl+Z/Y undo/redo. In a playtest: F9 debugger, F10 event overlay.'),
         h('li', null, 'Events mode: right-click an empty square for quick events (treasure chest, item on the ground, sign, shopkeeper, exit / door, monster encounter area).'),
         h('li', null, 'Need more tiles or sprites? Click Assets (F10) to add free pixel art from the asset library.'))));
     }

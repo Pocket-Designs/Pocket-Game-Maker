@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('api', {
   listAssets: (dir, kind) => ipcRenderer.invoke('asset:list', dir, kind),
   importAssets: (dir, kind) => ipcRenderer.invoke('asset:import', dir, kind),
   readAsset: (dir, rel) => ipcRenderer.invoke('asset:read', dir, rel),
+  assetMissing: (dir, rels) => ipcRenderer.invoke('asset:missing', dir, rels),
   writeText: (dir, name, text) => ipcRenderer.invoke('asset:writeText', dir, name, text),
   saveScreenshot: (dir, dataUrl) => ipcRenderer.invoke('playtest:screenshot', dir, dataUrl),
   quitGame: () => ipcRenderer.invoke('app:quitGame'),

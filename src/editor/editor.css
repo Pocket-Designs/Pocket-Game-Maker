@@ -53,6 +53,9 @@ input[type=color] { width: 44px; height: 26px; padding: 0; border: 1px solid var
 .tb-spacer { flex: 1; }
 .tb-check { display: flex; gap: 4px; align-items: center; color: var(--muted); cursor: pointer; }
 #zoom { width: auto; }
+.zoom-ctl { display: inline-flex; align-items: center; gap: 2px; }
+.zoom-btn { width: 26px; padding: 2px 0; font-size: 16px; font-weight: 600; line-height: 1; }
+.zoom-btn:disabled { opacity: .35; cursor: default; }
 
 #left { grid-area: left; display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
 #right { grid-area: right; border-left: 1px solid var(--line); min-height: 0; display: flex; flex-direction: column; }

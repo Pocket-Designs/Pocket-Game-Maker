@@ -378,6 +378,12 @@ ipcMain.handle('asset:read', (e, dir, rel) => {
   return fs.readFileSync(f);
 });
 
+// Which of these asset paths are missing from the project's assets folder (used by the playtest debugger).
+ipcMain.handle('asset:missing', (e, dir, rels) => {
+  const base = path.resolve(dir, 'assets');
+  return (rels || []).filter(rel => { const f = path.resolve(base, String(rel)); return !f.startsWith(base + path.sep) || !fs.existsSync(f); });
+});
+
 // Write a small text file into the project's assets/text folder (credits or licence typed in the editor).
 ipcMain.handle('asset:writeText', (e, dir, name, text) => {
   const safe = String(name || 'text.txt').replace(/[^\w.\-]+/g, '_').replace(/^\.+/, '');
@@ -405,7 +411,7 @@ ipcMain.handle('playtest:start', (e, dir, data, start) => {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: false }
   });
   win.setMenuBarVisibility(false);
-  playtestData.set(win.webContents.id, { projectPath: dir, data, start: start || null });
+  playtestData.set(win.webContents.id, { projectPath: dir, data, start: start || null, debug: true }); // debug: the playtest debugger runs
   const id = win.webContents.id;
   win.on('closed', () => playtestData.delete(id));
   win.loadFile(path.join(__dirname, 'src', 'runtime', 'play.html'));

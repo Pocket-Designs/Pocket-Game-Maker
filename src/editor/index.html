@@ -32,9 +32,13 @@
       <div class="tb-group">
         <label class="tb-check" title="Show passability (P)"><input type="checkbox" id="chk-pass"> Passability</label>
         <label class="tb-check"><input type="checkbox" id="chk-grid" checked> Grid</label>
-        <select id="zoom" title="Zoom">
-          <option value="1">100%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option>
-        </select>
+        <span class="zoom-ctl">
+          <button id="zoom-out" class="zoom-btn" title="Zoom out (−)" aria-label="Zoom out">−</button>
+          <select id="zoom" title="Zoom (Ctrl + mouse wheel over the map)">
+            <option value="1">100%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option>
+          </select>
+          <button id="zoom-in" class="zoom-btn" title="Zoom in (+)" aria-label="Zoom in">+</button>
+        </span>
       </div>
       <div class="tb-spacer"></div>
       <div class="tb-group">

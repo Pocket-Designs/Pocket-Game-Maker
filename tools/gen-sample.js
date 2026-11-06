@@ -160,7 +160,7 @@ for (let x = 0; x < 20; x++) { setT(m1, 1, x, 0, 4); setT(m1, 1, x, 14, 4); }
 for (let y = 0; y < 15; y++) { setT(m1, 1, 0, y, 4); setT(m1, 1, 19, y, 4); }
 setT(m1, 1, 9, 0, -1); setT(m1, 1, 10, 0, -1);
 fillT(m1, 0, 9, 0, 2, 9, PATH); fillT(m1, 0, 3, 9, 14, 2, PATH); // dirt path autotile: edges join up by themselves
-fillT(m1, 1, 6, 1, 8, 2, 8); fillT(m1, 1, 6, 3, 3, 1, 9); fillT(m1, 1, 11, 3, 3, 1, 9);
+fillT(m1, 1, 6, 1, 3, 2, 8); fillT(m1, 1, 11, 1, 3, 2, 8); // two roofs, with the path north between them fillT(m1, 1, 6, 3, 3, 1, 9); fillT(m1, 1, 11, 3, 3, 1, 9);
 fillT(m1, 0, 9, 3, 2, 1, 11); fillT(m1, 0, 6, 4, 8, 2, 11);
 fillT(m1, 1, 8, 5, 3, 1, 15);
 fillT(m1, 1, 14, 11, 4, 3, WATER); fillT(m1, 0, 13, 11, 1, 3, 12); // pond: animated water autotile on the Obstacles layer

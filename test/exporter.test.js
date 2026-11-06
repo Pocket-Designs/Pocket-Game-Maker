@@ -28,6 +28,12 @@ const { makeIco, tarGz, zipDir, unzip, slugify } = require('../lib/exporter');
   assert.strictEqual(ico[6 + 16], 0); // 256 is stored as 0
   assert.strictEqual(ico.readUInt32LE(6 + 12), 6 + 32);
   assert.strictEqual(slugify('My Great Game!'), 'my-great-game');
+  // Exported index.html: no playtest debugger, and every engine script it loads is one the exporter copies.
+  const { webIndexHtml, RUNTIME_FILES } = require('../lib/exporter');
+  const html = webIndexHtml(fs.readFileSync(path.join(__dirname, '..', 'src', 'runtime', 'play.html'), 'utf8'), 'A <Game>');
+  assert.ok(!/debugger/.test(html), 'debugger left out of exported games');
+  [...html.matchAll(/src="engine\/runtime\/([^"]+)"/g)].forEach(m => assert.ok(RUNTIME_FILES.includes(m[1]), m[1] + ' is copied'));
+  assert.ok(html.includes('<title>A Game></title>'));
   fs.rmSync(tmp, { recursive: true, force: true });
   console.log('All exporter tests passed.');
 })().catch(e => { console.error(e); process.exit(1); });

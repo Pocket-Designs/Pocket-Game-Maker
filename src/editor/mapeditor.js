@@ -36,9 +36,7 @@
       document.getElementById('map-scroll').addEventListener('wheel', e => {
         if (!e.ctrlKey) return;
         e.preventDefault();
-        const z = document.getElementById('zoom');
-        App.zoom = Math.max(1, Math.min(4, App.zoom + (e.deltaY < 0 ? 1 : -1)));
-        z.value = String(App.zoom); this.render();
+        App.setZoom(App.zoom + (e.deltaY < 0 ? 1 : -1));
       }, { passive: false });
     },
 
