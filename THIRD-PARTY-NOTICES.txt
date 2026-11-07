@@ -1,8 +1,8 @@
 Pocket-Game-Maker - Third-Party Notices
 ==================================
 
-Pocket-Game-Maker is Copyright (c) 2026 project-tech-me
-(project-tech-me@protonmail.com), released under the MIT Licence.
+Pocket-Game-Maker is Copyright (c) 2026 Pocket-Designs
+(pocket-designs@proton.me), released under the MIT Licence.
 
 Pocket-Game-Maker's editor uses a few small open-source libraries for exporting
 games (listed under "Libraries used by the game exporter" below). The desktop
@@ -107,7 +107,7 @@ Asset Library and sample project artwork, music and sounds
 All tilesets, tile mappings, characters, monster sprites and battle
 backgrounds, and all music, jingles and sound effects, in the Asset Library
 and the sample project were created specifically for Pocket-Game-Maker by
-project-tech-me and are released under CC0 1.0 (public domain). The colours
+Pocket-Designs and are released under CC0 1.0 (public domain). The colours
 come from the Endesga 32 palette (free to use). The music and sounds were
 synthesised from scratch and contain no third-party samples; the full list is
 in LICENSE.

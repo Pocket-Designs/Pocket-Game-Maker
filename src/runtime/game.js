@@ -33,6 +33,7 @@
       if (window.api.saveScreenshot) window.addEventListener('keydown', e => { if (e.key === 'F12') { e.preventDefault(); G.screenshot(); } });
       GameAudio.init(pd.projectPath, G.audioCfg);
       GameAudio.preload(Object.values(G.audioCfg.sfx || {}));
+      G.loadPrefs();
       document.title = (d.system.title || 'Game') + ' — Playtest';
       const stage = document.getElementById('stage');
       stage.style.width = G.screen.width + 'px'; stage.style.height = G.screen.height + 'px';
@@ -51,8 +52,48 @@
       let last = performance.now();
       const loop = t => { const dt = Math.min(0.05, (t - last) / 1000); last = t; G.update(dt); G.draw(); requestAnimationFrame(loop); };
       requestAnimationFrame(loop);
-      if (pd.start) { G.newGame(); await G.enterMap(pd.start.mapId, pd.start.x, pd.start.y, 'down'); G.afterArrive(); }
-      else G.title();
+      // "Preview" in the Opening & Ending Scenes window: play those scenes, then show the title screen.
+      if (pd.start && pd.start.scenes) { await Scenes.play(G, pd.start.scenes); G.title(); return; }
+      if (pd.start) {
+        G.newGame(); await G.enterMap(pd.start.mapId, pd.start.x, pd.start.y, pd.start.dir || 'down'); G.afterArrive();
+        // "Preview" in the Cut scene window: run that event straight away (unless it already started by itself).
+        if (pd.start.runEvent != null) setTimeout(() => {
+          const ev = G.evs.find(e => e.data.id === pd.start.runEvent);
+          if (!ev || G.busy) return;
+          if (ev.page < 0) ev.page = 0;
+          G.runEvent(ev);
+        }, 450);
+      }
+      else { await Scenes.play(G, G.cfg.scenes.opening); G.title(); }
+    },
+
+    /* ---------- the player's options (kept on this device, per game) ---------- */
+    prefsKey() { return 'pgm-options:' + ((G.db.system.exportInfo && G.db.system.exportInfo.id) || G.db.system.title || 'game'); },
+    loadPrefs() {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(G.prefsKey()) || '{}') || {}; } catch (e) { saved = {}; }
+      G.prefs = Object.assign({ bgmVolume: G.audioCfg.bgmVolume ?? 80, sfxVolume: G.audioCfg.sfxVolume ?? 80, textSpeed: 'normal' }, saved);
+      G.applyPrefs();
+    },
+    applyPrefs() {
+      const P = G.prefs;
+      GameAudio.settings.bgmVolume = P.bgmVolume; GameAudio.settings.sfxVolume = P.sfxVolume; GameAudio.applyVolumes();
+      RUI.textSpeed = { slow: 1, normal: 2, fast: 4, instant: 999 }[P.textSpeed] || 2;
+    },
+    savePrefs() { try { localStorage.setItem(G.prefsKey(), JSON.stringify(G.prefs)); } catch (e) { /* storage unavailable */ } },
+
+    /* ---------- autosave ---------- */
+    // Asks for an autosave; it happens as soon as the player is free to walk (not during events or menus).
+    autosaveSoon(reason) {
+      const S = G.cfg.saving;
+      if (!S.autosave || !G.state || !G.map) return;
+      G.autoPending = reason || 'auto';
+    },
+    async autosaveNow() {
+      G.autoPending = null; G.autoClock = 0;
+      try { await window.api.saveGame(G.projectPath, 0, G.makeSave(true)); } catch (e) { return; }
+      G.dbg('trace', 'Autosaved (' + G.map.name + ').');
+      if (G.cfg.saving.autoToast) RUI.toast('Saved');
     },
 
     /* ---------- assets ---------- */
@@ -74,7 +115,7 @@
         playerName: (sys.player && sys.player.name) || 'Player',
         party: [], storage: [], bag: Object.assign({}, sys.startingItems || {}), money: sys.startMoney || 0,
         switches: [], selfSwitches: {}, dex: { seen: {}, caught: {} }, playTime: 0, steps: 0,
-        decor: {}, wear: Object.assign({}, (G.cfg.wardrobe || {}).start || {})
+        decor: {}, wear: Object.assign({}, (G.cfg.wardrobe || {}).start || {}), visited: {}
       };
       Object.values(G.state.wear).forEach(id => { if (id && !G.state.bag[id]) G.state.bag[id] = 1; }); // starting clothes are owned
       (sys.startingParty || []).forEach(p => { if (G.db.species(p.speciesId)) G.addMonster(MF.createMonster(G.db, p.speciesId, p.level, { ot: G.state.playerName })); });
@@ -87,53 +128,74 @@
     seen(id) { G.state.dex.seen[id] = true; },
     caught(id) { G.state.dex.seen[id] = true; G.state.dex.caught[id] = true; },
     healthy() { return G.state.party.some(m => m.hp > 0); },
-    makeSave() {
+    makeSave(auto) {
       const t = Math.floor(G.state.playTime);
       const p = G.player;
       G.state.pos = { mapId: G.map.id, x: p.x, y: p.y, dir: p.dir };
-      return { meta: { mapName: G.map.name, party: G.state.party.length, time: Math.floor(t / 3600) + ':' + String(Math.floor(t / 60) % 60).padStart(2, '0') }, state: JSON.parse(JSON.stringify(G.state)) };
+      return { meta: { mapName: G.map.name, party: G.state.party.length, time: Math.floor(t / 3600) + ':' + String(Math.floor(t / 60) % 60).padStart(2, '0'), savedAt: Date.now(), auto: !!auto }, state: JSON.parse(JSON.stringify(G.state)) };
+    },
+    // Load a save and carry on from where it was made.
+    async loadSlot(slot) {
+      const save = await window.api.loadGame(G.projectPath, slot);
+      if (!save) return false;
+      G.state = save.state;
+      G.fixState();
+      const p = G.state.pos;
+      G.loading = true;
+      await G.enterMap(p.mapId, p.x, p.y, p.dir);
+      G.loading = false;
+      G.afterArrive();
+      return true;
+    },
+    async startNewGame() {
+      G.newGame();
+      await Scenes.play(G, G.cfg.scenes.newGame);
+      const s = G.db.system.start || {};
+      await G.enterMap(s.mapId, s.x || 0, s.y || 0, s.dir || 'down');
+      G.afterArrive();
     },
 
     /* ---------- title ---------- */
     async title() {
-      G.scene = 'title';
+      G.scene = 'title'; G.map = null; G.player = null;
       const sys = G.db.system, T = G.cfg.titleScreen;
-      const t = el('div', 'title-screen' + (T.background ? ' has-bg' : ''), '');
+      const t = el('div', 'title-screen' + (T.background ? ' has-bg' : '') + (T.menuStyle === 'plain' ? ' plain' : ''), '');
       if (T.background) { const bg = el('img', 'title-bg'); bg.src = G.asset(T.background); t.appendChild(bg); }
-      if (T.showTitle !== false) t.appendChild(el('h1', null, esc(sys.title || 'Monster Game')));
+      if (T.logo) { const lg = el('img', 'title-logo'); lg.src = G.asset(T.logo); t.appendChild(lg); }
+      else if (T.showTitle !== false) t.appendChild(el('h1', null, esc(sys.title || 'Monster Game')));
       if (T.subtitle) t.appendChild(el('div', 'sub', esc(T.subtitle)));
       t.style.color = T.textColour || '#fff';
       document.getElementById('ui').appendChild(t);
       GameAudio.playBgm(G.audioCfg.title);
-      const saves = await window.api.listSaves(G.projectPath);
+      // "Press any key" before the menu appears.
+      if (T.pressStart) {
+        const ps = el('div', 'press-start', esc(T.pressStartText || 'Press any key')); t.appendChild(ps);
+        await new Promise(res => { const pop = Input.push(a => { if (a === 'ok' || a === 'cancel' || a === 'menu') { pop(); res(); } }); t.addEventListener('pointerdown', () => { pop(); res(); }, { once: true }); });
+        ps.remove(); GameAudio.se('confirm');
+      }
+      const saves = await window.api.listSaves(G.projectPath, G.cfg.saving.slots);
       const any = saves.some(s => s.meta);
-      const entries = T.menu.filter(e => e.on);
+      const entries = T.menu.filter(e => e.on && (e.id !== 'scenes' || G.cfg.scenes.opening.length));
       if (!entries.length) entries.push({ id: 'new', label: 'New Game' });
       const W = G.screen.width, H = G.screen.height, w = Math.max(90, 16 + 7 * Math.max(...entries.map(e => (e.label || '').length)));
-      const pos = T.menuPosition === 'left' ? { x: 14, y: H * 0.55 } : T.menuPosition === 'bottom' ? { x: W / 2 - w / 2, y: H - 14 - entries.length * 15 } : { x: W / 2 - w / 2, y: H * 0.58 };
+      const tall = 12 + entries.length * 15, fitY = y => Math.max(6, Math.min(y, H - 8 - tall)); // keep a long menu on the screen
+      const pos = T.menuPosition === 'left' ? { x: 14, y: fitY(H * 0.55) } : T.menuPosition === 'bottom' ? { x: W / 2 - w / 2, y: fitY(H - 14 - entries.length * 15) } : { x: W / 2 - w / 2, y: fitY(H * 0.58) };
       let idx = Math.max(0, entries.findIndex(e => e.id === 'continue' && any));
       for (;;) {
-        const c = await choose({ items: entries.map(e => ({ label: e.label, disabled: e.id === 'continue' && !any })), parent: t, cancel: false, index: idx, x: pos.x, y: pos.y, w });
+        const c = await choose({ items: entries.map(e => ({ label: e.label, disabled: (e.id === 'continue' || e.id === 'load') && !any })), parent: t, cancel: false, index: idx, x: pos.x, y: pos.y, w });
         idx = c;
         const id = entries[c] && entries[c].id;
-        if (id === 'new') {
-          t.remove(); G.newGame();
-          const s = sys.start || {};
-          await G.enterMap(s.mapId, s.x || 0, s.y || 0, s.dir || 'down');
-          G.afterArrive(); return;
-        }
-        if (id === 'continue') {
-          const slot = await Menus.slotPicker(G, 'Load which save?', true);
-          if (slot < 0) continue;
-          const save = await window.api.loadGame(G.projectPath, slot + 1);
-          if (!save) continue;
+        if (id === 'new') { t.remove(); await G.startNewGame(); return; }
+        if (id === 'continue' || id === 'load') {
+          // Continue: the latest save straight away (unless set to ask); Load game: choose a slot.
+          const slot = id === 'continue' && T.continueMode !== 'choose' ? await Menus.latestSave(G) : await Menus.slotPicker(G, 'Load which save?', true);
+          if (slot == null || slot < 0) continue;
           t.remove();
-          G.state = save.state;
-          G.fixState();
-          const p = G.state.pos;
-          await G.enterMap(p.mapId, p.x, p.y, p.dir);
-          G.afterArrive(); return;
+          if (await G.loadSlot(slot)) return;
+          document.getElementById('ui').appendChild(t); continue;
         }
+        if (id === 'options') await Menus.options(G);
+        if (id === 'scenes') { t.style.display = 'none'; GameAudio.stopBgm(0.3); await Scenes.play(G, G.cfg.scenes.opening); t.style.display = ''; GameAudio.playBgm(G.audioCfg.title); }
         if (id === 'credits') await Menus.textScreen(G, T.credits.heading || 'Credits', await G.creditsText());
         if (id === 'licence') await Menus.textScreen(G, T.licence.heading || 'Licence', await G.readText(T.licence.file) || 'No licence file has been chosen for this game yet.');
         if (id === 'quit') { await RUI.fade(true, 300); window.api.quitGame(); return; }
@@ -175,7 +237,7 @@
     fixState() {
       const st = G.state;
       st.switches = st.switches || []; st.selfSwitches = st.selfSwitches || {}; st.dex = st.dex || { seen: {}, caught: {} };
-      st.bag = st.bag || {}; st.storage = st.storage || []; st.decor = st.decor || {}; st.wear = st.wear || {};
+      st.bag = st.bag || {}; st.storage = st.storage || []; st.decor = st.decor || {}; st.wear = st.wear || {}; st.visited = st.visited || {};
     },
 
     /* ---------- maps ---------- */
@@ -185,6 +247,8 @@
       MF.Layers.migrate(m);
       G.map = m;
       G.erased = new Set();
+      if (G.state) { G.state.visited = G.state.visited || {}; G.state.visited[mapId] = true; }
+      if (G.cfg.saving.autoOnMap && !G.loading && G.state && G.state.playTime > 1) G.autosaveSoon('map');
       G.ts = G.db.tilesets[m.tilesetId] || { tileSize: 16, flags: [] };
       G.tsImg = await G.loadImg(G.ts.image);
       const T = G.tileSize = G.ts.tileSize || 16;
@@ -244,10 +308,13 @@
       return -1;
     },
     refreshPages() {
+      let auto = false;
       G.evs.forEach(ev => {
         const p = G.pageFor(ev);
-        if (p !== ev.page) { ev.page = p; ev.routeIdx = 0; if (p >= 0) ev.dir = ev.data.pages[p].dir || 'down'; }
+        if (p !== ev.page) { ev.page = p; ev.routeIdx = 0; if (p >= 0) { ev.dir = ev.data.pages[p].dir || 'down'; if (ev.data.pages[p].trigger === 'auto') auto = true; } }
       });
+      // An autorun page that has just become active (a switch turned on) starts as soon as nothing else is running.
+      if (auto && !G.busy) setTimeout(() => G.checkAuto(), 0);
     },
     page(ev) { return ev.page >= 0 ? ev.data.pages[ev.page] : null; },
     flagsAt(x, y) { return MF.Layers.cellFlags(G.map, G.ts, x, y); },
@@ -296,6 +363,10 @@
       if (!G.state) return;
       G.state.playTime += dt;
       if (G.scene !== 'map' || !G.player) return;
+      // Autosave: every few minutes (if set), and whatever was asked for once the player is free again.
+      const SV = G.cfg.saving;
+      if (SV.autosave && SV.autoMinutes > 0 && (G.autoClock = (G.autoClock || 0) + dt) >= SV.autoMinutes * 60) G.autosaveSoon('timer');
+      if (G.autoPending && !G.busy && !Input.busy() && !G.player.moving && !G.saving) { G.saving = true; G.autosaveNow().finally(() => { G.saving = false; }); }
       G.animateTiles();
       const p = G.player;
       const speed = ((G.db.system.player || {}).moveSpeed || 4) * (Input.held.run ? 2 : 1);
@@ -550,6 +621,42 @@
     },
     letterbox(on) { const o = G.overlay('letterbox', 'letterbox'); o.classList.toggle('on', !!on); return wait(350); },
 
+    // Play a movie over the whole window (cut scenes). c: {file, skippable, music: 'pause'|'keep'|'stop', volume, fit: 'fit'|'fill'}
+    // Resolves when it ends, is skipped, or can't be played.
+    async playMovie(c) {
+      if (!c || !c.file) return;
+      const A = window.GameAudio, music = c.music || 'pause';
+      if (A && music !== 'keep') { A.pushBgm(); A.stopBgm(0.4); }
+      const wrap = document.createElement('div'), video = document.createElement('video');
+      wrap.className = 'movie' + (c.fit === 'fill' ? ' fill' : '');
+      video.src = G.asset(c.file); video.playsInline = true; video.preload = 'auto';
+      const sv = A && A.settings ? (A.settings.bgmVolume ?? 80) / 100 : 1;
+      video.volume = Math.max(0, Math.min(1, ((c.volume ?? 100) / 100) * sv));
+      wrap.appendChild(video);
+      let hint = null;
+      if (c.skippable !== false) { hint = document.createElement('div'); hint.className = 'movie-skip'; hint.textContent = 'Skip ▸'; wrap.appendChild(hint); }
+      if (window.Debug && Debug.on && Debug.panelWidth()) wrap.style.right = Debug.panelWidth() + 'px'; // beside the playtest debugger
+      document.body.appendChild(wrap);
+      const started = performance.now();
+      await new Promise(res => {
+        let done = false;
+        const finish = () => { if (done) return; done = true; window.removeEventListener('keydown', onKey, true); res(); };
+        const canSkip = () => c.skippable !== false && performance.now() - started > 600;
+        const onKey = e => { if (canSkip()) { e.preventDefault(); e.stopPropagation(); finish(); } };
+        video.addEventListener('ended', finish);
+        video.addEventListener('error', () => { G.dbg('error', 'The movie assets/' + c.file + ' could not be played.', { hint: 'Check the file exists. MP4 with H.264 video and AAC sound plays everywhere.' }); finish(); });
+        window.addEventListener('keydown', onKey, true);
+        wrap.addEventListener('pointerdown', () => { if (canSkip()) finish(); });
+        if (hint) setTimeout(() => hint.classList.add('on'), 600);
+        video.play().catch(() => { video.muted = true; video.play().catch(finish); }); // browsers may block sound until the player has pressed something
+      });
+      wrap.classList.add('out');
+      await wait(250);
+      video.pause(); wrap.remove();
+      if (A && music === 'pause') A.popBgm();
+      else if (A && music === 'stop') A.stack.pop();
+    },
+
     /* ---------- interpreter ---------- */
     async runEvent(ev, face) {
       if (G.busy) return;
@@ -613,6 +720,7 @@
         case 'screen': await G.screenEffect(c); break;
         case 'picture': await G.picture(c); break;
         case 'letterbox': await G.letterbox(c.on); break;
+        case 'playMovie': await G.playMovie(c); break;
         case 'selfSwitch': if (c.value) st.selfSwitches[key] = true; else delete st.selfSwitches[key]; if (G.map === mapAtStart) G.refreshPages(); break;
         case 'transfer': {
           if (c.sound) GameAudio.se('door');
@@ -634,6 +742,31 @@
         }
         case 'shop': await Shop.open(G, c); break;
         case 'openScreen': if ((c.screen === 'wardrobe' && !Home.wearOn(G)) || (c.screen === 'decorate' && !Home.decorOn(G))) break; await Menus.open(G, c.screen); break;
+        case 'saveGame':
+          // 'screen': the save screen (a save point: bed, diary…); 'auto': quietly into the Autosave slot.
+          if (c.heal) { st.party.forEach(m => MF.healMonster(G.db, m)); GameAudio.se('heal'); }
+          if (c.mode === 'auto') { await window.api.saveGame(G.projectPath, 0, G.makeSave(true)); GameAudio.se('save'); if (c.message !== false) await message('Your progress was saved.'); }
+          else await Menus.saveScreen(G);
+          break;
+        case 'playScenes': {
+          // The ending (or any group of story scenes). Afterwards: back to the title screen, or carry on playing.
+          const group = c.group || 'ending', list = G.cfg.scenes[group] || [];
+          await RUI.fade(true, 400);
+          GameAudio.pushBgm(); GameAudio.stopBgm(0.3);
+          await Scenes.play(G, list);
+          if ((c.then || (group === 'ending' ? G.cfg.scenes.endingThen : 'continue')) === 'title') {
+            // Back to the title screen: leave the map (so nothing there starts) and stop this event.
+            GameAudio.stack.pop();
+            G.scene = 'title'; G.map = null; G.player = null; G.evs = [];
+            closeMessage(); document.getElementById('ui').innerHTML = '';
+            await RUI.fade(false, 1);
+            setTimeout(() => G.title(), 0);
+            throw new Abort();
+          }
+          GameAudio.popBgm();
+          await RUI.fade(false, 400);
+          break;
+        }
         case 'playMusic': if (c.file) GameAudio.playBgm(c.file, { volume: c.volume }); else GameAudio.stopBgm(0.6); break;
         case 'playSound':
           if (!c.file) break;
@@ -676,6 +809,7 @@
         return 'lose';
       }
       if (r.result === 'lose') G.state.party.forEach(m => MF.healMonster(db, m));
+      else if (G.cfg.saving.autoAfterBattle) G.autosaveSoon('battle');
       G.scene = 'map';
       await RUI.fade(false, 300);
       if (r.caught) {

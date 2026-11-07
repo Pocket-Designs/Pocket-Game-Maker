@@ -22,7 +22,8 @@ copyLib('tilesets/outdoor.png'); copyLib('tilesets/interior.png');
 for (const kind of ['music', 'sounds']) fs.readdirSync(path.join(LIB, kind)).filter(f => /\.(mp3|flac)$/i.test(f)).forEach(f => copyLib(kind + '/' + f));
 ['embercub', 'blazebear', 'splashling', 'tidalisk', 'sproutle', 'thornox', 'zapmouse', 'pebblit', 'fluffkin', 'toxifrog'].forEach(m => { copyLib('monsters/' + m + '_front.png'); copyLib('monsters/' + m + '_back.png'); });
 ['field', 'town'].forEach(b => copyLib('battlebacks/' + b + '.png'));
-['title-sunrise', 'cutscene-night-sky'].forEach(b => copyLib('pictures/' + b + '.png'));
+['title-sunrise', 'cutscene-night-sky', 'worldmap-island'].forEach(b => copyLib('pictures/' + b + '.png'));
+copyLib('characters/tv-set.png'); copyLib('movies/monster-news.mp4'); // the TV in Your Room plays a movie (tools/gen-movie.py)
 // Decorating and Wardrobe (optional features): furniture pictures and clothes.
 const FURNITURE = [['bed', 'Bed', 1, 2, true, 1200], ['table', 'Wooden Table', 2, 1, true, 900], ['chair', 'Chair', 1, 1, true, 300], ['plant', 'Potted Plant', 1, 1, true, 400], ['bookshelf', 'Bookshelf', 2, 1, true, 1000],
   ['rug', 'Round Rug', 2, 2, false, 600], ['lamp', 'Floor Lamp', 1, 1, true, 350], ['sofa', 'Sofa', 2, 1, true, 1500], ['tv', 'Television', 1, 1, true, 2000], ['plush', 'Monster Plush', 1, 1, true, 250], ['trophy', 'Trophy', 1, 1, true, 3000]];
@@ -30,8 +31,8 @@ FURNITURE.forEach(([f]) => copyLib('decorations/' + f + '.png'));
 const CLOTHES = [['outfit-hero-casual', 'Casual Clothes', 'outfit', 0], ['outfit-hero-cool', 'Blue Jacket Outfit', 'outfit', 1200], ['outfit-hero-explorer', 'Explorer Outfit', 'outfit', 1500],
   ['wear-cap-blue', 'Blue Cap', 'hat', 400], ['wear-cap-green', 'Green Cap', 'hat', 400], ['wear-cap-yellow', 'Yellow Cap', 'hat', 400], ['wear-shirt-white', 'White Shirt', 'top', 500], ['wear-shirt-green', 'Green Shirt', 'top', 500], ['wear-trousers-black', 'Black Trousers', 'bottom', 500]];
 CLOTHES.forEach(([f]) => copyLib('characters/' + f + '.png'));
-W('assets/text/licence.txt', '# Sample Monster Quest licence\n\nThis sample game was made with Pocket-Game-Maker by project-tech-me.\n\n- The art, music and sounds are original and released under CC0 1.0 (public domain).\n- You may copy, change and share this game, for free or for money.\n- Credit is appreciated but not required.\n\nReplace this file with your own game\'s licence in Database > Menus & screens.\n');
-sampleCredits['text/licence.txt'] = { name: 'Licence text', origin: 'Written for the sample project', author: 'project-tech-me', licence: 'CC0 1.0 (public domain)', status: 'Placeholder' };
+W('assets/text/licence.txt', '# Sample Monster Quest licence\n\nThis sample game was made with Pocket-Game-Maker by Pocket-Designs.\n\n- The art, music and sounds are original and released under CC0 1.0 (public domain).\n- You may copy, change and share this game, for free or for money.\n- Credit is appreciated but not required.\n\nReplace this file with your own game\'s licence in Database > Menus & screens.\n');
+sampleCredits['text/licence.txt'] = { name: 'Licence text', origin: 'Written for the sample project', author: 'Pocket-Designs', licence: 'CC0 1.0 (public domain)', status: 'Placeholder' };
 const outdoorMap = JSON.parse(fs.readFileSync(path.join(LIB, 'tilesets', 'outdoor.tiles.json'), 'utf8'));
 const interiorMap = JSON.parse(fs.readFileSync(path.join(LIB, 'tilesets', 'interior.tiles.json'), 'utf8'));
 
@@ -131,11 +132,25 @@ const system = {
 Object.assign(system, require('../src/shared/gameconfig').withDefaults(system));
 system.titleScreen.background = 'pictures/title-sunrise.png';
 system.titleScreen.subtitle = 'A Pocket-Game-Maker sample';
-system.titleScreen.menu.forEach(e => { if (e.id === 'credits' || e.id === 'licence') e.on = true; });
+system.titleScreen.menu.forEach(e => { if (['credits', 'licence', 'load', 'scenes'].includes(e.id)) e.on = true; });
 system.titleScreen.licence.file = 'text/licence.txt';
 system.follower.enabled = true;
 system.decorating = { enabled: true };
 system.wardrobe = { enabled: true, start: {} };
+// World map (Database → World map): the island picture, with a pin for each place. Players open it from the menu (Map).
+system.worldMap = Object.assign(system.worldMap, { enabled: true, image: 'pictures/worldmap-island.png', title: 'Sample Island', travel: true, showUnvisited: true, locations: [
+  { id: 'starter-town', name: 'Starter Town', x: 0.5, y: 0.78, maps: ['map001', 'map004'], dest: { mapId: 'map001', x: 9, y: 10, dir: 'down' }, description: 'Your home town.' },
+  { id: 'route-1', name: 'Route 1', x: 0.5, y: 0.5, maps: ['map002'], dest: null, description: 'Tall grass full of wild monsters.' },
+  { id: 'lakeside', name: 'Lakeside', x: 0.52, y: 0.25, maps: ['map003'], dest: { mapId: 'map003', x: 9, y: 12, dir: 'up' }, description: 'A quiet lake in the north.' }] });
+// Saving: the menu's Save, plus an autosave each time the player arrives on a new map. The bed in Your Room is a save point.
+system.saving = Object.assign(system.saving, { slots: 4, autosave: true, autoOnMap: true });
+// Opening and ending scenes (Scenes → Opening & Ending Scenes). The ending is played by the "Play the ending" event command.
+system.scenes = Object.assign(system.scenes, {
+  opening: [{ id: 'sc-opening', type: 'text', name: 'Opening story', style: 'pages', advance: 'auto', seconds: 3, align: 'centre', colour: '#000000', textColour: '#ffffff',
+    background: 'pictures/cutscene-night-sky.png', skippable: true, music: '', text: '# Long ago…\n\nPeople and monsters lived side by side.\n---\nOne morning, a young trainer woke up in Starter Town…' }],
+  ending: [{ id: 'sc-thanks', type: 'text', name: 'Thank you', style: 'pages', advance: 'auto', seconds: 3, align: 'centre', colour: '#000000', textColour: '#ffffff', background: 'pictures/title-sunrise.png', skippable: true, music: '', text: '# Thank you for playing!' },
+    { id: 'sc-credits', type: 'credits', name: 'Credits roll', source: 'auto', heading: 'Credits', speed: 30, endText: 'The End', colour: '#000000', textColour: '#ffffff', background: '', skippable: true, music: '' }],
+  endingThen: 'title' });
 
 /* ---------------- Maps ---------------- */
 function blankMap(id, name, w, h) {
@@ -160,7 +175,8 @@ for (let x = 0; x < 20; x++) { setT(m1, 1, x, 0, 4); setT(m1, 1, x, 14, 4); }
 for (let y = 0; y < 15; y++) { setT(m1, 1, 0, y, 4); setT(m1, 1, 19, y, 4); }
 setT(m1, 1, 9, 0, -1); setT(m1, 1, 10, 0, -1);
 fillT(m1, 0, 9, 0, 2, 9, PATH); fillT(m1, 0, 3, 9, 14, 2, PATH); // dirt path autotile: edges join up by themselves
-fillT(m1, 1, 6, 1, 3, 2, 8); fillT(m1, 1, 11, 1, 3, 2, 8); // two roofs, with the path north between them fillT(m1, 1, 6, 3, 3, 1, 9); fillT(m1, 1, 11, 3, 3, 1, 9);
+fillT(m1, 1, 6, 1, 3, 2, 8); fillT(m1, 1, 11, 1, 3, 2, 8); // two roofs, with the path north between them
+fillT(m1, 1, 6, 3, 3, 1, 9); fillT(m1, 1, 11, 3, 3, 1, 9);
 fillT(m1, 0, 9, 3, 2, 1, 11); fillT(m1, 0, 6, 4, 8, 2, 11);
 fillT(m1, 1, 8, 5, 3, 1, 15);
 fillT(m1, 1, 14, 11, 4, 3, WATER); fillT(m1, 0, 13, 11, 1, 3, 12); // pond: animated water autotile on the Obstacles layer
@@ -306,6 +322,9 @@ qev(m4, 'Door out', 4, 7, { type: 'exit', how: 'step', mapId: 'map001', x: 3, y:
 qev(m4, 'Furniture catalogue', 1, 2, { type: 'shop', sprite: '', dir: 'down', greeting: 'Welcome to the Home & Style catalogue! Furniture for your room, and clothes for you.', farewell: 'Your order will be delivered straight to your bag!',
   goods: FURNITURE.map(([f]) => ({ itemId: f.replace(/-/g, '_'), price: null })).concat(CLOTHES.filter(c => c[3] > 0).map(([f]) => ({ itemId: f.replace(/-/g, '_'), price: null }))), sell: true, sellRate: 50 });
 ev(m4, 'Wardrobe', 8, 2, [page({ sprite: '', commands: [{ cmd: 'text', text: 'Your wardrobe. What will you wear today?' }, { cmd: 'openScreen', screen: 'wardrobe' }] })]);
+qev(m4, 'Television', 3, 2, { type: 'cutscene', start: 'action', sprite: 'characters/tv-set.png', dir: 'down', repeat: 'always', content: 'movie', movie: 'movies/monster-news.mp4', skippable: true, music: 'pause', volume: 100, fit: 'fit' });
+setT(m4, 1, 8, 4, 10); setT(m4, 1, 8, 5, 11); // the bed (two tiles: top and bottom)
+qev(m4, 'Bed (save point)', 8, 5, { type: 'savepoint', sprite: '', dir: 'down', text: 'Your bed. Have a rest and save your progress?', heal: true, mode: 'screen', ask: true });
 ev(m4, 'Mum\'s note', 6, 2, [page({ sprite: 'characters/sign-post.png', commands: [{ cmd: 'text', speaker: 'Note', text: 'I put a bed, a plant and a rug in your bag. Open the menu (X) and choose Decorate to place them. Face anything you have placed and press Z to turn it, move it or put it away. Love, Mum' }] })]);
 
 const mapInfos = [{ id: 'map001', name: 'Starter Town' }, { id: 'map002', name: 'Route 1' }, { id: 'map003', name: 'Lakeside' }, { id: 'map004', name: 'Your Room' }];

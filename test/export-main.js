@@ -32,10 +32,10 @@ app.whenReady().then(async () => {
   // set the test's choices, then reopen the window so its boxes show them
   await js(ed, `(() => {
     const s = App.proj.project.export;
-    s.publisher = 'project-tech-me'; s.outDir = ${JSON.stringify(OUT)};
+    s.publisher = 'Pocket-Designs'; s.outDir = ${JSON.stringify(OUT)};
     Object.keys(s.targets).forEach(k => s.targets[k] = ${JSON.stringify(targets)}.includes(k));
     Object.keys(s.stores).forEach(k => s.stores[k].on = true);
-    s.stores.steam.appId = '480'; s.stores.itch.user = 'project-tech-me';
+    s.stores.steam.appId = '480'; s.stores.itch.user = 'Pocket-Designs';
     s.stores.epic.organizationId = 'o-abc'; s.stores.epic.productId = 'p123'; s.stores.epic.artifactId = 'a456'; s.stores.epic.clientId = 'c789';
     s.stores.googlePlay.on = s.targets.android;
     document.querySelector('.modal .modal-foot button').click();

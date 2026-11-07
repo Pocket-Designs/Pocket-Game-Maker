@@ -11,7 +11,7 @@
   const DB = window.DB = {
     tab: 'monsters', sel: {},
 
-    TABS: [['monsters', 'Monsters'], ['moves', 'Moves'], ['types', 'Types'], ['items', 'Items'], ['tilesets', 'Tilesets'], ['audio', 'Music & sounds'], ['menus', 'Menus & screens'], ['system', 'System'], ['credits', 'Credits']],
+    TABS: [['monsters', 'Monsters'], ['moves', 'Moves'], ['types', 'Types'], ['items', 'Items'], ['tilesets', 'Tilesets'], ['audio', 'Music & sounds'], ['menus', 'Menus & screens'], ['worldmap', 'World map'], ['system', 'System'], ['credits', 'Credits']],
     // tab: open straight to that tab (from the Database menu). If the Database is already open, just switch tab.
     open(tab) {
       if (tab && DB.TABS.some(t => t[0] === tab)) DB.tab = tab;
@@ -27,7 +27,7 @@
       const body = clear(DB.root);
       const tabs = DB.TABS;
       const tabEl = h('div', { class: 'db-tabs' }, tabs.map(([k, n]) => h('div', { class: 'db-tab' + (DB.tab === k ? ' sel' : ''), onclick: () => { DB.tab = k; DB.draw(); } }, n)));
-      const layout = h('div', { class: 'db' + (DB.tab === 'types' || DB.tab === 'system' || DB.tab === 'credits' || DB.tab === 'audio' || DB.tab === 'menus' ? ' wide' : '') }, tabEl);
+      const layout = h('div', { class: 'db' + (DB.tab === 'types' || DB.tab === 'system' || DB.tab === 'credits' || DB.tab === 'audio' || DB.tab === 'menus' || DB.tab === 'worldmap' ? ' wide' : '') }, tabEl);
       body.appendChild(layout);
       DB['tab_' + DB.tab](layout);
     },
@@ -277,7 +277,9 @@
     /* ---------------- Items ---------------- */
     tab_items(layout) {
       const P = App.proj;
-      const KINDS = [['ball', 'Capture ball'], ['heal', 'Healing / status cure'], ['revive', 'Revive'], ['pp', T().pp + ' restore'], ['evolution', 'Evolution item'], ['tool', 'Tool (opens a menu, e.g. a storage box)'], ['decoration', 'Decoration (furniture for a home)'], ['clothing', 'Clothing (for the Wardrobe)'], ['key', 'Key item (no effect)']];
+      const KINDS = MF.Config.ITEM_KINDS.map(([k, l]) => [k, MF.Config.word(T(), l)]);
+      const PK = MF.Config.withDefaults(P.system).pockets;
+      const pocketOpts = it => [['', 'Automatic: ' + ((PK.list.find(p => p.id === MF.Config.pocketOf(PK, Object.assign({}, it, { pocket: '' }))) || {}).name || '—')]].concat(PK.list.map(p => [p.id, (p.icon ? p.icon + ' ' : '') + p.name]));
       DB.listTab(layout, {
         items: () => P.items,
         label: i => i.name + '  ·  ' + (KINDS.find(k => k[0] === i.kind) || ['', ''])[1],
@@ -303,7 +305,8 @@
           f.append(h('h2', null, it.name), h('div', { class: 'id-line' }, 'id: ' + it.id),
             section('General',
               row(field('Name', it, 'name', { onChange: relist }), field('Kind', it, 'kind', { type: 'select', options: KINDS, onChange: () => { if (it.kind === 'ball' && !it.catchBonus) it.catchBonus = 1; if (it.kind === 'decoration' || it.kind === 'clothing') { it.battleUsable = false; it.fieldUsable = true; DB.draw(); return; } drawKind(); relist(); } }), field('Price', it, 'price', { type: 'number', min: 0 })),
-              row(field('Usable in battle', it, 'battleUsable', { type: 'checkbox' }), field('Usable from the field menu', it, 'fieldUsable', { type: 'checkbox' })),
+              row(field('Usable in battle', it, 'battleUsable', { type: 'checkbox' }), field('Usable from the field menu', it, 'fieldUsable', { type: 'checkbox' }),
+                PK.enabled ? field('Bag pocket', it, 'pocket', { type: 'select', options: pocketOpts(it), width: '240px', help: 'Which pocket of the bag it goes in. Automatic uses the pocket that takes this kind of item (Menus & screens → Bag pockets).' }) : null),
               field('Description', it, 'description', { type: 'textarea', rows: 2 })),
             section('Effect', kindBox));
         }
@@ -462,12 +465,18 @@
           row(UI.assetPicker('Background picture (blank = the default glow)', t, 'background', 'pictures'),
             h('div', null, field('Menu position', t, 'menuPosition', { type: 'select', options: [['centre', 'Centre'], ['bottom', 'Bottom'], ['left', 'Left']] }),
               h('p', { class: 'muted' }, 'Title music is set in Music & sounds.'))),
-          h('div', { class: 'field' }, h('span', null, 'Start menu (tick to show, rename, ▲▼ to reorder)'), entryList(t.menu, 'Continue is greyed out until there is a save. Quit closes the game window.'))),
+          row(UI.assetPicker('Logo picture instead of the title text (optional)', t, 'logo', 'pictures'),
+            h('div', null, field('Menu style', t, 'menuStyle', { type: 'select', options: [['window', 'In a window'], ['plain', 'Plain text over the picture']] }),
+              field('Continue', t, 'continueMode', { type: 'select', options: [['latest', 'Loads the latest save straight away'], ['choose', 'Asks which save to load']] }))),
+          row(field('“Press any key” before the menu appears', t, 'pressStart', { type: 'checkbox', onChange: () => DB.draw() }), t.pressStart ? field('Words', t, 'pressStartText') : null),
+          h('div', { class: 'field' }, h('span', null, 'Start menu (tick to show, rename, ▲▼ to reorder)'), entryList(t.menu, 'Continue and Load Game are greyed out until there is a save. Options lets players change the music and sound volume and the text speed. Replay Opening only shows when the game has opening scenes (Scenes → Opening & Ending Scenes). Quit closes the game window.'))),
         section('Credits screen', field('Heading', t.credits, 'heading'), credSrc),
         section('Licence screen', field('Heading', t.licence, 'heading'), textChooser(t.licence, 'file', 'licence.txt'),
           h('p', { class: 'muted' }, 'Your game\'s licence or terms, shown when the player picks Licence on the start menu. Turn the Licence entry on above.')),
         section('In-game menu (X / Esc while walking)', entryList(M.main, '{dex} is replaced by your word for the monster database below. Close is always available with X.'),
           field('Show money in the menu', M, 'showMoney', { type: 'checkbox' })),
+        DB.savingSection(S),
+        DB.pocketsSection(S),
         section('Bag shortcuts', h('p', { class: 'muted', style: { marginTop: 0 } }, 'Ticked shortcuts appear at the top of the bag, so players can open them from there. For example, tick Storage to let players reach monster storage from the bag, and untick Storage in the in-game menu above if it should only be there.'),
           entryList(M.bag), h('p', { class: 'muted' }, 'You can also make an item that opens a screen: in Items, choose the kind “Tool” (for example a “Storage Box” key item).')),
         section('Words used in the game', h('div', { class: 'slot-grid' }, MF.Config.TERMS.map(([k, , help]) => field(help, terms, k)))),
@@ -477,6 +486,69 @@
           h('p', { class: 'muted' }, 'Give a monster a walking sprite in Monsters → Sprites to use a proper walking animation; otherwise its front picture hops along behind the player.')),
         DB.optionalFeatures(S));
     },
+    // Saving: slots, autosave, and the ways players can save.
+    savingSection(S) {
+      const V = S.saving, P = App.proj, M = S.menus;
+      const saveEntry = M.main.find(e => e.id === 'save');
+      const tools = P.items.filter(i => i.kind === 'tool' && i.toolAction === 'save');
+      const points = Object.values(P.maps).reduce((n, m) => n + m.events.filter(e => e.quick && e.quick.type === 'savepoint').length, 0);
+      const draw = () => DB.draw();
+      return section('Saving',
+        row(field('Save slots', V, 'slots', { type: 'number', min: 1, max: 12, width: '110px' }), field('Ask before saving over a slot', V, 'confirmOverwrite', { type: 'checkbox' })),
+        h('div', { class: 'feature-box' },
+          h('b', null, 'Ways to save'),
+          field('From the in-game menu (the Save entry)', saveEntry, 'on', { type: 'checkbox', onChange: draw }),
+          h('div', { class: 'feature-detail muted' }, 'Save points: ' + points + ' on your maps. Right-click a square in Events mode → Quick event → Save point (a bed, a diary or a save crystal; it can heal the party too), or use the “Save the game” command in any event.'),
+          h('div', { class: 'feature-detail muted' }, 'From the bag: ' + (tools.length ? tools.map(i => i.name).join(', ') : 'no item yet') + '. ',
+            h('button', { class: 'small', onclick: () => {
+              const id = UI.slug('Journal', P.items.map(i => i.id));
+              P.items.push({ id, name: 'Journal', kind: 'tool', toolAction: 'save', price: 0, battleUsable: false, fieldUsable: true, description: 'Write in your journal to save your progress.' });
+              S.startingItems = S.startingItems || {}; S.startingItems[id] = 1;
+              App.markDirty(); UI.toast('Added the Journal item (players start with one). Rename it in Items.'); draw();
+            } }, '+ Add a “Journal” save item')),
+          field('Autosave', V, 'autosave', { type: 'checkbox', onChange: draw }),
+          V.autosave ? h('div', { class: 'feature-detail' },
+            row(field('When the player moves to another map', V, 'autoOnMap', { type: 'checkbox' }), field('After winning a battle', V, 'autoAfterBattle', { type: 'checkbox' }),
+              field('Every … minutes (0 = no)', V, 'autoMinutes', { type: 'number', min: 0, max: 120, width: '150px' })),
+            field('Show “Saved” in the corner', V, 'autoToast', { type: 'checkbox' }),
+            h('p', { class: 'muted' }, 'Autosaves go in their own Autosave slot, so they never overwrite the player\'s own saves. Continue loads whichever save is newest.')) : null));
+    },
+
+    // Bag pockets: add, remove, rename, reorder; which kinds of item each one holds.
+    pocketsSection(S) {
+      const PK = S.pockets, P = App.proj;
+      const box = h('div');
+      const draw = () => {
+        clear(box);
+        box.append(field('The bag has pockets (tabs); players switch with ← →', PK, 'enabled', { type: 'checkbox', onChange: draw }));
+        if (!PK.enabled) { box.append(h('p', { class: 'muted' }, 'All items are in one list.')); return; }
+        const kinds = MF.Config.ITEM_KINDS.map(([k, l]) => [k, MF.Config.word(S.terms, l).replace(/ \(.*\)$/, '')]);
+        PK.list.forEach((pk, i) => {
+          const count = P.items.filter(it => MF.Config.pocketOf(PK, it) === pk.id).length;
+          box.appendChild(h('div', { class: 'pocket-row' },
+            h('div', { class: 'pocket-head' },
+              h('input', { type: 'text', value: pk.icon || '', class: 'pocket-icon', maxlength: 3, title: 'Icon (a symbol or emoji, optional)', oninput: e => { pk.icon = e.target.value; App.markDirty(); } }),
+              h('input', { type: 'text', value: pk.name, class: 'pocket-name', oninput: e => { pk.name = e.target.value; App.markDirty(); } }),
+              h('span', { class: 'muted' }, count + ' item' + (count === 1 ? '' : 's')),
+              h('label', { class: 'pocket-rest', title: 'Items that no pocket takes go here' }, h('input', { type: 'radio', name: 'pocket-rest', checked: !!pk.rest, onchange: () => { PK.list.forEach(p => { p.rest = p === pk; }); App.markDirty(); draw(); } }), 'everything else'),
+              h('button', { class: 'icon-btn', title: 'Move up', disabled: i === 0, onclick: () => { [PK.list[i - 1], PK.list[i]] = [PK.list[i], PK.list[i - 1]]; App.markDirty(); draw(); } }, '▲'),
+              h('button', { class: 'icon-btn', title: 'Move down', disabled: i === PK.list.length - 1, onclick: () => { [PK.list[i + 1], PK.list[i]] = [PK.list[i], PK.list[i + 1]]; App.markDirty(); draw(); } }, '▼'),
+              h('button', { class: 'icon-btn', title: 'Remove this pocket (its items go to the “everything else” pocket)', disabled: PK.list.length <= 1, onclick: () => { PK.list.splice(i, 1); P.items.forEach(it => { if (it.pocket === pk.id) delete it.pocket; }); if (!PK.list.some(p => p.rest)) PK.list[0].rest = true; App.markDirty(); draw(); } }, '✕')),
+            h('div', { class: 'pocket-kinds' }, kinds.map(([k, l]) => h('label', null, h('input', { type: 'checkbox', checked: (pk.kinds || []).includes(k), onchange: e => {
+              PK.list.forEach(p => { p.kinds = (p.kinds || []).filter(x => x !== k); }); // each kind lives in one pocket
+              if (e.target.checked) pk.kinds.push(k);
+              App.markDirty(); draw();
+            } }), l)))));
+        });
+        box.append(h('div', { class: 'asset-row' },
+          h('button', { class: 'small', onclick: () => { PK.list.push({ id: UI.slug('pocket', PK.list.map(p => p.id)), name: 'New Pocket', icon: '', kinds: [], rest: false }); App.markDirty(); draw(); } }, '+ Add a pocket'),
+          h('button', { class: 'small', onclick: () => { PK.list = JSON.parse(JSON.stringify(MF.Config.DEFAULT_POCKETS)); App.markDirty(); draw(); } }, 'Reset to the starting pockets')),
+          h('p', { class: 'muted' }, 'Tick the kinds of item each pocket holds. To put one particular item somewhere else (for example a “Battle Items” pocket), choose its Bag pocket in Items.'));
+      };
+      draw();
+      return section('Bag pockets', box);
+    },
+
     optionalFeatures(S) {
       const P = App.proj;
       const decorItems = P.items.filter(i => i.kind === 'decoration'), clothes = P.items.filter(i => i.kind === 'clothing');
@@ -555,7 +627,7 @@
       let filter = 'all';
       const draw = () => {
         clear(f);
-        const files = [...new Set([].concat(...['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds'].map(k => App.assets[k] || [])))];
+        const files = [...new Set([].concat(...['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds', 'movies'].map(k => App.assets[k] || [])))];
         const rowsAll = files.map(rel => ({ rel, c: P.credits[rel] }));
         const counts = { all: rowsAll.length, Placeholder: 0, Custom: 0, 'Third-party': 0, missing: 0 };
         rowsAll.forEach(r => { if (!r.c) counts.missing++; else if (counts[r.c.status] !== undefined) counts[r.c.status]++; });
@@ -564,7 +636,7 @@
           h('button', { class: filter === k ? 'active' : '', onclick: () => { filter = k; draw(); } }, n + ' (' + counts[k] + ')')));
         const tbl = h('table', { class: 'grid credits' }, h('tr', null, h('th', null, ''), h('th', null, 'File'), h('th', null, 'Status'), h('th', null, 'Origin'), h('th', null, 'Author'), h('th', null, 'Licence'), h('th')));
         shown.forEach(({ rel, c }) => {
-          const thumb = MF.Audio.RE.test(rel) ? UI.audioButton(() => rel) : h('img', { src: UI.assetUrl(rel), class: 'credit-thumb' });
+          const thumb = MF.Audio.RE.test(rel) ? UI.audioButton(() => rel) : /^movies\//.test(rel) ? h('span', { class: 'credit-thumb movie', title: 'Movie' }, '🎬') : h('img', { src: UI.assetUrl(rel), class: 'credit-thumb' });
           if (!c) {
             tbl.appendChild(h('tr', { class: 'missing' }, h('td', null, thumb), h('td', null, rel), h('td', { colspan: 4, class: 'muted' }, 'No origin or licence recorded'),
               h('td', null, h('button', { class: 'small', onclick: () => { P.credits[rel] = { name: rel.split('/').pop().replace(/\.[^.]+$/, ''), origin: '', author: '', licence: 'Not set', status: 'Custom' }; App.markDirty(); draw(); } }, 'Add'))));
@@ -585,6 +657,90 @@
     },
 
     /* ---------------- System ---------------- */
+    // The world map: a picture with named places. Click the picture to add a place, drag a pin to move it.
+    async tab_worldmap(layout) {
+      const P = App.proj, S = P.system;
+      Object.assign(S, MF.Config.withDefaults(S));
+      const W = S.worldMap;
+      await UI.refreshAssets('pictures');
+      const f = h('div', { class: 'db-form' });
+      layout.appendChild(f);
+      DB.wmSel = Math.min(DB.wmSel || 0, Math.max(0, W.locations.length - 1));
+      const mapIds = P.mapInfos.map(i => i.id), mapName = id => (P.mapInfos.find(i => i.id === id) || {}).name || id;
+      const DEFAULTS = [['pictures/worldmap-island.png', 'Island (towns, a route, a lake and mountains)'], ['pictures/worldmap-continent.png', 'Continent (coast, forest, desert, snow)'], ['pictures/worldmap-parchment.png', 'Old parchment map']];
+      const useDefault = async rel => {
+        const r = await window.api.libraryAdd(P.path, [rel], false, P.tilesets.map(t => t.id));
+        P.credits = Object.assign(P.credits || {}, r.credits || {});
+        App.assetVersion = Date.now(); await UI.refreshAssets('pictures');
+        W.image = rel; App.markDirty(); DB.draw();
+      };
+      const stage = h('div', { class: 'wm-ed-stage' });
+      const side = h('div', { class: 'wm-ed-side' });
+      const drawStage = async () => {
+        clear(stage);
+        if (!W.image) { stage.appendChild(h('div', { class: 'muted wm-ed-empty' }, 'Choose a picture for the world map above, or use one of the default maps.')); return; }
+        const img = await UI.loadImage(W.image);
+        if (!img) { stage.appendChild(h('div', { class: 'muted wm-ed-empty' }, 'The picture could not be loaded.')); return; }
+        const k = Math.min(560 / img.width, 420 / img.height, 3), w = Math.round(img.width * k), hh = Math.round(img.height * k);
+        const area = h('div', { class: 'wm-ed-area', style: { width: w + 'px', height: hh + 'px' } }, h('img', { src: img.src, style: { width: w + 'px', height: hh + 'px' } }));
+        stage.appendChild(area);
+        let drag = null;
+        W.locations.forEach((l, i) => {
+          const pin = h('div', { class: 'wm-ed-pin' + (i === DB.wmSel ? ' sel' : ''), style: { left: l.x * w + 'px', top: l.y * hh + 'px' }, title: l.name },
+            h('span', null, l.name));
+          pin.addEventListener('mousedown', e => { e.stopPropagation(); e.preventDefault(); DB.wmSel = i; drag = { pin, l, moved: false }; drawSide(); area.querySelectorAll('.wm-ed-pin').forEach((p, k2) => p.classList.toggle('sel', k2 === i)); });
+          area.appendChild(pin);
+        });
+        const at = e => { const r = area.getBoundingClientRect(); return { x: Math.max(0, Math.min(1, (e.clientX - r.left) / w)), y: Math.max(0, Math.min(1, (e.clientY - r.top) / hh)) }; };
+        area.addEventListener('mousemove', e => { if (!drag) return; const p = at(e); drag.l.x = +p.x.toFixed(4); drag.l.y = +p.y.toFixed(4); drag.pin.style.left = p.x * w + 'px'; drag.pin.style.top = p.y * hh + 'px'; drag.moved = true; });
+        const up = () => { if (drag && drag.moved) App.markDirty(); drag = null; };
+        area.addEventListener('mouseup', up); area.addEventListener('mouseleave', up);
+        area.addEventListener('click', e => {
+          if (e.target !== area && e.target.tagName !== 'IMG') return;
+          const p = at(e), first = mapIds.find(id => !W.locations.some(l => (l.maps || []).includes(id))) || mapIds[0];
+          const start = first ? App.walkableNear(P.maps[first]) : { x: 0, y: 0 };
+          W.locations.push({ id: UI.slug('place', W.locations.map(l => l.id)), name: first ? mapName(first) : 'New place', x: +p.x.toFixed(4), y: +p.y.toFixed(4), maps: first ? [first] : [], dest: first ? { mapId: first, x: start.x, y: start.y, dir: 'down' } : null, description: '' });
+          DB.wmSel = W.locations.length - 1; App.markDirty(); drawStage(); drawSide();
+        });
+      };
+      const drawSide = () => {
+        clear(side);
+        const l = W.locations[DB.wmSel];
+        if (!l) { side.appendChild(h('p', { class: 'muted' }, 'Click the picture to add a place. Drag a pin to move it.')); return; }
+        l.dest = l.dest || { mapId: (l.maps || [])[0] || mapIds[0], x: 0, y: 0, dir: 'down' };
+        const destMap = P.maps[l.dest.mapId];
+        side.append(h('h3', null, l.name || 'Place'),
+          field('Name', l, 'name', { onChange: () => { drawStage(); side.querySelector('h3').textContent = l.name; } }),
+          field('Description (shown at the bottom of the map)', l, 'description'),
+          h('div', { class: 'field' }, h('span', null, 'The player is here when on these maps'),
+            h('div', { class: 'wm-ed-maps' }, mapIds.map(id => h('label', null, h('input', { type: 'checkbox', checked: (l.maps || []).includes(id), onchange: e => {
+              l.maps = (l.maps || []).filter(x => x !== id); if (e.target.checked) l.maps.push(id); App.markDirty();
+            } }), mapName(id))))),
+          W.travel ? h('div', { class: 'field' }, h('span', null, 'Travelling here takes the player to'),
+            row(field('Map', l.dest, 'mapId', { type: 'select', options: mapIds.map(id => [id, mapName(id)]), onChange: () => { const p = App.walkableNear(P.maps[l.dest.mapId]); l.dest.x = p.x; l.dest.y = p.y; drawSide(); } }),
+              field('X', l.dest, 'x', { type: 'number', min: 0, max: destMap ? destMap.width - 1 : 255, width: '70px' }), field('Y', l.dest, 'y', { type: 'number', min: 0, max: destMap ? destMap.height - 1 : 255, width: '70px' }),
+              field('Facing', l.dest, 'dir', { type: 'select', width: '100px', options: [['down', 'Down'], ['up', 'Up'], ['left', 'Left'], ['right', 'Right']] }))) : null,
+          h('div', { class: 'asset-row' },
+            h('button', { class: 'small danger', onclick: () => { W.locations.splice(DB.wmSel, 1); DB.wmSel = Math.max(0, DB.wmSel - 1); App.markDirty(); drawStage(); drawSide(); } }, 'Delete place')),
+          h('p', { class: 'muted' }, W.locations.length + ' place' + (W.locations.length === 1 ? '' : 's') + '. Places the player hasn\'t visited ' + (W.showUnvisited ? 'show as grey pins with “???”.' : 'are hidden.')));
+      };
+      const mapEntry = S.menus.main.find(e => e.id === 'worldmap');
+      const tools = P.items.filter(i => i.kind === 'tool' && i.toolAction === 'worldmap');
+      f.append(h('h2', null, 'World map'), h('div', { class: 'id-line' }, 'A picture of your world with its towns and routes. The game shows where the player is, the places they have been, and can let them travel to them.'),
+        section('Settings',
+          row(field('Players have a world map', W, 'enabled', { type: 'checkbox', onChange: () => DB.draw() }), field('Title', W, 'title')),
+          row(field('Travel: players can go straight to places they have visited', W, 'travel', { type: 'checkbox', onChange: () => DB.draw() }), field('Show places they haven\'t visited yet', W, 'showUnvisited', { type: 'checkbox' })),
+          row(UI.assetPicker('Map picture (your own, or draw one)', W, 'image', 'pictures', { onChange: () => DB.draw() }),
+            h('div', { class: 'field' }, h('span', null, 'Or use a default map'), h('div', { class: 'wm-defaults' }, DEFAULTS.map(([rel, label]) => h('button', { class: 'small', title: label, onclick: () => useDefault(rel) }, label.split(' (')[0]))))),
+          h('div', { class: 'muted' }, 'Opening it: ',
+            mapEntry ? h('label', { class: 'inline-check' }, h('input', { type: 'checkbox', checked: !!mapEntry.on, onchange: e => { mapEntry.on = e.target.checked; App.markDirty(); } }), ' “' + mapEntry.label + '” in the in-game menu') : null,
+            ' · from the bag: ' + (tools.length ? tools.map(i => i.name).join(', ') : 'no item yet') + ' ',
+            h('button', { class: 'small', onclick: () => { const id = UI.slug('Town Map', P.items.map(i => i.id)); P.items.push({ id, name: 'Town Map', kind: 'tool', toolAction: 'worldmap', price: 0, battleUsable: false, fieldUsable: true, description: 'A map of the region. Shows where you are.' }); App.markDirty(); UI.toast('Added the Town Map item. Give it to the player with Give item, or in System → Starting items.'); DB.draw(); } }, '+ Add a “Town Map” item'),
+            ' · from an event: Open a screen → World map.')),
+        section('Places', h('div', { class: 'wm-ed' }, stage, side)));
+      drawStage(); drawSide();
+    },
+
     tab_system(layout) {
       const P = App.proj, S = P.system, B = S.battle;
       const f = h('div', { class: 'db-form' });

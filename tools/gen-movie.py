@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""Makes the asset library's sample movie, library/movies/monster-news.mp4: a 7-second "Monster News" TV clip built
+from the library's own art and music, and the television event sprite library/characters/tv-set.png.
+Run: python3 tools/gen-movie.py  (needs Pillow and ffmpeg with libx264 and aac)
+
+MP4 with H.264 video (yuv420p, main profile) and AAC sound plays in Electron, Chrome, Firefox, Safari and Android.
+The pixel art is drawn at the game's 320 x 240 and doubled with nearest-neighbour scaling so it stays sharp."""
+import os, subprocess, math, json
+from PIL import Image, ImageDraw, ImageFont
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LIB = os.path.join(ROOT, 'library')
+W, H, FPS, SECS = 320, 240, 24, 7.0
+OUT = os.path.join(LIB, 'movies', 'monster-news.mp4')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+
+def lib(rel): return Image.open(os.path.join(LIB, rel)).convert('RGBA')
+def font(size): return ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', size)
+
+bg = lib('pictures/title-sunrise.png').resize((W, H), Image.NEAREST)
+hero = lib('characters/hero.png')
+fw, fh = hero.width // 3, hero.height // 4
+mons = [lib('monsters/%s_front.png' % m) for m in ('embercub', 'splashling', 'sproutle')]
+F_TITLE, F_CAP = font(20), font(12)
+
+def ease(t): return 1 - (1 - max(0.0, min(1.0, t))) ** 3
+
+def frame(i):
+    t = i / FPS
+    im = bg.copy()
+    d = ImageDraw.Draw(im)
+    # hero walks in from the left (facing right, 3-frame walk), then turns to face us
+    walk_end = 2.4
+    if t < walk_end:
+        x = -32 + (118 + 32) * (t / walk_end); col = [1, 0, 1, 2][int(t * 8) % 4]; row = 2
+    else:
+        x = 118; col = 1; row = 0
+    spr = hero.crop((col * fw, row * fh, (col + 1) * fw, (row + 1) * fh)).resize((fw * 2, fh * 2), Image.NEAREST)
+    im.alpha_composite(spr, (int(x), 150))
+    # monsters hop in one after another
+    for k, m in enumerate(mons):
+        t0 = 2.4 + k * 0.8
+        if t < t0: continue
+        p = ease((t - t0) / 0.45)
+        hop = abs(math.sin((t - t0) * 6)) * 6 * max(0.0, 1 - (t - t0) / 1.2)
+        size = 48
+        mm = m.resize((size, size), Image.NEAREST)
+        mx, my = 168 + k * 44, int(178 - size + (1 - p) * 60 - hop)
+        if p < 1: mm.putalpha(mm.getchannel('A').point(lambda a: int(a * p)))
+        im.alpha_composite(mm, (mx, my))
+    # "MONSTER NEWS" banner slides down
+    by = int(-34 + 46 * ease(t / 0.6))
+    d.rectangle([0, by, W, by + 30], fill=(162, 38, 51, 255)); d.rectangle([0, by + 30, W, by + 32], fill=(24, 20, 37, 255))
+    d.text((W // 2, by + 15), 'MONSTER NEWS', font=F_TITLE, fill=(255, 255, 255, 255), anchor='mm')
+    d.ellipse([12, by + 9, 24, by + 21], fill=(255, 0, 68, 255) if int(t * 2) % 2 == 0 else (115, 20, 35, 255))
+    # caption box
+    caps = [(2.6, 4.9, 'Wild monsters spotted on Route 1!'), (5.0, 6.6, 'Stay tuned for more news!')]
+    for a, b, text in caps:
+        if a <= t < b:
+            al = min(1.0, (t - a) / 0.25, (b - t) / 0.25)
+            box = Image.new('RGBA', (W, H), (0, 0, 0, 0)); bd = ImageDraw.Draw(box)
+            bd.rectangle([10, 200, W - 10, 230], fill=(24, 20, 37, int(220 * al)), outline=(234, 212, 170, int(255 * al)))
+            bd.text((W // 2, 215), text, font=F_CAP, fill=(255, 255, 255, int(255 * al)), anchor='mm')
+            im.alpha_composite(box)
+    # fade in and out
+    fade = min(1.0, t / 0.4, (SECS - t) / 0.6)
+    if fade < 1:
+        im = Image.blend(Image.new('RGBA', (W, H), (0, 0, 0, 255)), im, max(0.0, fade))
+    return im.convert('RGB')
+
+music = os.path.join(LIB, 'music', 'title-dawn-of-adventure.mp3')
+cmd = ['ffmpeg', '-y', '-loglevel', 'error',
+       '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', '%dx%d' % (W, H), '-r', str(FPS), '-i', '-',
+       '-t', str(SECS), '-i', music,
+       '-vf', 'scale=%d:%d:flags=neighbor' % (W * 2, H * 2),
+       '-c:v', 'libx264', '-preset', 'slow', '-crf', '24', '-pix_fmt', 'yuv420p', '-profile:v', 'main', '-tune', 'animation',
+       '-c:a', 'aac', '-b:a', '96k', '-af', 'afade=t=in:d=0.3,afade=t=out:st=%.1f:d=1' % (SECS - 1),
+       '-shortest', '-movflags', '+faststart', OUT]
+p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+for i in range(int(SECS * FPS)):
+    p.stdin.write(frame(i).tobytes())
+p.stdin.close()
+if p.wait() != 0: raise SystemExit('ffmpeg failed')
+print('wrote', OUT, os.path.getsize(OUT), 'bytes')
+
+# The television as an event sprite (3 x 4 sheet of the same 16 x 16 picture), for a TV the player can watch.
+tv = lib('decorations/tv.png')
+sheet = Image.new('RGBA', (48, 64), (0, 0, 0, 0))
+for r in range(4):
+    for c in range(3): sheet.alpha_composite(tv, (c * 16, r * 16))
+sheet.save(os.path.join(LIB, 'characters', 'tv-set.png'), optimize=True)
+print('wrote characters/tv-set.png')
+
+# Library credits for both.
+meta_f = os.path.join(LIB, 'library.json')
+meta = json.load(open(meta_f, encoding='utf-8'))
+ORIGIN = 'Original pixel art made for Pocket-Game-Maker (generated by its built-in asset generator, 2026). Colours from the Endesga 32 palette.'
+meta['characters']['characters/tv-set.png'] = {'origin': ORIGIN, 'author': 'Pocket-Designs', 'licence': 'CC0 1.0 (public domain)', 'status': 'Placeholder',
+                                               'name': 'Television (event)', 'description': 'The television as an event, for a TV the player can watch.'}
+meta.setdefault('movies', {})['movies/monster-news.mp4'] = {'origin': 'Original movie made for Pocket-Game-Maker from its library art and the "Dawn of Adventure" music (tools/gen-movie.py, 2026).',
+                                                           'author': 'Pocket-Designs', 'licence': 'CC0 1.0 (public domain)', 'status': 'Placeholder',
+                                                           'name': 'Monster News', 'description': 'A 7-second TV news clip: the hero and three monsters. MP4, 640 x 480, with sound.'}
+json.dump(meta, open(meta_f, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
+open(meta_f, 'a').write('\n')
+print('updated library.json')

@@ -109,6 +109,11 @@
     "background": "pictures/title-sunrise.png",
     "menuPosition": "centre",
     "textColour": "#ffffff",
+    "logo": "",
+    "pressStart": false,
+    "pressStartText": "Press any key",
+    "menuStyle": "window",
+    "continueMode": "latest",
     "menu": [
       {
         "id": "new",
@@ -118,6 +123,21 @@
       {
         "id": "continue",
         "label": "Continue",
+        "on": true
+      },
+      {
+        "id": "load",
+        "label": "Load Game",
+        "on": true
+      },
+      {
+        "id": "options",
+        "label": "Options",
+        "on": true
+      },
+      {
+        "id": "scenes",
+        "label": "Replay Opening",
         "on": true
       },
       {
@@ -164,6 +184,11 @@
         "on": true
       },
       {
+        "id": "worldmap",
+        "label": "Map",
+        "on": true
+      },
+      {
         "id": "storage",
         "label": "Storage",
         "on": true
@@ -181,6 +206,11 @@
       {
         "id": "save",
         "label": "Save",
+        "on": true
+      },
+      {
+        "id": "options",
+        "label": "Options",
         "on": true
       },
       {
@@ -206,6 +236,11 @@
         "on": false
       },
       {
+        "id": "worldmap",
+        "label": "Map",
+        "on": false
+      },
+      {
         "id": "save",
         "label": "Save",
         "on": false
@@ -224,5 +259,173 @@
   "wardrobe": {
     "enabled": true,
     "start": {}
+  },
+  "pockets": {
+    "enabled": true,
+    "list": [
+      {
+        "icon": "✚",
+        "kinds": [
+          "heal",
+          "revive",
+          "pp"
+        ],
+        "rest": true,
+        "id": "items",
+        "name": "Items"
+      },
+      {
+        "icon": "●",
+        "kinds": [
+          "ball"
+        ],
+        "rest": false,
+        "id": "balls",
+        "name": "Capture Orbs"
+      },
+      {
+        "icon": "✦",
+        "kinds": [
+          "evolution"
+        ],
+        "rest": false,
+        "id": "evolution",
+        "name": "Evolution"
+      },
+      {
+        "icon": "⌂",
+        "kinds": [
+          "decoration",
+          "clothing"
+        ],
+        "rest": false,
+        "id": "home",
+        "name": "Home & Style"
+      },
+      {
+        "icon": "⚿",
+        "kinds": [
+          "key",
+          "tool"
+        ],
+        "rest": false,
+        "id": "key",
+        "name": "Key Items"
+      }
+    ]
+  },
+  "saving": {
+    "slots": 4,
+    "confirmOverwrite": true,
+    "autosave": true,
+    "autoOnMap": true,
+    "autoAfterBattle": false,
+    "autoMinutes": 0,
+    "autoToast": true
+  },
+  "worldMap": {
+    "enabled": true,
+    "image": "pictures/worldmap-island.png",
+    "title": "Sample Island",
+    "travel": true,
+    "showUnvisited": true,
+    "locations": [
+      {
+        "id": "starter-town",
+        "name": "Starter Town",
+        "x": 0.5,
+        "y": 0.78,
+        "maps": [
+          "map001",
+          "map004"
+        ],
+        "dest": {
+          "mapId": "map001",
+          "x": 9,
+          "y": 10,
+          "dir": "down"
+        },
+        "description": "Your home town."
+      },
+      {
+        "id": "route-1",
+        "name": "Route 1",
+        "x": 0.5,
+        "y": 0.5,
+        "maps": [
+          "map002"
+        ],
+        "dest": null,
+        "description": "Tall grass full of wild monsters."
+      },
+      {
+        "id": "lakeside",
+        "name": "Lakeside",
+        "x": 0.52,
+        "y": 0.25,
+        "maps": [
+          "map003"
+        ],
+        "dest": {
+          "mapId": "map003",
+          "x": 9,
+          "y": 12,
+          "dir": "up"
+        },
+        "description": "A quiet lake in the north."
+      }
+    ]
+  },
+  "scenes": {
+    "opening": [
+      {
+        "id": "sc-opening",
+        "type": "text",
+        "name": "Opening story",
+        "style": "pages",
+        "advance": "auto",
+        "seconds": 3,
+        "align": "centre",
+        "colour": "#000000",
+        "textColour": "#ffffff",
+        "background": "pictures/cutscene-night-sky.png",
+        "skippable": true,
+        "music": "",
+        "text": "# Long ago…\n\nPeople and monsters lived side by side.\n---\nOne morning, a young trainer woke up in Starter Town…"
+      }
+    ],
+    "newGame": [],
+    "ending": [
+      {
+        "id": "sc-thanks",
+        "type": "text",
+        "name": "Thank you",
+        "style": "pages",
+        "advance": "auto",
+        "seconds": 3,
+        "align": "centre",
+        "colour": "#000000",
+        "textColour": "#ffffff",
+        "background": "pictures/title-sunrise.png",
+        "skippable": true,
+        "music": "",
+        "text": "# Thank you for playing!"
+      },
+      {
+        "id": "sc-credits",
+        "type": "credits",
+        "name": "Credits roll",
+        "source": "auto",
+        "heading": "Credits",
+        "speed": 30,
+        "endText": "The End",
+        "colour": "#000000",
+        "textColour": "#ffffff",
+        "background": "",
+        "skippable": true,
+        "music": ""
+      }
+    ],
+    "endingThen": "title"
   }
 }

@@ -10,7 +10,7 @@ const errors = [];
 app.on('browser-window-created', (e, win) => win.webContents.on('console-message', (ev, level, msg, line, src) => { if (ev && ev.message !== undefined) { level = { error: 3, warning: 2 }[ev.level] || 0; msg = ev.message; line = ev.lineNumber; src = ev.sourceId; } if (level >= 2) errors.push(path.basename(src || '') + ':' + line + ' ' + msg); }));
 require('../main.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const js = (w, c) => w.webContents.executeJavaScript(c, true);
+const js = (w, c) => w.webContents.executeJavaScript(c, true).catch(e => { console.log('STEP FAILED:', c.slice(0, 140)); throw e; });
 const shot = async (w, n) => fs.writeFileSync(path.join(OUT, n + '.png'), (await w.webContents.capturePage()).toPNG());
 async function key(w, k, times = 1, gap = 160) { for (let i = 0; i < times; i++) { w.webContents.sendInputEvent({ type: 'keyDown', keyCode: k }); await sleep(40); w.webContents.sendInputEvent({ type: 'keyUp', keyCode: k }); await sleep(gap); } }
 
@@ -32,7 +32,7 @@ app.whenReady().then(async () => {
   await js(ed, `[...document.querySelectorAll('.modal-foot button')].find(b => b.textContent === 'Done').click(); 0`); await sleep(400);
 
   // playtest from inside the room
-  await js(ed, `App.playtest({ mapId: 'map004', x: 4, y: 5, dir: 'up' }); 0`); await sleep(500);
+  await js(ed, `App.playtest({ mapId: 'map004', x: 4, y: 5, dir: 'down' }); 0`); await sleep(500);
   await js(ed, `document.querySelector('.modal-foot .primary') && document.querySelector('.modal-foot .primary').click()`);
   await sleep(2000);
   const play = BrowserWindow.getAllWindows().find(w => w !== ed);

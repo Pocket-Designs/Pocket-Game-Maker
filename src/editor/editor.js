@@ -37,14 +37,17 @@
     async action(a) {
       if (a === 'new') return App.newProjectDialog();
       if (a === 'open') return App.openProject();
-      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.3 · © 2026 project-tech-me\nContact: project-tech-me@protonmail.com\nReleased under the MIT Licence.');
+      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.6 · © 2026 Pocket-Designs\nContact: pocket-designs@proton.me\nReleased under the MIT Licence.');
       if (!App.proj) return UI.toast('Open or create a project first');
       if (a === 'save') return App.save();
       if (a === 'playtest') return App.playtest();
       if (a === 'database') return DB.open();
       if (a.startsWith('db:')) return DB.open(a.slice(3));
       if (a === 'import') return Importer.open();
+      if (a === 'pixel') return PixelEditor.newPicture();
+      if (a === 'pixelTileset') return PixelEditor.editTileset();
       if (a === 'library') return AssetLib.open();
+      if (a === 'scenes' || a.startsWith('scenes:')) return ScenesEditor.open(a.split(':')[1]);
       if (a === 'export') return Export.open();
       if (a === 'undo') return MapEditor.undo();
       if (a === 'redo') return MapEditor.redo();
@@ -360,9 +363,9 @@
       UI.toast('Deleted "' + m.name + '"');
     },
     // The walkable square closest to the middle of a map (for moving the start position).
-    walkableNear(map) {
+    walkableNear(map, px, py) {
       const ts = App.proj.tilesets.find(t => t.id === map.tilesetId);
-      const cx = Math.floor(map.width / 2), cy = Math.floor(map.height / 2);
+      const cx = px == null ? Math.floor(map.width / 2) : px, cy = py == null ? Math.floor(map.height / 2) : py;
       for (let r = 0; r < Math.max(map.width, map.height); r++)
         for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) {
           if (x < 0 || y < 0 || x >= map.width || y >= map.height || (Math.abs(x - cx) !== r && Math.abs(y - cy) !== r)) continue;

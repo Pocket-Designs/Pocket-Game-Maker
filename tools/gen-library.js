@@ -6,7 +6,7 @@ const P = require('./pixel');
 const { Image, px, rect, hline, vline, spr, blob, outline, blit, mirror, scale, speckle, rng } = P;
 
 const OUT = path.join(__dirname, '..', 'library');
-const AUTHOR = 'project-tech-me';
+const AUTHOR = 'Pocket-Designs';
 const LICENCE = 'CC0-1.0';
 const write = (rel, data) => { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, data); };
 const json = (rel, o) => write(rel, JSON.stringify(o, null, 2) + '\n');

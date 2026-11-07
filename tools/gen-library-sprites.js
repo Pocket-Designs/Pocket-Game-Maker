@@ -221,6 +221,7 @@ decoration('bookshelf.png', 'Bookshelf', 2, 1, o => { rect(o, 1, 0, 30, 15, 't')
 decoration('rug.png', 'Round rug', 2, 2, o => { blob(o, 16, 16, 15, 13, { base: 'P', dark: 'p', light: 'q' }); blob(o, 16, 16, 10, 8, { base: 'q', dark: 'P', light: 'W' }); blob(o, 16, 16, 4, 3, { base: 'P', dark: 'p' }); }, 'A round rug, 2x2 squares. Players can walk over it.');
 decoration('lamp.png', 'Floor lamp', 1, 1, o => { rect(o, 7, 6, 2, 8, 'm'); rect(o, 5, 13, 6, 2, 'n'); for (let j = 0; j < 5; j++) hline(o, 5 - Math.floor(j / 2), 1 + j, 6 + Math.floor(j / 2) * 2, j < 1 ? 'Y' : 'y'); }, 'A tall lamp.');
 decoration('sofa.png', 'Sofa', 2, 1, o => { rect(o, 1, 1, 30, 6, 'b'); rect(o, 1, 6, 30, 7, 'B'); for (const x of [1, 27]) rect(o, x, 3, 4, 10, 'b'); vline(o, 16, 7, 6, 'b'); hline(o, 1, 13, 30, 'n'); }, 'A blue sofa, 2x1 squares.');
+// tv-set.png (the television as an event sprite) and movies/monster-news.mp4 are made by tools/gen-movie.py.
 decoration('tv.png', 'Television', 1, 1, o => { rect(o, 1, 9, 14, 6, 't'); hline(o, 1, 9, 14, 'T'); rect(o, 2, 1, 12, 8, 'k'); rect(o, 3, 2, 10, 6, 'b'); px(o, 4, 3, 'c'); px(o, 5, 3, 'c'); }, 'A TV on a low cabinet.');
 decoration('plush.png', 'Monster plush', 1, 1, o => { blob(o, 8, 9, 5.5, 5, { base: 'O', dark: 'x', light: 'y' }); for (const s of [-1, 1]) blob(o, 8 + s * 4, 4, 2, 2, { base: 'O', dark: 'x' }); rect(o, 6, 8, 1, 2, 'K'); rect(o, 9, 8, 1, 2, 'K'); hline(o, 7, 11, 2, 'K'); }, 'A soft toy of a fire monster.');
 decoration('dresser.png', 'Dresser', 1, 1, o => { rect(o, 1, 2, 14, 13, 'T'); hline(o, 1, 2, 14, 'U'); for (const y of [6, 10]) hline(o, 1, y, 14, 't'); for (const y of [4, 8, 12]) rect(o, 7, y, 2, 1, 'Y'); }, 'A chest of drawers.');
@@ -356,10 +357,13 @@ catch (err) {
   try { audio = JSON.parse(fs.readFileSync(path.join(OUT, 'audio-meta.json'), 'utf8')); } catch (e) { audio = { music: {}, sounds: {} }; }
 }
 const META = {
-  name: 'Pocket-Game-Maker Asset Library', version: 1, author: 'project-tech-me', licence: 'CC0-1.0',
+  name: 'Pocket-Game-Maker Asset Library', version: 1, author: 'Pocket-Designs', licence: 'CC0-1.0',
   note: 'Original pixel art, music and sound effects made for Pocket-Game-Maker. Free to use, change and sell in your games, with or without credit.',
   tilesets, characters: manifest.characters, monsters: manifest.monsters, battlebacks: manifest.battlebacks, pictures: manifest.pictures, decorations: manifest.decorations, music: audio.music, sounds: audio.sounds
 };
+// keep the credits of pictures made by other generators (tools/gen-worldmaps.py)
+try { const old = JSON.parse(fs.readFileSync(path.join(OUT, 'library.json'), 'utf8'));
+  for (const [k, v] of Object.entries(old.pictures || {})) if (!META.pictures[k] && fs.existsSync(path.join(OUT, k))) META.pictures[k] = v; } catch (e) {}
 fs.writeFileSync(path.join(OUT, 'library.json'), JSON.stringify(META, null, 2) + '\n');
 const CREDIT_INTRO = 'Every asset in the Pocket-Game-Maker Asset Library, with where it came from and its licence. ' +
   '"Placeholder" means the built-in art that came with Pocket-Game-Maker. When you replace a file with your own art, change its status to Custom ' +
@@ -369,7 +373,7 @@ fs.writeFileSync(path.join(OUT, 'CREDITS.md'), CR.toMarkdown('Asset Library cred
 fs.writeFileSync(path.join(OUT, 'credits.csv'), CR.toCSV(CR.fromLibraryMeta(META)));
 
 fs.writeFileSync(path.join(OUT, 'LICENSE.txt'), `Pocket-Game-Maker Asset Library
-Copyright (c) 2026 project-tech-me <project-tech-me@protonmail.com>
+Copyright (c) 2026 Pocket-Designs <pocket-designs@proton.me>
 
 All images in this library (tilesets, characters, monsters, battle
 backgrounds, pictures, decorations and clothing), their .tiles.json mapping files, and all music, jingles and
@@ -383,7 +387,7 @@ but not required.
 
 The colours come from the Endesga 32 palette, which is also free to use.
 
-The music and sound effects are original compositions by project-tech-me,
+The music and sound effects are original compositions by Pocket-Designs,
 synthesised from scratch by Pocket-Game-Maker's audio generator (tools/gen-audio.js).
 They contain no samples or recordings from any other source.
 `);

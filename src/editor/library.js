@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const { h, clear } = UI;
-  const KINDS = [['tilesets', 'Tilesets'], ['characters', 'Characters'], ['monsters', 'Monsters'], ['battlebacks', 'Battle backgrounds'], ['pictures', 'Pictures'], ['decorations', 'Decorations'], ['music', 'Music'], ['sounds', 'Sound effects']];
+  const KINDS = [['tilesets', 'Tilesets'], ['characters', 'Characters'], ['monsters', 'Monsters'], ['battlebacks', 'Battle backgrounds'], ['pictures', 'Pictures'], ['decorations', 'Decorations'], ['music', 'Music'], ['sounds', 'Sound effects'], ['movies', 'Movies']];
 
   const AssetLib = window.AssetLib = {
     tab: 'tilesets', selected: new Set(), lib: null,
@@ -98,6 +98,12 @@
         const b = UI.audioButton(() => window.api.fileUrl(item.preview));
         b.addEventListener('click', e => e.stopPropagation());
         return h('div', { class: 'lib-audio' }, h('span', { class: 'lib-note' }, item.kind === 'music' ? '♫' : '♪'), b, item.loop ? h('span', { class: 'muted' }, 'loops') : null);
+      }
+      if (item.kind === 'movies') { // first frame; plays (silently) while the mouse is over it
+        const v = h('video', { src: url, muted: true, loop: true, preload: 'metadata', class: 'lib-movie' });
+        v.addEventListener('mouseenter', () => { v.play().catch(() => {}); });
+        v.addEventListener('mouseleave', () => { v.pause(); });
+        return v;
       }
       if (item.kind === 'characters') {
         const c = h('canvas', { width: 48, height: 16 });

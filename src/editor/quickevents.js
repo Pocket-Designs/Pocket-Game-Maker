@@ -11,7 +11,8 @@
     encounter: { label: 'Monster encounter area', icon: '❖', blurb: 'Wild monsters appear while the player walks inside this area. Inside it, this list replaces the map\'s own encounter table.' },
     npc: { label: 'Person (NPC)', icon: '☺', blurb: 'Someone the player can talk to. They can just chat, give an item once, or battle the player, and can stand still, wander or walk a set route.' },
     lever: { label: 'Switch / lever', icon: '⏻', blurb: 'An on/off switch the player flips with the action button. It turns a game switch ON or OFF, so doors, bridges and people elsewhere can react (use “Switch is ON / OFF” in their page conditions).' },
-    cutscene: { label: 'Cut scene', icon: '🎬', blurb: 'A scene that plays once: when the player steps into an area, or as soon as the map opens. It starts with black cinema bars; add moves, speech bubbles, camera pans and pictures in the full event editor.' },
+    cutscene: { label: 'Cut scene', icon: '🎬', blurb: 'A scene that plays when the player steps into an area, arrives on the map, talks to someone or when a switch turns on. Play a movie file, or build the scene from your game: text, moving characters, speech bubbles, camera moves, fades, pictures and music.' },
+    savepoint: { label: 'Save point', icon: '💾', blurb: 'A bed, a diary or a save crystal: the player uses it to save the game. It can ask first and heal the party (like resting in a bed). Put it on a bed tile or give it a sprite.' },
     shop: { label: 'Shopkeeper', icon: '$', blurb: 'A shop the player talks to. Choose what it sells and whether the player can sell items back.' },
     exit: { label: 'Exit / door', icon: '⇲', blurb: 'Takes the player to another place: a doorway, stairs or cave entrance. To move between maps by walking off the edge instead, use Map edges in the map properties (right-hand panel).' }
   };
@@ -36,7 +37,10 @@
         trainerName: 'Trainer', party: mons.length ? [{ speciesId: mons[0].id, level: 5 }] : [], reward: 100, sight: 4, active: 0, winText: 'You\'re strong!', loseText: 'Better luck next time!' };
     }
     if (type === 'lever') return { type, switchId: 1, offSprite: SPRITES.leverOff, onSprite: SPRITES.leverOn, oneWay: false, onText: '', offText: '', doneText: 'It won\'t budge.', sound: (App.proj.system.audio && App.proj.system.audio.sfx && App.proj.system.audio.sfx.confirm) || '' };
-    if (type === 'cutscene') return { type, start: 'step', width: 1, height: 1, text: 'Something is about to happen…' };
+    if (type === 'savepoint') return { type, sprite: '', dir: 'down', ask: true, text: 'Your bed. Have a rest and save your progress?', yes: 'Yes', no: 'No', heal: true, mode: 'screen' };
+    if (type === 'cutscene') return { type, start: 'step', width: 1, height: 1, repeat: 'once', switchId: 0, afterSwitch: 0, sprite: '', dir: 'down', afterText: '',
+      content: 'steps', bars: true, commands: [{ cmd: 'text', speaker: '', text: 'Something is about to happen…' }],
+      movie: (App.assets.movies || [])[0] || '', skippable: true, music: 'pause', volume: 100, fit: 'fit' };
     if (type === 'shop') {
       const goods = App.proj.items.filter(i => i.kind !== 'key' && i.price > 0).slice(0, 4).map(i => ({ itemId: i.id, price: null }));
       return { type, sprite: SPRITES.shopkeeper, dir: 'down', greeting: 'Welcome! What can I do for you?', farewell: 'Please come again!', goods, sell: true, sellRate: 50 };
@@ -140,13 +144,54 @@
         h('p', { class: 'muted' }, 'Other events react through their page conditions: give a page “Switch is ON” (for example, a bridge appears) or “Switch is OFF”.')
       ];
       void sw;
-    } else if (q.type === 'cutscene') {
+    } else if (q.type === 'savepoint') {
       body = [
-        field('Starts', q, 'start', { type: 'select', options: [['step', 'When the player steps into the area'], ['map', 'As soon as the player arrives on this map']], onChange: redraw }),
-        q.start === 'step' ? row(field('Area width (squares)', q, 'width', { type: 'number', min: 1, max: 64, width: '160px' }), field('Area height (squares)', q, 'height', { type: 'number', min: 1, max: 64, width: '160px' }),
-          h('div', { class: 'field muted', style: { alignSelf: 'center' } }, 'The area starts at this square and goes right and down.')) : null,
-        field('First line of the scene (you can change it later)', q, 'text', { type: 'textarea', rows: 2 }),
-        h('p', { class: 'muted' }, 'After creating it, click “Open full event editor” (or double-click it and choose Full event editor) to add cut-scene commands: move a character, speech bubble icon, move the camera, screen effects, pictures, music and text. It plays once, then switches itself off.')
+        row(UI.assetPicker('Sprite (optional: leave empty to use it on a bed or other tile)', q, 'sprite', 'characters', { preview: 'charFrame' }),
+          field('Facing', q, 'dir', { type: 'select', width: '110px', options: [['down', 'Down'], ['left', 'Left'], ['right', 'Right'], ['up', 'Up']] })),
+        field('Ask first (Yes / No)', q, 'ask', { type: 'checkbox', onChange: redraw }),
+        field(q.ask !== false ? 'Question' : 'Message before saving (optional)', q, 'text', { type: 'textarea', rows: 2 }),
+        q.ask !== false ? row(field('Yes answer', q, 'yes'), field('No answer', q, 'no')) : null,
+        row(field('Heal the party first (resting in a bed)', q, 'heal', { type: 'checkbox' }),
+          field('Saving', q, 'mode', { type: 'select', width: '330px', options: [['screen', 'Open the save screen (the player picks a slot)'], ['auto', 'Save straight into the Autosave slot']] })),
+        h('p', { class: 'muted' }, 'To make save points the only way to save, untick Save in Database → Menus & screens → In-game menu. Slots and autosave are in Menus & screens → Saving.')
+      ];
+    } else if (q.type === 'cutscene') {
+      const swOpts = none => [[0, none]].concat(App.proj.system.switches.map((n, i) => [i, String(i).padStart(3, '0') + ': ' + (n || '(unnamed)')]).slice(1));
+      const newSwitch = (key, label) => h('button', { class: 'small', style: { marginBottom: '8px' }, onclick: async () => {
+        const n = await UI.prompt('New switch', '', 'Switch name (e.g. "' + label + '")'); if (!n) return;
+        App.proj.system.switches.push(n); q[key] = App.proj.system.switches.length - 1; App.markDirty(); redraw(); } }, '+ Switch');
+      const auto = q.start === 'map' || q.start === 'switch';
+      const add = (cmd, label) => h('button', { class: 'small', title: EventEditor.COMMANDS[cmd].label, onclick: () => { q.commands.push(Object.assign({ cmd }, EventEditor.COMMANDS[cmd].make())); redraw(); } }, label);
+      body = [
+        h('fieldset', { class: 'section' }, h('legend', null, 'When it plays'),
+          row(field('Starts', q, 'start', { type: 'select', onChange: redraw, options: [['step', 'When the player steps into an area'], ['map', 'As soon as the player arrives on this map'],
+            ['action', 'When the player talks to it or examines it (action button)'], ['switch', 'When a switch turns ON (while on this map)']] }),
+            auto ? h('div', { class: 'field muted', style: { alignSelf: 'center' } }, 'Plays once.') : field('Plays', q, 'repeat', { type: 'select', width: '170px', options: [['once', 'Once'], ['always', 'Every time']] })),
+          q.start === 'step' ? row(field('Area width (squares)', q, 'width', { type: 'number', min: 1, max: 64, width: '160px' }), field('Area height (squares)', q, 'height', { type: 'number', min: 1, max: 64, width: '160px' }),
+            h('div', { class: 'field muted', style: { alignSelf: 'center' } }, 'The area starts at this square and goes right and down.')) : null,
+          q.start === 'action' ? row(UI.assetPicker('Person or object (optional; leave empty for an invisible spot)', q, 'sprite', 'characters', { preview: 'charFrame' }),
+            field('Facing', q, 'dir', { type: 'select', width: '110px', options: [['down', 'Down'], ['left', 'Left'], ['right', 'Right'], ['up', 'Up']] })) : null,
+          q.start === 'action' && q.repeat !== 'always' ? field('Afterwards, when used again, say (optional)', q, 'afterText') : null,
+          q.start === 'switch' ? row(field('Switch', q, 'switchId', { type: 'select', number: true, options: swOpts('(choose a switch)') }), newSwitch('switchId', 'Rival beaten')) : null,
+          row(field('When it has finished, turn this switch ON (optional)', q, 'afterSwitch', { type: 'select', number: true, options: swOpts('(none)') }), newSwitch('afterSwitch', 'Saw the opening')),
+          h('p', { class: 'muted' }, 'Other events can react to that switch with “Switch is ON” in their page conditions, so people move, doors open or the story moves on.')),
+        h('fieldset', { class: 'section' }, h('legend', null, 'The scene'),
+          h('div', { class: 'tb-group seg', style: { marginBottom: '10px' } },
+            h('button', { class: q.content !== 'movie' ? 'active' : '', onclick: () => { q.content = 'steps'; redraw(); } }, '🎭 Built from your game'),
+            h('button', { class: q.content === 'movie' ? 'active' : '', onclick: () => { q.content = 'movie'; redraw(); } }, '🎬 A movie file')),
+          q.content === 'movie' ? h('div', null,
+            UI.moviePicker('Movie (MP4 or WebM)', q, 'movie', { onChange: redraw }),
+            row(field('Player can skip it (any key or a tap)', q, 'skippable', { type: 'checkbox' }),
+              field('Music', q, 'music', { type: 'select', width: '230px', options: [['pause', 'Pause it, then carry on afterwards'], ['stop', 'Stop it'], ['keep', 'Keep playing under the movie']] }),
+              field('Volume %', q, 'volume', { type: 'number', min: 0, max: 100, width: '90px' }),
+              field('Picture', q, 'fit', { type: 'select', width: '170px', options: [['fit', 'Whole movie (black bars)'], ['fill', 'Fill the screen (crops)']] })),
+            h('p', { class: 'muted' }, 'MP4 with H.264 video and AAC sound plays everywhere the game runs. Import movies here, in the Import window or with File → Import Assets.'))
+          : h('div', null,
+            field('Black cinema bars at the top and bottom while it plays', q, 'bars', { type: 'checkbox' }),
+            h('div', { class: 'cs-add' }, h('span', { class: 'muted' }, 'Add:'), add('text', '💬 Text'), add('moveRoute', '🚶 Move someone'), add('balloon', '❗ Bubble'), add('camera', '🎥 Camera'),
+              add('screen', '🌗 Fade / flash / shake'), add('picture', '🖼 Picture'), add('playMusic', '🎵 Music'), add('playSound', '🔊 Sound'), add('wait', '⏱ Wait'), add('playMovie', '🎬 Movie'), add('setSwitch', '⏻ Switch')),
+            EventEditor.cmdList(q.commands, redraw, 0, ['text', 'moveRoute', 'balloon', 'camera', 'screen', 'picture', 'playMusic', 'playSound', 'wait', 'playMovie', 'letterbox', 'setSwitch', 'transfer', 'choice']),
+            h('p', { class: 'muted' }, 'Steps play from top to bottom. “Move someone” and “Bubble” work on the player, this event, or any event on this map by its name, so place the people in the scene on the map first. Use ▶ Preview to watch it.')))
       ];
     } else if (q.type === 'shop') {
       body = [
@@ -190,12 +235,13 @@
       if (!App.proj.items.length && (t === 'chest' || t === 'item')) return UI.alert('No items yet', 'Add some items in Database → Items first.');
       if (!App.proj.monsters.length && t === 'encounter') return UI.alert('No monsters yet', 'Add some monsters in Database → Monsters first.');
       const q = Object.assign(defaults(t), ev ? JSON.parse(JSON.stringify(ev.quick)) : {});
+      if (t === 'cutscene' && ev && !ev.quick.commands) q.commands = [{ cmd: 'text', speaker: '', text: ev.quick.text || '' }]; // made by an earlier version
       if (!ev && area && t === 'encounter') Object.assign(q, { dx: area.x - x, dy: area.y - y, width: area.w, height: area.h });
       if (t === 'shop' && !App.proj.items.length) return UI.alert('No items yet', 'Add some items in Database → Items first.');
       if (t === 'npc' && q.role === 'trainer' && !App.proj.monsters.length) return UI.alert('No monsters yet', 'Add some monsters in Database → Monsters first.');
       let addedSwitch = false;
       if (t === 'lever' && !ev) { const sw = App.proj.system.switches; sw.push('Lever ' + sw.length); q.switchId = sw.length - 1; addedSwitch = true; }
-      if (!['encounter', 'exit', 'cutscene'].includes(t)) await ensureSprites(q.type === 'chest' ? [q.sprite, q.openSprite] : q.type === 'lever' ? [q.offSprite, q.onSprite] : [q.sprite]);
+      if (!['encounter', 'exit', 'cutscene', 'savepoint'].includes(t)) await ensureSprites(q.type === 'chest' ? [q.sprite, q.openSprite] : q.type === 'lever' ? [q.offSprite, q.onSprite] : [q.sprite]);
       const name = { v: ev ? ev.name : TYPES[q.type].label };
       const box = h('div');
       const redraw = () => { clear(box); box.append(field('Event name', name, 'v'), form(q, redraw)); };
@@ -203,20 +249,27 @@
       redraw();
       const buttons = [{ label: 'Cancel', value: false }];
       if (ev) buttons.push({ label: 'Open full event editor', value: 'full' });
-      if (!ev && q.type === 'cutscene') buttons.push({ label: 'Create and open full event editor', value: 'create-full' });
+      if (q.type === 'cutscene') buttons.push({ label: '▶ Preview', onClick: () => {
+        if (q.content === 'movie' && !q.movie) { UI.toast('Choose or import a movie first'); return false; }
+        if (q.start === 'switch' && !q.switchId) { UI.toast('Choose the switch that starts the scene'); return false; }
+        return 'preview';
+      } });
       buttons.push({ label: ev ? 'Save' : 'Create', primary: true, value: true });
       QE.preview = { ev, x, y, q };
       MapEditor.render();
-      const res = await UI.modal({ title: (ev ? 'Edit ' : 'New ') + TYPES[q.type].label.toLowerCase(), body: box, buttons, size: q.type === 'encounter' || q.type === 'npc' ? 'large' : '' });
+      const res = await UI.modal({ title: (ev ? 'Edit ' : 'New ') + TYPES[q.type].label.toLowerCase(), body: box, buttons, size: q.type === 'encounter' || q.type === 'npc' || q.type === 'cutscene' ? 'large' : '' });
       QE.preview = null;
       App._suppressDirty = false;
       if (addedSwitch && (!res || q.switchId !== App.proj.system.switches.length - 1)) App.proj.system.switches.pop(); // not used after all
       if (res === 'full') return EventEditor.open(ev);
       if (res === 'create-full') { const made = await QE.finish(q, ev, name, x, y); return EventEditor.open(made); }
+      if (res === 'preview') return QE.previewScene(QE.finish(q, ev, name, x, y));
       if (!res) return null;
       if (q.type === 'item' && !q.itemId) return UI.toast('Choose an item first');
       if (q.type === 'shop') { q.goods = (q.goods || []).filter(g => g.itemId); if (!q.goods.length && !q.sell) return UI.alert('Nothing to sell', 'Add at least one item for sale, or let the player sell items here.'); }
       if (q.type === 'exit' && !App.proj.maps[q.mapId]) return UI.alert('Choose a map', 'Choose where the exit leads.');
+      if (q.type === 'cutscene' && q.start === 'switch' && !q.switchId) return UI.alert('Choose a switch', 'Choose the switch that starts the scene.');
+      if (q.type === 'cutscene' && q.content === 'movie' && !q.movie) return UI.alert('Choose a movie', 'Choose or import a movie, or build the scene from your game instead.');
       if (q.type === 'npc' && q.role === 'trainer' && !(q.party || []).length) return UI.alert('No monsters', 'Give the trainer at least one monster.');
       if (q.type === 'npc' && q.role === 'gift' && !q.itemId) return UI.alert('Choose an item', 'Choose the item they give.');
       if (q.type === 'encounter') { q.list = (q.list || []).filter(e => e.speciesId && e.weight > 0); q.width = Math.max(1, q.width | 0); q.height = Math.max(1, q.height | 0); if (!q.list.length) return UI.alert('No monsters in the list', 'Add at least one monster with a frequency above zero.'); }
@@ -233,6 +286,12 @@
       return target;
     },
     edit(ev) { return QE.open(null, ev.x, ev.y, ev); },
+    // Play one cut scene in a playtest straight away, with the player standing next to it.
+    previewScene(ev) {
+      const map = App.map(), below = { x: ev.x, y: Math.min(map.height - 1, ev.y + 1) };
+      const p = App.walkableNear(map, below.x, below.y);
+      return App.playtest({ mapId: map.id, x: p.x, y: p.y, dir: p.y > ev.y ? 'up' : 'down', runEvent: ev.id });
+    },
     menuItems(x, y, area) {
       return Object.entries(TYPES).map(([k, t]) => (k === 'encounter' && area && (area.w > 1 || area.h > 1))
         ? { label: 'Quick event: ' + t.label + ' (' + area.w + '×' + area.h + ' selected)…', action: () => QE.open('encounter', x, y, null, area) }

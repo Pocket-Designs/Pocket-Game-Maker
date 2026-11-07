@@ -21,6 +21,7 @@ const NEED = [
   ['templates/sample/assets', 80, 'the sample project\'s pictures, music and sounds'],
   ['templates/sample/assets/music', 5, 'the sample project\'s music'],
   ['templates/sample/assets/tilesets', 2, 'the sample project\'s tilesets'],
+  ['templates/art-templates', 20, 'the art templates (Help → Art Templates)'],
   ['library/library.json', 1, 'the asset library list'],
   ['library/tilesets', 8, 'the asset library\'s tilesets'],
   ['library/characters', 30, 'the asset library\'s characters'],

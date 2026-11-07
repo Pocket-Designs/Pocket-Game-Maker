@@ -163,14 +163,14 @@ for (let i = 0; i < 3000; i++) {
   const C = require('../src/shared/gameconfig.js');
   const d = C.withDefaults({});
   assert.strictEqual(d.terms.dex, 'DB'); assert.strictEqual(d.terms.pp, 'EP'); assert.strictEqual(d.terms.ppLong, 'Energy Points');
-  assert.deepStrictEqual(d.titleScreen.menu.filter(e => e.on).map(e => e.id), ['new', 'continue']);
-  assert.deepStrictEqual(d.menus.main.map(e => e.id), ['dex', 'party', 'bag', 'storage', 'decorate', 'wardrobe', 'save', 'close']);
+  assert.deepStrictEqual(d.titleScreen.menu.filter(e => e.on).map(e => e.id), ['new', 'continue', 'options']);
+  assert.deepStrictEqual(d.menus.main.map(e => e.id), ['dex', 'party', 'bag', 'worldmap', 'storage', 'decorate', 'wardrobe', 'save', 'options', 'close']);
   assert.ok(!d.decorating.enabled && !d.wardrobe.enabled, 'optional features start off');
   assert.ok(d.menus.bag.every(e => !e.on), 'bag shortcuts start off');
   // saved order, names and choices are kept
   const kept = C.withDefaults({ menus: { main: [{ id: 'save', label: 'Record', on: true }, { id: 'dex', label: 'Book', on: false }] }, terms: { pp: 'MP' } });
   assert.deepStrictEqual(kept.menus.main.slice(0, 2).map(e => e.id + ':' + e.label + ':' + e.on), ['save:Record:true', 'dex:Book:false']);
-  assert.strictEqual(kept.menus.main.length, 8);
+  assert.strictEqual(kept.menus.main.length, 10);
   const old = C.withDefaults({ menus: { main: [{ id: 'dex', label: 'DB', on: true }, { id: 'save', label: 'Save', on: true }, { id: 'close', label: 'Close', on: true }] } });
   assert.deepStrictEqual(old.menus.main.map(e => e.id).slice(-1), ['close'], 'new entries go before Close'); assert.strictEqual(kept.terms.pp, 'MP'); assert.strictEqual(kept.terms.dex, 'DB');
   assert.strictEqual(C.word(d.terms, 'Open the {dex}'), 'Open the DB');
@@ -197,6 +197,59 @@ for (let i = 0; i < 3000; i++) {
   assert.strictEqual(cs[0].trigger, 'touch'); assert.deepStrictEqual(cs[0].area, { width: 3, height: 2 });
   assert.deepStrictEqual(cs[0].commands.map(c => c.cmd), ['letterbox', 'text', 'letterbox', 'selfSwitch']);
   assert.strictEqual(Q.build({ type: 'cutscene', start: 'map' }, {})[0].trigger, 'auto');
+  // Cut scenes: every start, once / every time, movie or built, a switch afterwards
+  const cmdsOf = p => p.commands.map(c => c.cmd);
+  const act = Q.build({ type: 'cutscene', start: 'action', sprite: 'characters/tv-set.png', repeat: 'always', content: 'movie', movie: 'movies/m.mp4', skippable: false }, {});
+  assert.strictEqual(act.length, 1, 'every time: one page');
+  assert.strictEqual(act[0].trigger, 'action'); assert.strictEqual(act[0].sprite, 'characters/tv-set.png'); assert.strictEqual(act[0].through, false);
+  assert.deepStrictEqual(cmdsOf(act[0]), ['playMovie'], 'a movie has no cinema bars');
+  assert.strictEqual(act[0].commands[0].skippable, false);
+  const sw = Q.build({ type: 'cutscene', start: 'switch', switchId: 3, afterSwitch: 4, repeat: 'always', commands: [{ cmd: 'text', text: 'x' }] }, {});
+  assert.strictEqual(sw[0].trigger, 'auto'); assert.strictEqual(sw[0].condition.switchId, 3);
+  assert.deepStrictEqual(cmdsOf(sw[0]), ['letterbox', 'text', 'letterbox', 'setSwitch', 'selfSwitch'], 'autorun scenes always play once');
+  assert.strictEqual(sw[0].commands[3].switchId, 4);
+  assert.ok(sw[1].condition.selfSwitch);
+  const nobars = Q.build({ type: 'cutscene', start: 'action', bars: false, afterText: 'Seen it.', commands: [{ cmd: 'wait', frames: 1 }] }, {});
+  assert.deepStrictEqual(cmdsOf(nobars[0]), ['wait', 'selfSwitch']);
+  assert.deepStrictEqual(cmdsOf(nobars[1]), ['text'], 'afterwards it says its after text');
+  assert.strictEqual(nobars[0].through, true, 'an invisible spot does not block the way');
+  const tv = read('maps/map004.json').events.find(e => e.name === 'Television');
+  assert.ok(tv && tv.pages[0].commands[0].cmd === 'playMovie' && fs.existsSync(path.join(dir, '..', 'assets', tv.pages[0].commands[0].file)), 'the sample TV plays its movie');
+}
+
+// 0.9.6: bag pockets, saving, the world map and opening / ending scenes
+{
+  const C = require('../src/shared/gameconfig');
+  const d = C.withDefaults({});
+  assert.ok(d.pockets.enabled && d.pockets.list.length >= 4, 'default pockets');
+  assert.strictEqual(d.saving.slots, 4); assert.strictEqual(d.saving.autosave, false);
+  assert.deepStrictEqual([d.scenes.opening, d.scenes.newGame, d.scenes.ending], [[], [], []]); assert.strictEqual(d.scenes.endingThen, 'title');
+  assert.strictEqual(d.worldMap.enabled, false);
+  assert.ok(d.titleScreen.menu.find(e => e.id === 'options').on, 'Options is on the title screen by default');
+  assert.ok(!d.titleScreen.menu.find(e => e.id === 'load').on);
+  const P = d.pockets;
+  assert.strictEqual(C.pocketOf(P, { kind: 'ball' }), 'balls');
+  assert.strictEqual(C.pocketOf(P, { kind: 'key' }), 'key');
+  assert.strictEqual(C.pocketOf(P, { kind: 'heal' }), P.list.find(p => p.rest).id, 'anything else goes to the "everything else" pocket');
+  assert.strictEqual(C.pocketOf(P, { kind: 'ball', pocket: 'key' }), 'key', 'an item can choose its pocket');
+  assert.strictEqual(C.pocketOf(P, { kind: 'ball', pocket: 'gone' }), 'balls', 'a deleted pocket falls back to its kind');
+  const custom = { list: [{ id: 'potions', kinds: ['heal', 'revive'] }, { id: 'stuff', kinds: [], rest: true }] };
+  assert.strictEqual(C.pocketOf(custom, { kind: 'revive' }), 'potions'); assert.strictEqual(C.pocketOf(custom, { kind: 'ball' }), 'stuff');
+  assert.strictEqual(C.pocketOf({ list: [] }, { kind: 'ball' }), null, 'no pockets: one list');
+  // the save point quick event
+  const sp = Quick.build({ type: 'savepoint', text: 'Rest?', heal: true }, {});
+  assert.strictEqual(sp[0].trigger, 'action'); assert.strictEqual(sp[0].through, true);
+  assert.strictEqual(sp[0].commands[0].cmd, 'choice');
+  assert.deepStrictEqual(sp[0].commands[0].yesCmds, [{ cmd: 'saveGame', mode: 'screen', heal: true }]);
+  const quiet = Quick.build({ type: 'savepoint', ask: false, mode: 'auto', sprite: 'characters/ball.png' }, {});
+  assert.deepStrictEqual(quiet[0].commands.map(c => c.cmd), ['saveGame']); assert.strictEqual(quiet[0].through, false);
+  // the sample: a world map with places on real maps, a save point bed, opening and ending scenes
+  const sys = read('system.json');
+  assert.ok(sys.worldMap.enabled && fs.existsSync(path.join(dir, '..', 'assets', sys.worldMap.image)), 'sample world map picture');
+  sys.worldMap.locations.forEach(l => { l.maps.forEach(m => assert.ok(fs.existsSync(path.join(dir, 'maps', m + '.json')), l.name)); });
+  assert.ok(read('maps/map004.json').events.some(e => e.quick && e.quick.type === 'savepoint'), 'the bed is a save point');
+  assert.ok(sys.scenes.opening.length && sys.scenes.ending.some(s => s.type === 'credits'));
+  ['worldmap-island', 'worldmap-continent', 'worldmap-parchment'].forEach(f => assert.ok(fs.existsSync(path.join(__dirname, '..', 'library', 'pictures', f + '.png')), f));
 }
 
 console.log('All engine tests passed. Outcomes over 3000 battles:', tally, 'longest:', turnsMax, 'turns');

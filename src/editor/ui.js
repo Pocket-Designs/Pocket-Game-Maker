@@ -132,7 +132,7 @@
     return imgCache[url];
   }
   async function refreshAssets(kind) {
-    const kinds = kind ? [kind] : ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds', 'text'];
+    const kinds = kind ? [kind] : ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds', 'movies', 'text'];
     for (const k of kinds) App.assets[k] = await window.api.listAssets(App.proj.path, k);
   }
   async function importAssets(kind) {
@@ -144,6 +144,7 @@
       App.assetVersion = Date.now();
       await refreshAssets(kind);
       toast('Imported ' + got.length + ' file' + (got.length > 1 ? 's' : '') + ' into ' + (kind === 'sounds' ? 'sound effects' : kind));
+      if (kind === 'movies' && got.some(r => /\.webm$/i.test(r))) toast('Imported. Tip: WebM movies play on computers and Android; use MP4 (H.264) if the game will also run in Safari or on iPhones.');
     }
     return got || [];
   }
@@ -170,7 +171,42 @@
         const got = await importAssets(kind);
         if (got.length) { obj[key] = got[0]; App.markDirty(); if (o.onChange) o.onChange(got[0]); render(); }
       } }, 'Import…');
-      wrap.append(h('div', { class: 'asset-row' }, sel, imp), prev);
+      const pics = window.PixelEditor && ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations'].includes(kind);
+      const after = () => { if (o.onChange) o.onChange(obj[key]); render(); };
+      const edit = pics && obj[key] ? h('button', { class: 'small', title: 'Edit this picture in the pixel editor', onclick: async () => { const m = await PixelEditor.edit(obj[key]); if (m) { await m; after(); } } }, '✎ Edit') : null;
+      const draw = pics ? h('button', { class: 'small', title: 'Draw a new picture in the pixel editor', onclick: async () => {
+        const before = (App.assets[kind] || []).slice();
+        const m = await PixelEditor.newPicture(kind); if (!m) return; await m;
+        const made = (App.assets[kind] || []).find(a => !before.includes(a));
+        if (made) { obj[key] = made; App.markDirty(); }
+        after();
+      } }, 'New…') : null;
+      wrap.append(h('div', { class: 'asset-row' }, sel, imp, draw, edit), prev);
+    };
+    render();
+    return h('div', { class: 'field' }, h('span', null, label), wrap);
+  }
+
+  /* ---------- movies ---------- */
+  // moviePicker(label, obj, key): choose a cut-scene movie, import one, or watch it.
+  function moviePicker(label, obj, key, o) {
+    o = o || {};
+    const wrap = h('div', { class: 'asset-picker' });
+    const render = () => {
+      clear(wrap);
+      const list = App.assets.movies || [];
+      const sel = h('select', null, h('option', { value: '' }, list.length ? '(choose a movie)' : '(no movies yet: import one)'), list.map(a => h('option', { value: a, selected: obj[key] === a }, a.split('/').pop())));
+      if (obj[key] && !list.includes(obj[key])) sel.appendChild(h('option', { value: obj[key], selected: true }, obj[key].split('/').pop() + ' (missing)'));
+      sel.addEventListener('change', () => { obj[key] = sel.value; App.markDirty(); if (o.onChange) o.onChange(sel.value); render(); });
+      const watch = obj[key] ? h('button', { class: 'small', title: 'Watch it here', onclick: () => {
+        const v = h('video', { src: assetUrl(obj[key]), controls: true, autoplay: true, class: 'movie-preview' });
+        modal({ title: obj[key].split('/').pop(), body: v, size: 'large', buttons: [{ label: 'Close', primary: true, value: true }], onClose: () => { v.pause(); } });
+      } }, '▶ Watch') : null;
+      const imp = h('button', { class: 'small', title: 'Copy MP4 or WebM files into this project\'s assets/movies folder', onclick: async () => {
+        const got = await importAssets('movies');
+        if (got.length) { obj[key] = got[0]; App.markDirty(); if (o.onChange) o.onChange(got[0]); render(); }
+      } }, 'Import…');
+      wrap.append(h('div', { class: 'asset-row' }, sel, imp, watch));
     };
     render();
     return h('div', { class: 'field' }, h('span', null, label), wrap);
@@ -253,5 +289,5 @@
     return el;
   }
 
-  window.UI = { h, clear, modal, prompt, confirm, alert, toast, menu, field, row, section, assetUrl, loadImage, refreshAssets, importAssets, assetPicker, audioPicker, audioButton, playAudio, stopAudio, slug, listEditor, anyModal };
+  window.UI = { h, clear, modal, prompt, confirm, alert, toast, menu, field, row, section, assetUrl, loadImage, refreshAssets, importAssets, assetPicker, audioPicker, audioButton, playAudio, stopAudio, slug, listEditor, anyModal, moviePicker };
 })();

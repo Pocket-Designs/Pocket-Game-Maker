@@ -4,7 +4,7 @@
   "image": "interior.png",
   "tileSize": 16,
   "columns": 8,
-  "author": "project-tech-me",
+  "author": "Pocket-Designs",
   "licence": "CC0-1.0",
   "legend": {
     "pass": "player can walk on it",

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 project-tech-me <project-tech-me@protonmail.com>
+Copyright (c) 2026 Pocket-Designs <pocket-designs@proton.me>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ MUSIC AND SOUND EFFECTS
 
 The preset music, jingles and sound effects that come with Pocket-Game-Maker (the
 music/ and sounds/ folders of the Asset Library, and the sample project) are
-original works by project-tech-me <project-tech-me@protonmail.com>, composed
+original works by Pocket-Designs <pocket-designs@proton.me>, composed
 and synthesised from scratch for Pocket-Game-Maker (tools/gen-audio.js). They contain
 no samples, loops or recordings from any other source.
 

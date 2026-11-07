@@ -42,6 +42,8 @@
       </div>
       <div class="tb-spacer"></div>
       <div class="tb-group">
+        <button data-act="pixel" title="Pixel editor: draw a new tileset, character, monster, furniture or background (Ctrl+Shift+N)">Draw</button>
+        <button data-act="scenes" title="Opening &amp; ending scenes: intro movies, story text, picture slides and the credits roll">Scenes</button>
         <button data-act="library" title="Free pixel-art asset library (F10)">Assets</button>
         <button data-act="import" title="Import your own images, music, sounds and text files (Ctrl+I)">Import</button>
         <button data-act="database" title="Database (F9)">Database</button>
@@ -52,7 +54,7 @@
 
     <aside id="left">
       <div class="panel" id="palette-panel">
-        <div class="panel-head"><span>Tileset</span><span id="tileset-name" class="muted"></span></div>
+        <div class="panel-head"><span>Tileset</span><span><span id="tileset-name" class="muted"></span> <button class="icon-btn" data-act="pixelTileset" title="Edit this tileset's picture in the pixel editor">✎</button></span></div>
         <div id="palette-wrap"><canvas id="palette"></canvas></div>
         <div class="panel-foot muted" id="palette-hint">Click a tile, or drag to pick a multi-tile stamp.</div>
       </div>
@@ -103,5 +105,7 @@
   <script src="layers-panel.js"></script>
   <script src="export.js"></script>
   <script src="importer.js"></script>
+  <script src="pixel-editor.js"></script>
+  <script src="scenes-editor.js"></script>
 </body>
 </html>

@@ -22,7 +22,7 @@ Choose **New project…**, pick *Sample project* (playable immediately) or *Blan
 
 `.github/workflows/build.yml` builds all three on GitHub's computers, so you don't need a Mac or a Windows PC:
 
-1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Projects-me-design/pocket-game-maker`; change it if yours is different).
+1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Pocket-Designs/pocket-game-maker`; change it if yours is different).
 2. Every push to `main` and every pull request runs the tests and builds on Windows, macOS and Linux, to check everything still builds. These runs don't keep the installers, so they don't use up the account's Actions storage.
 3. To download installers, use **Actions → Build → Run workflow**. They appear under the run's **Artifacts** for 5 days.
 4. To make a release, push a version tag: `git tag v0.9.3` then `git push origin v0.9.3`. The installers are attached to a **draft release**; check it and click **Publish**. Release files don't count towards Actions storage.
@@ -95,13 +95,41 @@ Two separate options:
 
 ### Menus & screens (Database → Menus & screens)
 
-- **Title (start) screen:** show or hide the title, a subtitle, text colour, a background picture, the menu position, and the start menu itself: tick, rename and reorder New Game, Continue, Credits, Licence and Quit.
+- **Title (start) screen:** show or hide the title or use your own logo picture, a subtitle, text colour, a background picture, the menu position and style (a window, or plain words on the picture), a "Press any key" line, and the start menu itself: tick, rename and reorder New Game, Continue, Load Game, Options, Replay Opening, Credits, Licence and Quit. **Continue** loads the latest save straight away, or asks which one.
+- **Options screen:** players set the music and sound volume and the text speed (kept on their computer or phone). On the title screen and in the menu.
 - **Credits and Licence screens:** credits can be built automatically from Database → Credits or come from your own `.txt` / `.md` file; the licence screen shows your own file. Import a file, or write one in Pocket-Game-Maker (saved in `assets/text`).
-- **In-game menu:** tick, rename and reorder DB, Monsters, Bag, Storage, Save and Close, and choose whether money is shown.
+- **In-game menu:** tick, rename and reorder DB, Monsters, Bag, Map, Storage, Save, Options and Close, and choose whether money is shown.
 - **Bag shortcuts:** put Storage, the DB, Monsters or Save at the top of the bag. Items of the kind **Tool** open one of these screens when used (e.g. a Storage Box).
 - **Words used in the game:** the monster database is called **DB** (Database) and move energy **EP** (Energy Points) by default. Change them per game.
 - **Touch screens:** on-screen direction pad and A/B buttons for web and Android builds: shown automatically on touch devices, or always / never.
 - **Following monster:** the first monster in the party walks behind the player, and the player can talk to it. Give a species a walking sprite (3×4 sheet) or it hops along using its front picture.
+
+### Saving
+
+In **Database → Menus & screens → Saving**:
+- **Number of save slots** (1–12), and whether to ask before saving over a game.
+- **Where players can save:** the menu's **Save**, **save points** (the **Save point** quick event: a bed, a diary, a save crystal; it can heal the party first), and items: **+ Add a Journal save item** makes a Tool item that opens the save screen from the bag.
+- **Autosave** into its own **Autosave** slot: when arriving on a new map, after winning a battle, and/or every few minutes, with an optional "Saved" note. Players can load the autosave like any other slot.
+- The event command **Save the game (save point)** opens the save screen or saves quietly into the Autosave slot.
+
+The sample's bed in Your Room is a save point, and it autosaves on every new map.
+
+### Bag pockets
+
+In **Database → Menus & screens → Bag pockets**, split the bag into pockets: add, rename, reorder and remove them, give each an icon, and tick which item kinds go in each (e.g. a **Potions** pocket for healing items, or no **Battle items** pocket at all). One pocket takes "everything else". An item can also choose its pocket in **Items → Bag pocket**. In the game, ← → changes pocket. Untick **The bag has pockets** for one simple list.
+
+### World map
+
+**Database → World map** turns on a map of your game's world. Use one of the three ready-made maps (an island, a continent, an old parchment map), import a picture or draw one in the pixel editor. Click the picture to add a place and drag pins to move them; each place lists the game maps that count as "being there" and, optionally, where travelling there puts the player. Players open it from the menu (**Map**), a **Town Map** Tool item (**+ Add a Town Map item**), or the **Open a screen** event command. Places not yet visited can be shown as "???" or hidden, and **Travel** lets players go straight to places they have visited.
+
+### Opening and ending scenes (Scenes → Opening & Ending Scenes…)
+
+The **Scenes** menu (and the **Scenes** button on the toolbar) opens a window with three lists of scenes, each played in order:
+- **Before the title:** when the game starts (a studio logo, an intro movie, a story crawl). "Replay Opening" on the title screen plays it again.
+- **New game starts:** after New Game, before the first map (a prologue).
+- **Ending & credits:** played by the event command **Play the ending (or other story scenes)**, e.g. after the final battle. Afterwards the game goes back to the title screen, or players carry on playing.
+
+Add any number of scenes of four kinds: a **movie**; **picture slides** with captions (each for some seconds, or until a key is pressed; fade or cut); **story text** that scrolls or shows a page at a time; and a **credits roll** built from Database → Credits or written yourself, ending with "The End". Each scene can change the music, use a background colour or picture and text colour, and be skippable or not. Reorder, duplicate or turn scenes off, and **▶ Preview** one scene or **▶ Play all**.
 
 ### Optional features: decorating a home and changing clothes
 
@@ -124,7 +152,12 @@ Both are off until you turn them on in **Database → Menus & screens → Option
 - **Person (NPC)** quick event: talks, **gives an item once**, or **battles once** (by sight or when spoken to); stands still, wanders, looks around, or **walks a set route** at slow, normal or fast speed.
 - **Routes** are built from steps (move, turn, wait) with presets: back and forth, walk a square, look around. Blocked steps are retried and then skipped. The selected event's route is drawn on the map.
 - **Switch / lever** quick event: flips a game switch ON or OFF, with on/off sprites, messages and a sound; can be one-way. Pages can now require a switch to be **ON or OFF**, and **Set switch** can flip a switch.
-- **Cut scene** quick event: plays once, when the player steps into an area or when the map opens, with black cinema bars. Cut-scene commands: **move a character** (player, this event, another event or the following monster) along a route, **speech bubble icon**, **move the camera**, **screen effects** (fade, flash, shake, tint), **show / hide pictures** and **black bars on / off**.
+- **Cut scene** quick event (right-click a square in Events mode → Quick event → Cut scene):
+  - **When it plays:** when the player steps into an area, as soon as they arrive on the map, when they talk to a person or examine an object (action button), or when a switch turns ON. Step and action scenes can play once or every time; the others play once. It can turn a switch ON when it has finished, so other events react.
+  - **The scene** is either **a movie file** (MP4 or WebM, skippable or not; the music pauses and carries on afterwards, stops, or keeps playing) or **built from your game**: a list of steps added with one click (text, move someone, speech bubble, camera, fade / flash / shake / tint, picture, music, sound, wait, movie, switch), with black cinema bars if you like.
+  - **▶ Preview** opens a playtest next to the event and plays the scene straight away.
+- Cut-scene commands (in any event): **move a character** (player, this event, another event or the following monster) along a route, **speech bubble icon**, **move the camera**, **screen effects** (fade, flash, shake, tint), **show / hide pictures**, **black bars on / off** and **play a movie**.
+- **Movies** are imported like other assets (Import → Movies, into `assets/movies/`). MP4 with H.264 video and AAC sound plays everywhere a game runs; WebM plays on computers and Android. The Asset Library has a short sample movie, *Monster News*, which the sample project's TV in Your Room plays.
 
 ### Events
 
@@ -164,13 +197,33 @@ Double-click a quick event to change its settings later. **Full event editor** o
 
 Click **Import** in the toolbar (or **File → Import Assets…**, Ctrl+I) to add your own tilesets, character sheets, monster pictures, battle backgrounds, pictures, music, sound effects or text files. Pick the kind, choose the files, and they're copied into the project's `assets/` folder and listed in Database → Credits as Custom. New tileset images can be added to Database → Tilesets in the same step. The Asset Library window has an **Import your own…** button too, and every picker has its own **Import…** button. PNG with transparency is recommended.
 
+### The pixel editor
+
+**Draw** in the toolbar (or **Tools → Pixel Editor: New Picture…**, Ctrl+Shift+N) starts a new tileset, character sheet, monster picture, piece of furniture, clothes or background, at the right size with the matching art template underneath as a guide. **✎** on the Tileset panel edits the current map's tileset, and every picture picker has **New…** and **✎ Edit** buttons.
+
+| Tool | Key | What it does |
+| --- | --- | --- |
+| Pencil | B | Draws in the current colour, 1–4 pixels wide (`[` and `]`). Shift+click draws a straight line from the last point. Right-click erases. |
+| Eraser | E | Makes pixels transparent. |
+| Fill | G | Fills touching pixels of the same colour on the current layer. |
+| Colour picker | I | Takes a colour from the picture (all visible layers). Alt+click does this with any tool. |
+| Line | L | Shift keeps it straight or at 45°. |
+| Rectangle, circle/ellipse, triangle | U, O, T | Outline or filled (X switches). Shift makes a square or circle. Drag downwards for a triangle pointing up. |
+| Select | M | Drag to select; drag inside to move; Ctrl+C / X / V, Delete, flip, rotate, Ctrl+A. Enter or Esc drops it in place. Pictures copied in other programs paste in too. |
+
+Colours: a palette (the library's 32 colours to start with; add or right-click to remove, saved with the project), a colour chooser with opacity, and recently used colours. Layers: add, duplicate, hide, rename (double-click), opacity, move up and down, merge down and delete; the template is a separate guide that is never saved in the picture. Undo and redo (Ctrl+Z / Ctrl+Y), zoom with the mouse wheel, pan with the middle button or Space+drag, and a tile or frame grid (#).
+
+The preview shows the picture at actual size, a character sheet walking in all four directions (optionally over the player, for clothes) and, for tilesets, any autotile block joined up as a small lake. **Save** writes the PNG to `assets/<kind>/` (what the game uses, added to Database → Credits as Custom) and keeps the layers in `art-src/` so they are there next time; the map and Database update straight away.
+
+**Art templates.** **Help → Art Templates…** (or **Open art templates…** in the Import window) opens a folder of templates for every kind of art, copied to `Documents/Pocket-Game-Maker/Art Templates`: tilesets (16 and 32 px), autotile blocks, character sheets (16×16, 16×24 and 32×32 frames), monster pictures (64 and 96 px), furniture, clothes and battle backgrounds. Each `…-template.png` is the exact size, shaded one light square per tile or frame: open it, draw on a new layer above it, hide it and save your layer as PNG. Each `…-guide.png` explains the layout with an example from the library. They are made by `tools/gen-art-templates.py` (Python 3 with Pillow).
+
 | Kind | Folder | Format |
 |---|---|---|
 | Tilesets | `assets/tilesets` | A grid of square tiles, any number of rows and columns. Set **Tile size** in Database → Tilesets (16, 24, 32, 48…). Then click tiles to flag them ○ walkable / × blocked / ☆ drawn above the player, and ♣ wild-encounter. |
 | Characters | `assets/characters` | One character per file: **3 columns × 4 rows** of frames. Columns: step, stand, step. Rows: down, left, right, up. This is the RPG Maker single-character layout (files starting with `$` in MZ), so those work directly. MZ's 8-characters-per-sheet files need to be cut into one character per file first. Frames may be taller than a tile; they're drawn bottom-aligned. |
 | Monsters | `assets/monsters` | One **front** image (how enemies look) and one **back** image (how your monsters look) per species. Any size; square with transparency looks best (64×64, 96×96, 128×128). |
 | Battle backgrounds | `assets/battlebacks` | Any image; it's stretched to cover the screen. Set a default in System, override per map or per trainer battle. |
-| Pictures | `assets/pictures` | Any image. Used for the title screen background and the Show picture cut-scene command. |
+| Pictures | `assets/pictures` | Any image. Used for the title screen background and logo, the world map, opening and ending scenes, and the Show picture cut-scene command. |
 | Decorations | `assets/decorations` | Furniture for the Decorating feature, facing down: one 16-pixel tile per square (a 2×1 table is 32×16). |
 | Text | `assets/text` | `.txt` or `.md` files for the Credits and Licence screens. |
 | Music | `assets/music` | MP3 or FLAC. Background music loops; jingles play once. |
@@ -236,6 +289,9 @@ src/shared/tiles.js        Tile drawing: autotiles and animated tiles (editor an
 src/shared/audio.js        Music and sound slots and their presets
 src/runtime/               Game runtime: map, events, battle scene, menus, shop, audio
 src/runtime/debugger.js    Playtest debugger (F9 panel, F10 overlay); left out of exported games
+src/runtime/scenes.js      Opening, new-game and ending scenes (movies, slides, text, credits roll)
+src/runtime/worldmap.js    The world map screen and fast travel
+src/editor/scenes-editor.js  The Opening & Ending Scenes window
 templates/sample/          Sample project (regenerate with npm run gen-sample)
 test/                      Engine and exporter tests, an Electron smoke test and an export test
 .github/workflows/build.yml  GitHub build for Windows, macOS and Linux (tests, installers, draft releases)
@@ -252,12 +308,13 @@ Pocket-Game-Maker comes with a free library of original pixel art, music and sou
 | Kind | Contents |
 |---|---|
 | Tilesets (16 px) | Outdoor (64 tiles, including an animated water autotile and a dirt path autotile), Town buildings (32), Interior (32), Cave (24) |
-| Characters | 13 people plus a capture orb, chest, boulder, sign post and a lever (off and on) |
-| Pictures | A sunrise title screen and a starry night sky for cut scenes |
+| Characters | 13 people plus a capture orb, chest, boulder, sign post, a lever (off and on) and a television |
+| Pictures | A sunrise title screen, a starry night sky for cut scenes, and three world maps (island, continent, parchment; remake them with `python3 tools/gen-worldmaps.py`) |
 | Monsters | 16 species, front and back sprites |
 | Battle backgrounds | Field, forest, town, beach, cave, indoor |
 | Music | 7 looping tracks (title, town, route, cave, wild battle, trainer battle, victory) and 3 jingles |
 | Sound effects | 19 effects for menus, battles, capture, doors, shops and saving |
+| Movies | *Monster News*, a 7-second TV clip (MP4 with sound) for cut scenes; remake it with `python3 tools/gen-movie.py` |
 
 Every tileset has a `.tiles.json` **mapping file** naming each tile and saying whether it's walkable, has wild encounters, is drawn above the player and which layer it belongs on. Adding a tileset to a project copies those settings in.
 
@@ -267,6 +324,6 @@ The library lives in `Documents/Pocket-Game-Maker/Asset Library`, so you can edi
 
 ## Licence
 
-Pocket-Game-Maker is © 2026 project-tech-me (project-tech-me@protonmail.com) and released under the MIT Licence (see `LICENSE`). Games you make with it are yours. Bundled third-party components are listed in `THIRD-PARTY-NOTICES.txt`.
+Pocket-Game-Maker is © 2026 Pocket-Designs (pocket-designs@proton.me) and released under the MIT Licence (see `LICENSE`). Games you make with it are yours. Bundled third-party components are listed in `THIRD-PARTY-NOTICES.txt`.
 
 The product icon is by MJO-Art (workmjo@gmail.com). It is not covered by the MIT Licence and can't be altered or used without the artist's permission; see `LICENSE`.

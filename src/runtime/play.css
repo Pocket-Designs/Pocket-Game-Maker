@@ -141,3 +141,60 @@ img { image-rendering: pixelated; }
 .wardrobe .wd-slot { font-weight: 700; }
 .wardrobe .wd-none { margin-top: 8px; font-size: 8.5px; }
 .wardrobe .wd-help { position: absolute; bottom: 4px; left: 8px; font-size: 8px; }
+
+/* Cut-scene movies: over the whole window, letterboxed (or cropped to fill). */
+.movie { position: fixed; inset: 0; z-index: 900; background: #000; display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity .25s; }
+.movie.out { opacity: 0; }
+.movie video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.movie.fill video { object-fit: cover; }
+.movie-skip { position: absolute; right: 18px; bottom: 16px; font: 600 14px/1 system-ui, sans-serif; color: rgba(255,255,255,.85); background: rgba(0,0,0,.45); padding: 7px 12px; border-radius: 16px; opacity: 0; transition: opacity .4s; pointer-events: none; }
+.movie-skip.on { opacity: 1; }
+
+/* Title screen extras */
+.title-logo { position: relative; max-width: 80%; max-height: 40%; margin-bottom: 6px; image-rendering: pixelated; object-fit: contain; }
+.press-start { position: absolute; left: 0; right: 0; bottom: 22%; text-align: center; font-size: 10px; letter-spacing: .5px; animation: pressBlink 1.2s steps(2) infinite; text-shadow: 0 1px 0 rgba(0,0,0,.6); }
+@keyframes pressBlink { 50% { opacity: .25; } }
+.title-screen.plain .menu { background: transparent; border-color: transparent; box-shadow: none; color: inherit; text-shadow: 0 1px 0 rgba(0,0,0,.7); }
+
+/* Bag pockets */
+.bag-tabs { position: absolute; right: 6px; top: 6px; width: 170px; box-sizing: border-box; display: flex; gap: 2px; padding: 2px 4px; font-size: 8px; z-index: 31; }
+.bag-tabs span { flex: 0 0 auto; padding: 1px 3px; border-radius: 3px; opacity: .55; white-space: nowrap; }
+.bag-tabs span.on { flex: 1; opacity: 1; background: rgba(255,255,255,.12); font-weight: 700; }
+
+/* World map */
+.worldmap { position: absolute; inset: 0; background: #10131c; z-index: 40; color: #fff; }
+.wm-head { position: absolute; left: 6px; right: 6px; top: 2px; height: 13px; font-size: 9px; white-space: nowrap; overflow: hidden; }
+.wm-tag { color: #ff8a8a; font-size: 8px; }
+.wm-area { position: absolute; inset: 0; }
+.wm-pic { position: absolute; image-rendering: pixelated; border-radius: 2px; }
+.wm-pin { position: absolute; width: 7px; height: 7px; margin: -4px 0 0 -4px; border-radius: 50%; background: #fee761; border: 1px solid #181425; cursor: pointer; }
+.wm-pin.unseen { background: #8b9bb4; opacity: .8; }
+.wm-pin.sel { outline: 2px solid #fff; outline-offset: 1px; animation: pinPulse .8s ease-in-out infinite alternate; }
+@keyframes pinPulse { to { outline-color: rgba(255,255,255,.3); } }
+.wm-you { position: absolute; width: 9px; height: 9px; margin: -5px 0 0 -5px; border-radius: 50%; border: 2px solid #e43b44; pointer-events: none; animation: youPulse 1s ease-in-out infinite; }
+@keyframes youPulse { 50% { transform: scale(1.6); opacity: .4; } }
+.wm-foot { position: absolute; left: 6px; right: 6px; bottom: 2px; font-size: 8px; color: #c0cbdc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Opening and ending scenes */
+.scene { position: absolute; inset: 0; z-index: 95; /* above #fade (90): the ending starts from a faded-out map */ overflow: hidden; color: #fff; opacity: 0; transition: opacity .35s; }
+.scene.on { opacity: 1; }
+.sc-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; opacity: .55; }
+.sc-skip { position: absolute; right: 5px; bottom: 3px; font-size: 7px; opacity: .55; z-index: 3; }
+.sc-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .4s; }
+.sc-slide.cut { transition: none; }
+.sc-slide.on { opacity: 1; }
+.sc-pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.sc-pic.fill { object-fit: cover; }
+.sc-cap { position: absolute; left: 10px; right: 10px; padding: 5px 8px; background: rgba(10,10,20,.72); border-radius: 4px; font-size: 9px; line-height: 1.45; text-align: center; }
+.sc-cap.bottom { bottom: 10px; } .sc-cap.top { top: 10px; } .sc-cap.centre { top: 50%; transform: translateY(-50%); }
+.sc-page { position: absolute; inset: 0; padding: 22px 26px; display: flex; flex-direction: column; justify-content: center; font-size: 10px; line-height: 1.6; opacity: 0; transition: opacity .4s; z-index: 2; }
+.sc-page.on { opacity: 1; }
+.sc-page.centre, .sc-roll.centre { text-align: center; }
+.sc-roll { position: absolute; left: 20px; right: 20px; top: 0; font-size: 10px; line-height: 1.6; z-index: 2; will-change: transform; }
+.sc-h1 { font-size: 15px; font-weight: 700; margin: 6px 0 8px; }
+.sc-h2 { font-size: 11px; font-weight: 700; margin-top: 10px; color: #fee761; }
+.scene.credits .sc-h2 { color: #feae34; }
+.sc-li { opacity: .9; }
+.sc-gap { height: 8px; }
+.sc-end { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; opacity: 0; transition: opacity 1s; z-index: 2; }
+.sc-end.on { opacity: 1; }

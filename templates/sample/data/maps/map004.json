@@ -139,7 +139,7 @@
       -1,
       -1,
       -1,
-      -1,
+      10,
       4,
       4,
       -1,
@@ -149,7 +149,7 @@
       -1,
       -1,
       -1,
-      -1,
+      11,
       4,
       4,
       -1,
@@ -560,6 +560,96 @@
     },
     {
       "id": 32,
+      "name": "Television",
+      "x": 3,
+      "y": 2,
+      "quick": {
+        "type": "cutscene",
+        "start": "action",
+        "sprite": "characters/tv-set.png",
+        "dir": "down",
+        "repeat": "always",
+        "content": "movie",
+        "movie": "movies/monster-news.mp4",
+        "skippable": true,
+        "music": "pause",
+        "volume": 100,
+        "fit": "fit"
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "characters/tv-set.png",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": false,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "playMovie",
+              "file": "movies/monster-news.mp4",
+              "skippable": true,
+              "music": "pause",
+              "volume": 100,
+              "fit": "fit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Bed (save point)",
+      "x": 8,
+      "y": 5,
+      "quick": {
+        "type": "savepoint",
+        "sprite": "",
+        "dir": "down",
+        "text": "Your bed. Have a rest and save your progress?",
+        "heal": true,
+        "mode": "screen",
+        "ask": true
+      },
+      "pages": [
+        {
+          "condition": {
+            "switchId": 0,
+            "selfSwitch": false
+          },
+          "sprite": "",
+          "dir": "down",
+          "trigger": "action",
+          "move": "fixed",
+          "through": true,
+          "sightRange": 0,
+          "commands": [
+            {
+              "cmd": "choice",
+              "text": "Your bed. Have a rest and save your progress?",
+              "speaker": "",
+              "yes": "Yes",
+              "no": "No",
+              "cancelIsNo": true,
+              "yesCmds": [
+                {
+                  "cmd": "saveGame",
+                  "mode": "screen",
+                  "heal": true
+                }
+              ],
+              "noCmds": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 34,
       "name": "Mum's note",
       "x": 6,
       "y": 2,

@@ -50,9 +50,19 @@
     giveMoney: { label: 'Give / take money', make: () => ({ amount: 100 }),
       form: c => [field('Amount (negative takes)', c, 'amount', { type: 'number' }), field('Don\'t show the money message', c, 'silent', { type: 'checkbox' })], sum: c => (c.amount < 0 ? 'Take ' : 'Give ') + Math.abs(c.amount) + ' money' },
     openScreen: { label: 'Open a screen (bag, storage, wardrobe…)', make: () => ({ screen: 'wardrobe' }),
-      form: c => [field('Screen', c, 'screen', { type: 'select', options: [['wardrobe', 'Wardrobe (change clothes)'], ['decorate', 'Decorate (place furniture)'], ['storage', 'Monster storage'], ['party', 'Monsters'], ['bag', 'Bag'], ['dex', MF.Config.word(terms(), '{dexLong}')], ['save', 'Save']] }),
+      form: c => [field('Screen', c, 'screen', { type: 'select', options: [['wardrobe', 'Wardrobe (change clothes)'], ['decorate', 'Decorate (place furniture)'], ['storage', 'Monster storage'], ['party', 'Monsters'], ['bag', 'Bag'], ['dex', MF.Config.word(terms(), '{dexLong}')], ['save', 'Save'], ['worldmap', 'World map'], ['options', 'Options']] }),
         h('div', { class: 'muted' }, 'Wardrobe and Decorate only open when that feature is turned on in Database → Menus & screens. Decorate only works on maps players can decorate.')],
-      sum: c => 'Open screen: ' + ({ wardrobe: 'Wardrobe', decorate: 'Decorate', storage: 'Storage', party: 'Monsters', bag: 'Bag', dex: MF.Config.word(terms(), '{dex}'), save: 'Save' }[c.screen] || c.screen) },
+      sum: c => 'Open screen: ' + ({ wardrobe: 'Wardrobe', decorate: 'Decorate', storage: 'Storage', party: 'Monsters', bag: 'Bag', dex: MF.Config.word(terms(), '{dex}'), save: 'Save', worldmap: 'World map', options: 'Options' }[c.screen] || c.screen) },
+    saveGame: { label: 'Save the game (save point)', make: () => ({ mode: 'screen', heal: false }),
+      form: c => [row(field('How', c, 'mode', { type: 'select', width: '320px', options: [['screen', 'Open the save screen (the player picks a slot)'], ['auto', 'Save straight into the Autosave slot']] }),
+        field('Heal the party first (a bed or a rest spot)', c, 'heal', { type: 'checkbox' })),
+        h('div', { class: 'muted' }, 'For save points: a bed, a diary or a save crystal. The Save point quick event sets one up for you. How many slots there are, and autosave, are set in Database → Menus & screens → Saving.')],
+      sum: c => (c.heal ? 'Heal party, then ' : '') + (c.mode === 'auto' ? 'save into the Autosave slot' : 'open the save screen') },
+    playScenes: { label: 'Play the ending (or other story scenes)', make: () => ({ group: 'ending', then: '' }),
+      form: c => [row(field('Scenes', c, 'group', { type: 'select', width: '260px', options: [['ending', 'The ending'], ['opening', 'The opening scenes'], ['newGame', 'The new-game scenes']] }),
+        field('Afterwards', c, 'then', { type: 'select', width: '300px', options: [['', 'As set for the ending (Scenes window)'], ['title', 'Back to the title screen'], ['continue', 'Carry on playing']] })),
+        h('div', { class: 'muted' }, 'Make the scenes with Scenes → Opening & Ending Scenes (in the menu bar).')],
+      sum: c => 'Play ' + ({ ending: 'the ending', opening: 'the opening scenes', newGame: 'the new-game scenes' }[c.group] || c.group) + (c.then === 'title' ? ', then the title screen' : c.then === 'continue' ? ', then carry on' : '') },
     heal: { label: 'Heal party', make: () => ({}), form: () => [h('div', { class: 'muted' }, 'Restores HP, ' + terms().pp + ' and status for the whole party.')], sum: () => 'Heal party' },
     setSwitch: { label: 'Set switch (on / off)', make: () => ({ switchId: 1, value: true }),
       form: c => { const o = { v: c.value === 'toggle' ? 'toggle' : c.value ? 'on' : 'off' }; return [row(switchField('Switch', c, 'switchId'), field('Set it', o, 'v', { type: 'select', width: '160px', options: [['on', 'ON'], ['off', 'OFF'], ['toggle', 'Flip (ON ↔ OFF)']], onChange: v => { c.value = v === 'toggle' ? 'toggle' : v === 'on'; } }))]; },
@@ -134,6 +144,13 @@
         UI.assetPicker('Picture', c, 'file', 'pictures'),
         row(field('Position', c, 'position', { type: 'select', options: [['centre', 'Centre'], ['fill', 'Fill the screen'], ['xy', 'At X, Y (pixels)']], width: '150px' }), field('X', c, 'x', { type: 'number', width: '70px' }), field('Y', c, 'y', { type: 'number', width: '70px' }), field('Opacity %', c, 'opacity', { type: 'number', min: 0, max: 100, width: '90px' }))],
       sum: c => (c.action === 'hide' ? 'Hide picture ' : 'Show picture ') + c.slot + (c.action === 'hide' ? '' : ': ' + (c.file || '').split('/').pop()) },
+    playMovie: { label: 'Cut scene: play a movie', make: () => ({ file: '', skippable: true, music: 'pause', volume: 100, fit: 'fit' }),
+      form: c => [UI.moviePicker('Movie (MP4 or WebM, in assets/movies)', c, 'file'),
+        row(field('Player can skip it (any key or a tap)', c, 'skippable', { type: 'checkbox' }),
+          field('Music', c, 'music', { type: 'select', width: '230px', options: [['pause', 'Pause it, then carry on afterwards'], ['stop', 'Stop it'], ['keep', 'Keep playing under the movie']] }),
+          field('Volume %', c, 'volume', { type: 'number', min: 0, max: 100, width: '90px' }),
+          field('Picture', c, 'fit', { type: 'select', width: '170px', options: [['fit', 'Whole movie (black bars)'], ['fill', 'Fill the screen (crops)']] }))],
+      sum: c => 'Play movie: ' + ((c.file || '').split('/').pop() || '(none chosen)') + (c.skippable === false ? ' (can\'t skip)' : '') },
     letterbox: { label: 'Cut scene: black bars on / off', make: () => ({ on: true }), form: c => [field('Show the black cinema bars at the top and bottom', c, 'on', { type: 'checkbox' })], sum: c => 'Black bars ' + (c.on ? 'on' : 'off') },
     wait: { label: 'Wait', make: () => ({ frames: 30 }), form: c => [field('Frames (60 = 1 second)', c, 'frames', { type: 'number' })], sum: c => 'Wait ' + c.frames + ' frames' },
     erase: { label: 'Erase event (until map reload)', make: () => ({}), form: () => [h('div', { class: 'muted' }, 'Hides this event until the player leaves the map.')], sum: () => 'Erase event' }
@@ -176,7 +193,8 @@
     },
 
     // An editable list of commands. Choices contain two of these (one per answer), so lists can nest.
-    cmdList(cmds, draw, depth) {
+    // first (optional): command names listed first in the Add menu (the rest follow under "More").
+    cmdList(cmds, draw, depth, first) {
       depth = depth || 0;
       const list = h('div', { class: 'cmd-list' + (depth ? ' nested' : '') });
       cmds.forEach((c, i) => {
@@ -191,7 +209,10 @@
             h('button', { class: 'icon-btn', title: 'Delete', onclick: () => { cmds.splice(i, 1); draw(); } }, '✕'))));
       });
       if (!cmds.length) list.appendChild(h('div', { class: 'muted', style: { padding: depth ? '8px' : '14px' } }, depth ? 'Nothing happens. Add a command below.' : 'No commands yet. Add one below.'));
-      const addSel = h('select', null, Object.entries(COMMANDS).map(([k, d]) => h('option', { value: k }, d.label)));
+      const opt = ([k, d]) => h('option', { value: k }, d.label);
+      const addSel = first ? h('select', null, h('optgroup', { label: 'Cut scene' }, first.filter(k => COMMANDS[k]).map(k => opt([k, COMMANDS[k]]))),
+        h('optgroup', { label: 'More' }, Object.entries(COMMANDS).filter(([k]) => !first.includes(k)).map(opt)))
+        : h('select', null, Object.entries(COMMANDS).map(opt));
       list.appendChild(h('div', { class: 'cmd-add' }, addSel, h('button', { class: depth ? 'small' : 'primary', onclick: () => { cmds.push(Object.assign({ cmd: addSel.value }, COMMANDS[addSel.value].make())); draw(); } }, '+ Add command')));
       return list;
     },

@@ -86,12 +86,36 @@
         newPage({ condition: { switchId: q.switchId | 0, selfSwitch: false }, sprite: q.onSprite || '', commands: q.oneWay ? (q.doneText ? [{ cmd: 'text', speaker: '', text: q.doneText }] : []) : snd.concat([off]).concat(q.offText ? [{ cmd: 'text', speaker: '', text: q.offText }] : []) })
       ];
     }
+    if (q.type === 'savepoint') {
+      // A bed, a diary or a save crystal: asks first (if set), can heal the party, then saves.
+      const save = [{ cmd: 'saveGame', mode: q.mode || 'screen', heal: !!q.heal }];
+      const cmds = q.ask !== false
+        ? [{ cmd: 'choice', text: q.text || 'Do you want to save your progress?', speaker: '', yes: q.yes || 'Yes', no: q.no || 'No', cancelIsNo: true, yesCmds: save, noCmds: [] }]
+        : (q.text ? [{ cmd: 'text', speaker: '', text: q.text }] : []).concat(save);
+      return [newPage({ sprite: q.sprite || '', dir: q.dir || 'down', trigger: 'action', through: !q.sprite, commands: cmds })];
+    }
     if (q.type === 'cutscene') {
-      // Runs once: when the player steps on the square(s), or as soon as the map opens.
-      const cmds = [{ cmd: 'letterbox', on: true }].concat(q.commands && q.commands.length ? q.commands : [{ cmd: 'text', speaker: '', text: q.text || 'Edit this cut scene in the full event editor.' }]).concat([{ cmd: 'letterbox', on: false }, { cmd: 'selfSwitch', value: true }]);
-      const pages = [newPage({ trigger: q.start === 'map' ? 'auto' : 'touch', through: true, commands: cmds })];
-      if (q.start !== 'map' && (q.width > 1 || q.height > 1)) pages[0].area = { width: Math.max(1, q.width | 0), height: Math.max(1, q.height | 0) };
-      pages.push(newPage({ condition: { switchId: 0, selfSwitch: true }, through: true }));
+      // Starts: 'step' (player steps into the area), 'map' (as soon as the map opens), 'action' (player talks to /
+      // examines it), 'switch' (when a switch turns ON while on this map). Plays once (default) or every time
+      // (step and action only: an autorun that never stops would freeze the game).
+      // The scene is either a movie (content 'movie') or a list of commands built from the game's own assets.
+      const start = q.start || 'step', auto = start === 'map' || start === 'switch';
+      const once = auto || q.repeat !== 'always';
+      const body = q.content === 'movie'
+        ? [{ cmd: 'playMovie', file: q.movie || '', skippable: q.skippable !== false, music: q.music || 'pause', volume: q.volume ?? 100, fit: q.fit || 'fit' }]
+        : (q.commands && q.commands.length ? q.commands : [{ cmd: 'text', speaker: '', text: q.text || 'Edit this cut scene: add steps in the Cut scene window.' }]);
+      const bars = q.content !== 'movie' && q.bars !== false;
+      const cmds = (bars ? [{ cmd: 'letterbox', on: true }] : []).concat(body, bars ? [{ cmd: 'letterbox', on: false }] : [],
+        q.afterSwitch ? [{ cmd: 'setSwitch', switchId: q.afterSwitch | 0, value: true }] : [],
+        once ? [{ cmd: 'selfSwitch', value: true }] : []);
+      const look = start === 'action' ? { sprite: q.sprite || '', dir: q.dir || 'down', through: !q.sprite } : { through: true };
+      const first = newPage(Object.assign({ trigger: auto ? 'auto' : start === 'action' ? 'action' : 'touch', commands: cmds }, look));
+      if (start === 'switch') first.condition = { switchId: q.switchId | 0, selfSwitch: false };
+      if (start === 'step' && (q.width > 1 || q.height > 1)) first.area = { width: Math.max(1, q.width | 0), height: Math.max(1, q.height | 0) };
+      const pages = [first];
+      // Afterwards: nothing happens here any more (a person or object stays visible, and can say something).
+      if (once) pages.push(newPage(Object.assign({ condition: { switchId: 0, selfSwitch: true }, trigger: 'action',
+        commands: start === 'action' && q.afterText ? [{ cmd: 'text', speaker: '', text: q.afterText }] : [] }, look)));
       return pages;
     }
     throw new Error('Unknown quick event type: ' + q.type);

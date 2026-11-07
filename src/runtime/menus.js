@@ -13,7 +13,7 @@
       const refreshMoney = () => { money.innerHTML = '<b>' + esc(G.state.playerName) + '</b>' + (cfg.showMoney ? '<br>' + esc(G.db.system.currency || 'Money') + ': ' + G.state.money : '') + (cfg.main.some(e => e.id === 'dex' && e.on) ? '<br><span class="muted">' + esc(T.dex) + ' ' + Object.keys(G.state.dex.caught).length + ' caught</span>' : ''); };
       refreshMoney();
       document.getElementById('ui').appendChild(money);
-      const entries = cfg.main.filter(e => e.on && (e.id !== 'decorate' || Home.decorOn(G)) && (e.id !== 'wardrobe' || Home.wearOn(G)));
+      const entries = cfg.main.filter(e => e.on && (e.id !== 'decorate' || Home.decorOn(G)) && (e.id !== 'wardrobe' || Home.wearOn(G)) && (e.id !== 'worldmap' || G.cfg.worldMap.enabled));
       if (!entries.some(e => e.id === 'close')) entries.push({ id: 'close', label: 'Close' });
       let idx = 0;
       for (;;) {
@@ -22,7 +22,7 @@
         const c = await choose({ items, right: 6, top: 6, w, index: idx });
         if (c < 0 || entries[c].id === 'close') break;
         idx = c;
-        await Menus.open(G, entries[c].id);
+        if (await Menus.open(G, entries[c].id) === 'travel') break; // travelled on the world map: back to walking
         refreshMoney();
       }
       money.remove();
@@ -36,6 +36,34 @@
       if (id === 'save') return Menus.saveScreen(G);
       if (id === 'decorate') return Home.menu(G);
       if (id === 'wardrobe') return Home.wardrobe(G);
+      if (id === 'worldmap') { if (!G.cfg.worldMap.enabled || !G.cfg.worldMap.image) return message('There is no map of this world.'); return WorldMap.open(G); }
+      if (id === 'options') return Menus.options(G);
+    },
+
+    /* ---------- options (the player's own settings, kept on this computer or phone) ---------- */
+    async options(G) {
+      const P = G.prefs, A = window.GameAudio;
+      const SPEEDS = [['slow', 'Slow', 1], ['normal', 'Normal', 2], ['fast', 'Fast', 4], ['instant', 'Instant', 999]];
+      let idx = 0;
+      for (;;) {
+        const sp = SPEEDS.find(x => x[0] === P.textSpeed) || SPEEDS[1];
+        const bar = v => '■'.repeat(Math.round(v / 10)) + '□'.repeat(10 - Math.round(v / 10));
+        const items = [{ label: 'Music', right: bar(P.bgmVolume) }, { label: 'Sounds', right: bar(P.sfxVolume) }, { label: 'Text speed', right: '◂ ' + sp[1] + ' ▸' }, { label: 'Done' }];
+        const c = await choose({ title: 'Options', items, left: 20, top: 20, w: G.screen.width - 40, index: idx,
+          onKey: (a, i) => {
+            if (a !== 'left' && a !== 'right') return false;
+            const d = a === 'right' ? 1 : -1;
+            if (i === 0) P.bgmVolume = Math.max(0, Math.min(100, P.bgmVolume + d * 10));
+            if (i === 1) { P.sfxVolume = Math.max(0, Math.min(100, P.sfxVolume + d * 10)); GameAudio.se('cursor'); }
+            if (i === 2) { const k = SPEEDS.indexOf(sp); P.textSpeed = SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, k + d))][0]; }
+            G.applyPrefs(); idx = i; return 'redraw';
+          } });
+        if (c === 'redraw') continue;
+        if (c < 0 || c === 3) break;
+        idx = c;
+      }
+      G.savePrefs();
+      void A;
     },
     // A scrolling page of text (credits, licence). Supports simple Markdown: # headings, - lists, **bold**.
     textScreen(G, title, text) {
@@ -151,33 +179,45 @@
     },
 
     /* ---------- bag ---------- */
+    // The bag. With pockets on (Database → Menus & screens → Bag pockets) it has a tab per pocket: ← → change pocket.
     async bag(G) {
-      const db = G.db, bag = G.state.bag, T = G.terms;
-      const shortcuts = G.cfg.menus.bag.filter(e => e.on);
-      let idx = 0;
+      const db = G.db, bag = G.state.bag, T = G.terms, PK = G.cfg.pockets;
+      const shortcuts = G.cfg.menus.bag.filter(e => e.on && (e.id !== 'worldmap' || G.cfg.worldMap.enabled));
+      const pockets = PK.enabled && PK.list.length ? PK.list : null;
+      let idx = 0, pi = Math.min(G.bagPocket || 0, pockets ? pockets.length - 1 : 0);
       for (;;) {
-        const ids = Object.keys(bag).filter(id => bag[id] > 0 && db.item(id));
-        if (!ids.length && !shortcuts.length) { await message('Your bag is empty.'); return; }
+        const all = Object.keys(bag).filter(id => bag[id] > 0 && db.item(id));
+        const pocket = pockets ? pockets[pi] : null;
+        const ids = pocket ? all.filter(id => MF.Config.pocketOf(PK, db.item(id)) === pocket.id) : all;
+        if (!all.length && !shortcuts.length) { await message('Your bag is empty.'); return; }
         const help = el('div', 'win help', '');
         document.getElementById('ui').appendChild(help);
+        let tabs = null;
+        if (pockets) {
+          tabs = el('div', 'win bag-tabs', pockets.map((p, i) => '<span class="' + (i === pi ? 'on' : '') + '">' + (p.icon ? esc(p.icon) + ' ' : '') + (i === pi ? esc(p.name) : '') + '</span>').join(''));
+          document.getElementById('ui').appendChild(tabs);
+        }
         // Shortcuts chosen in Database → Menus appear at the top of the bag.
         const rows = shortcuts.map(e => ({ label: '▸ ' + MF.Config.word(T, e.label), shortcut: e.id })).concat(ids.map(id => ({ label: db.item(id).name, right: '×' + bag[id], id })));
-        if (!ids.length) rows.push({ label: '(no items)', disabled: true });
-        const c = await choose({ title: 'Bag', items: rows, right: 6, top: 6, w: 170, maxH: G.screen.height - 52, index: Math.min(idx, rows.length - 1),
-          onMove: i => { const r = rows[i]; help.textContent = r.shortcut ? 'Open ' + r.label.slice(2) : r.id ? (db.item(r.id).description || '') : ''; } });
-        help.remove();
+        if (!ids.length) rows.push({ label: pocket ? '(nothing in ' + pocket.name + ')' : '(no items)', disabled: true });
+        const turn = d => { pi = (pi + d + pockets.length) % pockets.length; G.bagPocket = pi; idx = shortcuts.length; return 'pocket'; };
+        const c = await choose({ title: pockets ? pocket.name : 'Bag', items: rows, right: 6, top: pockets ? 24 : 6, w: 170, maxH: G.screen.height - (pockets ? 70 : 52), index: Math.min(idx, rows.length - 1),
+          onMove: i => { const r = rows[i]; help.textContent = r.shortcut ? 'Open ' + r.label.slice(2) : r.id ? (db.item(r.id).description || '') : (pockets ? '← → change pocket' : ''); },
+          onKey: pockets ? a => (a === 'left' ? turn(-1) : a === 'right' ? turn(1) : false) : null });
+        help.remove(); if (tabs) tabs.remove();
+        if (c === 'pocket') { GameAudio.se('cursor'); continue; }
         if (c < 0) return;
         idx = c;
-        if (rows[c].shortcut) { await Menus.open(G, rows[c].shortcut); continue; }
+        if (rows[c].shortcut) { if (await Menus.open(G, rows[c].shortcut) === 'travel') return 'travel'; continue; }
         const it = db.item(rows[c].id);
-        if (it.kind === 'tool') { await Menus.open(G, it.toolAction || 'storage'); continue; }
+        if (it.kind === 'tool') { if (await Menus.open(G, it.toolAction || 'storage') === 'travel') return 'travel'; continue; }
         if (it.kind === 'decoration') { if (Home.decorOn(G)) await Home.place(G, it.id); else await message('You can put that up in your home.'); continue; }
         if (it.kind === 'clothing') { if (Home.wearOn(G)) await Home.wardrobe(G, it.id); else await message('There\'s no use for that right now.'); continue; }
         if (!it.fieldUsable) { await message('There\'s no use for that right now.'); continue; }
         if (!G.state.party.length) { await message('You don\'t have any monsters.'); continue; }
-        const pi = await Menus.party(G, { mode: 'pick', title: 'Use ' + it.name + ' on…' });
-        if (pi < 0) continue;
-        const mon = G.state.party[pi];
+        const pk = await Menus.party(G, { mode: 'pick', title: 'Use ' + it.name + ' on…' });
+        if (pk < 0) continue;
+        const mon = G.state.party[pk];
         if (it.kind === 'evolution') {
           const into = MF.itemCausesEvolution(db, mon, it.id);
           if (!into) { await message('It won\'t have any effect.'); continue; }
@@ -238,16 +278,30 @@
     },
 
     /* ---------- save / load ---------- */
+    // Choose a save slot. Returns the slot number (1…, or 0 for the Autosave slot when loading) or -1.
     async slotPicker(G, title, forLoad) {
-      const saves = await window.api.listSaves(G.projectPath);
-      const items = saves.map(s => s.meta ? { label: 'Slot ' + s.slot + ': ' + s.meta.mapName, right: s.meta.party + ' mon · ' + s.meta.time } : { label: 'Slot ' + s.slot + ': (empty)', disabled: forLoad });
-      return choose({ title, items, left: 20, top: 20, w: G.screen.width - 40 });
+      const saves = (await window.api.listSaves(G.projectPath, G.cfg.saving.slots)).filter(s => forLoad || !s.auto);
+      const name = s => s.auto ? 'Autosave' : 'Slot ' + s.slot;
+      const items = saves.map(s => s.meta ? { label: name(s) + ': ' + (s.meta.mapName || ''), right: (s.meta.party || 0) + ' mon · ' + (s.meta.time || '') } : { label: name(s) + ': (empty)', disabled: forLoad });
+      const c = await choose({ title, items, left: 20, top: 20, w: G.screen.width - 40, maxH: G.screen.height - 40 });
+      return c < 0 ? -1 : saves[c].slot;
     },
     async saveScreen(G) {
-      const c = await Menus.slotPicker(G, 'Save to which slot?', false);
-      if (c < 0) return;
-      await window.api.saveGame(G.projectPath, c + 1, G.makeSave()); GameAudio.se('save');
+      const slot = await Menus.slotPicker(G, 'Save to which slot?', false);
+      if (slot < 0) return false;
+      if (G.cfg.saving.confirmOverwrite) {
+        const cur = (await window.api.listSaves(G.projectPath, G.cfg.saving.slots)).find(s => s.slot === slot);
+        if (cur && cur.meta && !(await RUI.confirm('Save over the game in slot ' + slot + '?'))) return false;
+      }
+      await window.api.saveGame(G.projectPath, slot, G.makeSave()); GameAudio.se('save');
       await message('Your progress was saved.');
+      return true;
+    },
+    // The latest save of all (by the time it was written), or null.
+    async latestSave(G) {
+      const saves = (await window.api.listSaves(G.projectPath, G.cfg.saving.slots)).filter(s => s.meta);
+      if (!saves.length) return null;
+      return saves.sort((a, b) => (b.meta.savedAt || 0) - (a.meta.savedAt || 0))[0].slot;
     },
 
     /* ---------- learning & evolution ---------- */

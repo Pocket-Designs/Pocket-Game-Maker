@@ -14,14 +14,14 @@
 (function () {
   'use strict';
   const DIRV = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-  const ASSET_RE = /^(tilesets|characters|monsters|battlebacks|pictures|decorations|music|sounds|text)\/[^\s]+\.[A-Za-z0-9]+$/;
+  const ASSET_RE = /^(tilesets|characters|monsters|battlebacks|pictures|decorations|music|sounds|movies|text)\/[^\s]+\.[A-Za-z0-9]+$/;
   const ICON = { error: '✖', warning: '⚠', info: 'ℹ', trace: '·' };
   const TRIGGER = { action: 'action button', touch: 'touch', sight: 'trainer sight', auto: 'autorun', encounter: 'encounter area' };
   const CMD = {
     text: 'Show text', giveMonster: 'Give monster', giveItem: 'Give item', giveMoney: 'Give money', heal: 'Heal party', setSwitch: 'Set switch',
     moveRoute: 'Move route', balloon: 'Balloon icon', camera: 'Camera', screen: 'Screen effect', picture: 'Picture', letterbox: 'Letterbox',
     selfSwitch: 'Self switch', transfer: 'Transfer player', choice: 'Yes/No choice', shop: 'Shop', openScreen: 'Open screen',
-    playMusic: 'Play music', playSound: 'Play sound', wait: 'Wait', erase: 'Erase event', trainerBattle: 'Trainer battle', wildBattle: 'Wild battle'
+    playMusic: 'Play music', playSound: 'Play sound', playMovie: 'Play movie', saveGame: 'Save the game', playScenes: 'Play scenes', wait: 'Wait', erase: 'Erase event', trainerBattle: 'Trainer battle', wildBattle: 'Wild battle'
   };
 
   const D = window.Debug = {
@@ -119,9 +119,13 @@
         }
         case 'openScreen':
           if (c.screen === 'wardrobe' && !(D.G.cfg.wardrobe || {}).enabled) P('warning', 'Open screen: the Wardrobe is turned off, so nothing opened.', 'Turn it on in Database → Menus & screens → Optional features for players.');
+          if (c.screen === 'worldmap' && !(D.G.cfg.worldMap.enabled && D.G.cfg.worldMap.image)) P('warning', 'Open screen: the world map is turned off or has no picture, so a message says there is no map.', 'Set it up in Database → World map.');
           if (c.screen === 'decorate' && !(D.G.cfg.decorating || {}).enabled) P('warning', 'Open screen: Decorating is turned off, so nothing opened.', 'Turn it on in Database → Menus & screens → Optional features for players.');
           break;
         case 'playSound': if (!c.file) P('warning', 'Play sound: no sound file is chosen, so nothing played.'); break;
+        case 'saveGame': break;
+        case 'playScenes': if (!((D.G.cfg.scenes || {})[c.group || 'ending'] || []).length) P('warning', 'Play scenes: there are no ' + ({ ending: 'ending', opening: 'opening', newGame: 'new-game' }[c.group || 'ending'] || c.group) + ' scenes yet, so nothing plays' + (c.then === 'title' || (!c.then && (c.group || 'ending') === 'ending' && D.G.cfg.scenes.endingThen === 'title') ? ' before the title screen.' : '.'), 'Add them with Scenes → Opening & Ending Scenes.'); break;
+        case 'playMovie': if (!c.file) P('error', 'Play movie: no movie is chosen, so nothing played.', 'Choose a movie in this command (Import adds MP4 or WebM files).'); break;
         case 'trainerBattle': {
           const party = c.party || [];
           const bad = party.filter(p => !db.species(p.speciesId));
@@ -166,6 +170,18 @@
       if (rs && rs.mapId && !db.maps[rs.mapId]) D.problem('error', 'The respawn point (where the player goes after losing) is not on a map that exists.', 'Database → System', 'Set the respawn point again.');
       (sys.startingParty || []).filter(p => !db.species(p.speciesId)).forEach(p => D.problem('error', 'The starting party has a monster that does not exist: "' + p.speciesId + '".', 'Database → System', 'Remove it or add it in Database → Monsters.'));
       Object.keys(sys.startingItems || {}).filter(id => !db.item(id)).forEach(id => D.problem('error', 'The starting items include one that does not exist: "' + id + '".', 'Database → System', 'Remove it or add it in Database → Items.'));
+
+      const WM = G.cfg.worldMap;
+      if (WM.enabled) {
+        if (!WM.image) D.problem('warning', 'The world map is turned on but has no picture.', 'Database → World map', 'Choose a picture, use a default map, or draw one.');
+        (WM.locations || []).forEach(l => {
+          (l.maps || []).filter(id => !db.maps[id]).forEach(id => D.problem('warning', 'The place "' + l.name + '" lists a map that does not exist ("' + id + '").', 'Database → World map', 'Untick it in the place\'s maps.'));
+          if (WM.travel && l.dest && l.dest.mapId && !db.maps[l.dest.mapId]) D.problem('error', 'Travelling to "' + l.name + '" goes to a map that does not exist.', 'Database → World map', 'Choose where travelling there takes the player.');
+        });
+        if (!(WM.locations || []).length) D.problem('info', 'The world map has no places yet, so it can\'t show where the player is.', 'Database → World map', 'Click the map picture to add places.');
+      }
+      if (G.cfg.saving.autosave === false && !G.cfg.menus.main.some(e => e.id === 'save' && e.on) && !maps.some(m => m.events.some(e => e.pages.some(p => (p.commands || []).some(c => c.cmd === 'saveGame' || (c.cmd === 'openScreen' && c.screen === 'save'))))) && !(db.raw.items || []).some(i => i.kind === 'tool' && i.toolAction === 'save'))
+        D.problem('warning', 'Players have no way to save: Save is off in the menu, autosave is off, and there are no save points or save items.', 'Database → Menus & screens → Saving', 'Turn one of them on, or add a Save point quick event.');
 
       maps.forEach(map => {
         MF.Layers.migrate(map);
@@ -310,6 +326,7 @@
         case 'giveItem': return n + ': ' + ((db.item(c.itemId) || {}).name || c.itemId) + ' ×' + (c.amount || 1);
         case 'giveMonster': case 'wildBattle': return n + ': ' + ((db.species(c.speciesId) || {}).name || c.speciesId) + ' Lv ' + (c.level || 5);
         case 'transfer': return n + ': map ' + D.mapName(c.mapId) + ' (' + c.x + ', ' + c.y + ')';
+        case 'playMovie': return n + ': ' + (c.file || '(none)');
         case 'selfSwitch': return n + ' → ' + (c.value ? 'ON' : 'OFF');
         case 'trainerBattle': return n + ': ' + (c.name || 'Trainer');
         case 'moveRoute': case 'balloon': return n + ': ' + (c.target || 'this event');

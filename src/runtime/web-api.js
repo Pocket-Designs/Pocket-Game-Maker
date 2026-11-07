@@ -6,7 +6,7 @@
   if (window.api) return;
   const base = 'game/';
   let info = null;
-  const key = slot => 'mf-save:' + ((info && info.id) || 'game') + ':' + slot;
+  const key = slot => 'mf-save:' + ((info && info.id) || 'game') + ':' + (+slot === 0 ? 'auto' : slot); // slot 0: Autosave
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -24,9 +24,11 @@
         return r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
       } catch (e) { return null; }
     },
-    async listSaves() {
-      const out = [];
-      for (let i = 1; i <= 4; i++) { const s = store.get(key(i)); let meta = null; try { meta = s ? JSON.parse(s).meta || {} : null; } catch (e) { meta = null; } out.push({ slot: i, meta }); }
+    async listSaves(dir, count) {
+      const out = [], metaOf = s => { try { return s ? JSON.parse(s).meta || {} : null; } catch (e) { return null; } };
+      const auto = metaOf(store.get(key(0)));
+      if (auto) out.push({ slot: 0, auto: true, meta: auto });
+      for (let i = 1; i <= Math.max(1, Math.min(12, count | 0 || 4)); i++) out.push({ slot: i, meta: metaOf(store.get(key(i))) });
       return out;
     },
     async saveGame(dir, slot, obj) { return store.set(key(slot), JSON.stringify(obj)); },

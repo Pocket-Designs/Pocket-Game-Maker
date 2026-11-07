@@ -8,11 +8,12 @@ const TILES = require('./src/shared/tiles');
 const { createExporter } = require('./lib/exporter');
 
 const IMG_RE = /\.(png|jpe?g|webp|gif)$/i;
-const ASSET_KINDS = ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds', 'text'];
+const ASSET_KINDS = ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations', 'music', 'sounds', 'movies', 'text'];
 const AUDIO_KINDS = ['music', 'sounds'];
 const AUDIO_RE = /\.(mp3|flac)$/i;
 const TEXT_RE = /\.(txt|md)$/i;
-const kindRe = kind => AUDIO_KINDS.includes(kind) ? AUDIO_RE : kind === 'text' ? TEXT_RE : IMG_RE;
+const MOVIE_RE = /\.(mp4|webm|m4v)$/i; // cut-scene movies: MP4 (H.264 + AAC) plays everywhere, WebM on computers and Android
+const kindRe = kind => AUDIO_KINDS.includes(kind) ? AUDIO_RE : kind === 'text' ? TEXT_RE : kind === 'movies' ? MOVIE_RE : IMG_RE;
 // In packaged builds templates are unpacked next to app.asar so they can be copied as plain files.
 const TEMPLATE_DIR = path.join(__dirname, 'templates', 'sample').replace('app.asar' + path.sep, 'app.asar.unpacked' + path.sep);
 const LIBRARY_BUNDLED = path.join(__dirname, 'library').replace('app.asar' + path.sep, 'app.asar.unpacked' + path.sep);
@@ -55,7 +56,7 @@ function loadProject(dir) {
     tilesets: readJSON(d('tilesets.json'), []),
     mapInfos: infos,
     maps,
-    credits: readJSON(d('credits.json'), {})
+    credits: renameCreditAuthor(readJSON(d('credits.json'), {}))
   };
 }
 
@@ -106,6 +107,33 @@ function makeBlank(dir, name) {
 /* ---------------- asset library ---------------- */
 // The user's own copy lives in Documents so it can be edited and extended; the bundled copy seeds it.
 const libraryDir = () => path.join(app.getPath('documents'), 'Pocket-Game-Maker', 'Asset Library');
+// Projects made from the sample before November 2026 credit the built-in art to the author's old name.
+function renameCreditAuthor(credits) {
+  for (const c of Object.values(credits || {})) if (c && c.author === 'project' + '-tech-me') c.author = 'Pocket-Designs';
+  return credits;
+}
+
+// Art templates (tools/gen-art-templates.py) are copied to Documents/Pocket-Game-Maker/Art Templates so they can be
+// opened in an art program; the copies in the app itself sit inside its package. Missing or changed files are refreshed.
+const ART_TEMPLATES = path.join(__dirname, 'templates', 'art-templates');
+function artTemplatesDir() { return path.join(app.getPath('documents'), 'Pocket-Game-Maker', 'Art Templates'); }
+function seedArtTemplates() {
+  if (!fs.existsSync(ART_TEMPLATES)) return;
+  const dst = artTemplatesDir();
+  fs.mkdirSync(dst, { recursive: true });
+  for (const f of fs.readdirSync(ART_TEMPLATES)) {
+    const src = fs.readFileSync(path.join(ART_TEMPLATES, f)), d = path.join(dst, f);
+    if (!fs.existsSync(d) || fs.statSync(d).size !== src.length) fs.writeFileSync(d, src);
+  }
+}
+async function openArtTemplates() {
+  try { seedArtTemplates(); } catch (err) { console.error('Art templates copy failed:', err); }
+  const dir = artTemplatesDir();
+  const err = await shell.openPath(dir);
+  if (err) dialog.showMessageBox(editorWin, { type: 'info', message: 'Art templates', detail: 'The art templates are in:\n' + dir });
+  return dir;
+}
+
 function seedLibrary() { // copy any bundled file the user doesn't have; never overwrite
   let added = 0;
   const walk = (src, dst) => {
@@ -254,15 +282,29 @@ function buildMenu() {
       { label: 'Open Database', accelerator: 'F9', click: send('database') },
       { type: 'separator' },
       ...[['monsters', 'Monsters'], ['moves', 'Moves'], ['types', 'Types'], ['items', 'Items'], ['tilesets', 'Tilesets'], ['audio', 'Music && Sounds'], ['menus', 'Menus && Screens'], ['system', 'System'], ['credits', 'Credits']]
-        .map(([tab, label], i) => ({ label, accelerator: 'CmdOrCtrl+Shift+' + (i + 1), click: send('db:' + tab) }))
+        .map(([tab, label], i) => ({ label, accelerator: 'CmdOrCtrl+Shift+' + (i + 1), click: send('db:' + tab) })),
+      { label: 'World Map', click: send('db:worldmap') }
+    ] },
+    { label: 'Scenes', submenu: [
+      { label: 'Opening && Ending Scenes…', accelerator: 'CmdOrCtrl+Shift+O', click: send('scenes') },
+      { type: 'separator' },
+      { label: 'Before the Title Screen…', click: send('scenes:opening') },
+      { label: 'When a New Game Starts…', click: send('scenes:newGame') },
+      { label: 'Ending && Credits…', click: send('scenes:ending') }
     ] },
     { label: 'Tools', submenu: [
       { label: 'Database…', click: send('database') },
       { label: 'Asset Library…', accelerator: 'F10', click: send('library') },
+      { label: 'Pixel Editor: New Picture…', accelerator: 'CmdOrCtrl+Shift+N', click: send('pixel') },
+      { label: 'Pixel Editor: Edit This Map\'s Tileset…', click: send('pixelTileset') },
       { label: 'Playtest', accelerator: 'F5', click: send('playtest') }
     ] },
     { label: 'View', submenu: [{ role: 'reload' }, { role: 'toggleDevTools' }, { type: 'separator' }, { role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'togglefullscreen' }] },
-    { label: 'Help', submenu: [{ label: 'About Pocket-Game-Maker', click: send('about') }] }
+    { label: 'Help', submenu: [
+      { label: 'Art Templates…', click: () => openArtTemplates() },
+      { type: 'separator' },
+      { label: 'About Pocket-Game-Maker', click: send('about') }
+    ] }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(tpl));
 }
@@ -271,6 +313,7 @@ function buildMenu() {
 ipcMain.handle('app:forceClose', () => { allowClose = true; if (editorWin) editorWin.close(); });
 ipcMain.handle('app:recent', () => readJSON(recentFile(), []).filter(p => fs.existsSync(path.join(p, 'project.json'))));
 ipcMain.handle('app:reveal', (e, p) => shell.openPath(p));
+ipcMain.handle('app:artTemplates', () => openArtTemplates());
 
 ipcMain.handle('project:new', async (e, opts) => {
   const r = await dialog.showOpenDialog(editorWin, { title: 'Choose a parent folder for the new project', properties: ['openDirectory', 'createDirectory'] });
@@ -356,7 +399,8 @@ ipcMain.handle('asset:list', (e, dir, kind) => {
 ipcMain.handle('asset:import', async (e, dir, kind) => {
   if (!ASSET_KINDS.includes(kind)) throw new Error('Unknown asset kind');
   const filters = AUDIO_KINDS.includes(kind) ? [{ name: 'Audio (MP3 or FLAC)', extensions: ['mp3', 'flac'] }]
-    : kind === 'text' ? [{ name: 'Text files (.txt or .md)', extensions: ['txt', 'md'] }] : [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif'] }];
+    : kind === 'text' ? [{ name: 'Text files (.txt or .md)', extensions: ['txt', 'md'] }]
+    : kind === 'movies' ? [{ name: 'Movies (MP4 or WebM)', extensions: ['mp4', 'webm', 'm4v'] }] : [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif'] }];
   const r = await dialog.showOpenDialog(editorWin, { title: 'Import ' + (kind === 'sounds' ? 'sound effects' : kind), properties: ['openFile', 'multiSelections'], filters });
   if (r.canceled) return [];
   const out = [];
@@ -383,6 +427,36 @@ ipcMain.handle('asset:missing', (e, dir, rels) => {
   const base = path.resolve(dir, 'assets');
   return (rels || []).filter(rel => { const f = path.resolve(base, String(rel)); return !f.startsWith(base + path.sep) || !fs.existsSync(f); });
 });
+
+// Pixel editor: save a picture (flattened PNG in assets/) and its layers (art-src/<rel>.layers.json, kept out of
+// the game) so the layers are still there next time. Only image kinds, only inside the project.
+const PIXEL_KINDS = ['tilesets', 'characters', 'monsters', 'battlebacks', 'pictures', 'decorations'];
+function pixelPaths(dir, rel) {
+  const kind = String(rel || '').split('/')[0];
+  if (!PIXEL_KINDS.includes(kind) || !/^[\w-]+\/[\w.\-]+\.png$/i.test(rel)) throw new Error('Not a picture this editor can save: ' + rel);
+  const base = path.resolve(dir, 'assets'), src = path.resolve(dir, 'art-src');
+  const png = path.resolve(base, rel), layers = path.resolve(src, rel + '.layers.json');
+  if (!png.startsWith(base + path.sep) || !layers.startsWith(src + path.sep)) throw new Error('Bad path');
+  return { png, layers };
+}
+ipcMain.handle('pixel:save', (e, dir, rel, pngBase64, layers) => {
+  const p = pixelPaths(dir, rel), buf = Buffer.from(String(pngBase64 || ''), 'base64');
+  fs.mkdirSync(path.dirname(p.png), { recursive: true });
+  fs.writeFileSync(p.png, buf);
+  if (layers) {
+    fs.mkdirSync(path.dirname(p.layers), { recursive: true });
+    fs.writeFileSync(p.layers, JSON.stringify(Object.assign({}, layers, { pngSize: buf.length })));
+  }
+  return rel;
+});
+ipcMain.handle('pixel:load', (e, dir, rel) => {
+  const p = pixelPaths(dir, rel);
+  const pngSize = fs.existsSync(p.png) ? fs.statSync(p.png).size : -1;
+  let layers = null;
+  try { if (fs.existsSync(p.layers)) layers = JSON.parse(fs.readFileSync(p.layers, 'utf8')); } catch (err) { layers = null; }
+  return { exists: pngSize >= 0, pngSize, layers: layers && layers.pngSize === pngSize ? layers : null, stale: !!(layers && layers.pngSize !== pngSize) };
+});
+ipcMain.handle('pixel:exists', (e, dir, rel) => { try { return fs.existsSync(pixelPaths(dir, rel).png); } catch (err) { return false; } });
 
 // Write a small text file into the project's assets/text folder (credits or licence typed in the editor).
 ipcMain.handle('asset:writeText', (e, dir, name, text) => {
@@ -420,12 +494,16 @@ ipcMain.handle('playtest:start', (e, dir, data, start) => {
 ipcMain.handle('playtest:getData', e => playtestData.get(e.sender.id) || null);
 
 const saveDir = proj => path.join(proj, 'saves');
-ipcMain.handle('save:write', (e, proj, slot, obj) => { writeJSON(path.join(saveDir(proj), 'slot' + slot + '.json'), obj); return true; });
-ipcMain.handle('save:read', (e, proj, slot) => readJSON(path.join(saveDir(proj), 'slot' + slot + '.json'), null));
-ipcMain.handle('save:list', (e, proj) => {
+// Save slots 1 to `count` (Database → Menus & screens → Saving), plus slot 0: the Autosave slot (autosave.json).
+const slotFile = slot => (+slot === 0 ? 'autosave' : 'slot' + (+slot | 0)) + '.json';
+ipcMain.handle('save:write', (e, proj, slot, obj) => { writeJSON(path.join(saveDir(proj), slotFile(slot)), obj); return true; });
+ipcMain.handle('save:read', (e, proj, slot) => readJSON(path.join(saveDir(proj), slotFile(slot)), null));
+ipcMain.handle('save:list', (e, proj, count) => {
   const out = [];
-  for (let i = 1; i <= 4; i++) {
-    const s = readJSON(path.join(saveDir(proj), 'slot' + i + '.json'), null);
+  const auto = readJSON(path.join(saveDir(proj), slotFile(0)), null);
+  if (auto) out.push({ slot: 0, auto: true, meta: auto.meta || {} });
+  for (let i = 1; i <= Math.max(1, Math.min(12, count | 0 || 4)); i++) {
+    const s = readJSON(path.join(saveDir(proj), slotFile(i)), null);
     out.push(s ? { slot: i, meta: s.meta || {} } : { slot: i, meta: null });
   }
   return out;
@@ -456,6 +534,10 @@ ipcMain.handle('export:androidBuild', (e, projectDir) => getExporter().androidBu
 
 /* ---------------- lifecycle ---------------- */
 // MonsterForge was renamed Pocket-Game-Maker in 0.8.1: carry over the old asset library folder and recent-projects list once.
+// The author was called "project-tech-me" (project-tech-me@protonmail.com) before November 2026.
+const OLD_AUTHOR = 'project' + '-tech-me';
+function renameOldAuthor(text) { return text.split(OLD_AUTHOR + '@' + 'protonmail.com').join('pocket-designs@proton.me').split(OLD_AUTHOR).join('Pocket-Designs'); }
+
 function migrateOldName() {
   const OLD = 'Monster' + 'Forge';
   try {
@@ -468,6 +550,17 @@ function migrateOldName() {
         if (fs.existsSync(p)) fs.writeFileSync(p, fs.readFileSync(p, 'utf8').split(OLD).join('Pocket-Game-Maker'));
       }
     }
+    // The author's name and email changed (project-tech-me to Pocket-Designs): update the built-in art's credits
+    // in the user's Asset Library, which earlier versions copied there and never overwrite.
+    const lib = path.join(app.getPath('documents'), 'Pocket-Game-Maker', 'Asset Library');
+    const tilesDir = path.join(lib, 'tilesets');
+    const libFiles = ['library.json', 'CREDITS.md', 'credits.csv', 'README.txt', 'LICENSE.txt', 'audio-meta.json'].map(f => path.join(lib, f))
+      .concat(fs.existsSync(tilesDir) ? fs.readdirSync(tilesDir).filter(f => f.endsWith('.tiles.json')).map(f => path.join(tilesDir, f)) : []);
+    for (const p of libFiles) {
+      if (!fs.existsSync(p)) continue;
+      const t = fs.readFileSync(p, 'utf8'), n = renameOldAuthor(t);
+      if (n !== t) fs.writeFileSync(p, n);
+    }
     const oldRecent = path.join(app.getPath('appData'), OLD, 'recent.json');
     if (fs.existsSync(oldRecent) && !fs.existsSync(recentFile())) { fs.mkdirSync(path.dirname(recentFile()), { recursive: true }); fs.copyFileSync(oldRecent, recentFile()); }
   } catch (err) { console.error('Could not carry over settings from the old name:', err); }
@@ -476,6 +569,7 @@ function migrateOldName() {
 app.whenReady().then(() => {
   migrateOldName();
   try { seedLibrary(); } catch (err) { console.error('Asset library setup failed:', err); }
+  try { seedArtTemplates(); } catch (err) { console.error('Art templates copy failed:', err); }
   buildMenu();
   createEditor();
   app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) createEditor(); });

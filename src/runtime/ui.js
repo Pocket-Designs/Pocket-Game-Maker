@@ -88,7 +88,7 @@
         if (!done) finish(); else close();
       });
       box.onclick = () => { if (!done) finish(); else close(); };
-      const speed = opts.speed || 2;
+      const speed = opts.speed || RUI.textSpeed || 2; // the player's Options choice
       timer = setInterval(() => { i += speed; t.textContent = text.slice(0, i); if (i >= text.length) finish(); }, 16);
       if (!text.length) finish();
       void last;
@@ -110,7 +110,8 @@
   function choose(opts) {
     const box = el('div', 'win menu' + (opts.cols > 1 ? ' grid' : '') + (opts.dark ? ' dark' : ''));
     if (opts.cols > 1) box.style.gridTemplateColumns = 'repeat(' + opts.cols + ', 1fr)';
-    ['left', 'top', 'right', 'bottom', 'width'].forEach(k => { const v = opts[k === 'left' ? 'x' : k === 'top' ? 'y' : k === 'width' ? 'w' : k]; if (v !== undefined) box.style[k] = v + 'px'; });
+    // position: x / left, y / top, right, bottom; width: w
+    ['left', 'top', 'right', 'bottom', 'width'].forEach(k => { const alias = { left: 'x', top: 'y', width: 'w' }[k]; const v = opts[k] !== undefined ? opts[k] : alias ? opts[alias] : undefined; if (v !== undefined) box.style[k] = v + 'px'; });
     if (opts.maxH) { box.style.maxHeight = opts.maxH + 'px'; box.style.overflowY = 'auto'; }
     if (opts.title) { const t = el('div', 'title', esc(opts.title)); if (opts.cols > 1) t.style.gridColumn = '1 / -1'; box.appendChild(t); }
     const rows = opts.items.map((it, i) => {
@@ -140,6 +141,8 @@
     function done(v) { pop(); if (!opts.keep) box.remove(); resolveFn(v); }
     const pop = Input.push(a => {
       const n = opts.items.length;
+      // onKey(action, index): a screen can handle a key itself; returning a value closes the menu with it.
+      if (opts.onKey) { const v = opts.onKey(a, idx); if (v) return done(v); }
       if (a === 'up') set((idx - cols + n) % n, true);
       else if (a === 'down') set((idx + cols) % n, true);
       else if (a === 'left' && cols > 1) set((idx - 1 + n) % n, true);

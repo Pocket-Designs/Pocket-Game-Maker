@@ -9,7 +9,7 @@ const { execFileSync } = require('child_process');
 
 const SR = 44100;
 const OUT = path.join(__dirname, '..', 'library');
-const AUTHOR = 'project-tech-me';
+const AUTHOR = 'Pocket-Designs';
 
 /* ---------------- helpers ---------------- */
 const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };

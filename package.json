@@ -1,14 +1,14 @@
 {
   "name": "pocket-game-maker",
   "productName": "Pocket-Game-Maker",
-  "version": "0.9.3",
+  "version": "0.9.6",
   "description": "A game maker for monster-taming and monster-capturing RPGs.",
-  "homepage": "https://github.com/Projects-me-design/pocket-game-maker",
+  "homepage": "https://github.com/Pocket-Designs/pocket-game-maker",
   "main": "main.js",
   "desktopName": "pocket-game-maker.desktop",
   "author": {
-    "name": "project-tech-me",
-    "email": "project-tech-me@protonmail.com"
+    "name": "Pocket-Designs",
+    "email": "pocket-designs@proton.me"
   },
   "license": "MIT",
   "engines": {
@@ -26,6 +26,9 @@
     "test:editing": "electron test/editing-main.js",
     "test:home": "electron test/home-main.js",
     "test:debugger": "electron test/debugger-main.js",
+    "test:pixel": "electron test/pixel-editor-main.js",
+    "test:cutscene": "electron test/cutscene-main.js",
+    "test:features": "electron test/features-main.js",
     "dist:mac": "electron-builder --mac --publish never"
   },
   "devDependencies": {
@@ -33,7 +36,7 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.pocketgamemaker.editor",
+    "appId": "com.pocketdesigns.pocketgamemaker",
     "productName": "Pocket-Game-Maker",
     "icon": "build/icon.ico",
     "afterPack": "build/adhoc-sign.js",
@@ -88,7 +91,7 @@
       "icon": "build/icon.png",
       "artifactName": "Pocket-Game-Maker-${version}-linux-${arch}.${ext}",
       "synopsis": "A game maker for monster-taming RPGs",
-      "maintainer": "project-tech-me <project-tech-me@protonmail.com>",
+      "maintainer": "Pocket-Designs <pocket-designs@proton.me>",
       "executableName": "pocket-game-maker",
       "syncDesktopName": true
     },
@@ -107,7 +110,7 @@
         "to": "THIRD-PARTY-NOTICES.txt"
       }
     ],
-    "copyright": "Copyright \u00a9 2026 project-tech-me",
+    "copyright": "Copyright \u00a9 2026 Pocket-Designs",
     "mac": {
       "target": [
         {
