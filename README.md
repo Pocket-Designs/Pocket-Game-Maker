@@ -24,10 +24,10 @@ Choose **New project…**, pick *Sample project* (playable immediately) or *Blan
 
 1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Pocket-Designs/pocket-game-maker`; change it if yours is different).
 2. Every push to `main` and every pull request runs the tests and builds on Windows, macOS and Linux, to check everything still builds. These runs don't keep the installers, so they don't use up the account's Actions storage.
-3. To download installers, use **Actions → Build → Run workflow**. They appear under the run's **Artifacts** for 5 days.
-4. To make a release, push a version tag: `git tag v0.9.3` then `git push origin v0.9.3`. The installers are attached to a **draft release**; check it and click **Publish**. Release files don't count towards Actions storage.
+3. To download installers, use **Actions → Build → Run workflow**. When it finishes, the installers are on the repository's **Releases** page as a draft called **Test build N** (drafts are only visible to people who can push to the repository). The newest 3 test builds are kept; older ones are deleted automatically.
+4. To make a release, push a version tag: `git tag v0.9.6` then `git push origin v0.9.6`. The installers are attached to a **draft release**; check it and click **Publish**.
 
-If a run says **"Artifact storage quota has been hit"**, the account's Actions storage is full of files kept by earlier runs. Delete old runs (Actions → a run → **…** → Delete workflow run) or just their artifacts (the bin icon next to each one under **Artifacts**). GitHub recounts the space used every few hours, so the next run may need to wait a little.
+Installers are never stored as Actions "artifacts", so they don't use the account's Actions storage quota (release files don't count). Each run also deletes artifacts left by earlier runs. If you ever see **"Artifact storage quota has been hit"** again, it only affects the small build logs kept when a build fails, and it won't stop the build; GitHub recounts the space used every 6–12 hours. To free it at once, delete old runs (Actions → a run → **…** → Delete workflow run).
 
 All the actions it uses run on Node.js 24 (GitHub removed Node.js 20 from its runners in September 2026), and the app is built with Node.js 24.
 

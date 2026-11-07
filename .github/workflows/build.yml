@@ -1,16 +1,18 @@
 # Builds Pocket-Game-Maker for Windows, macOS and Linux on GitHub.
 #
 #   Push to main or open a pull request: tests run and each system is built, to check it still builds.
-#   The installers are not kept, so they don't use up the account's Actions storage.
-#   Click "Run workflow" (Actions tab > Build): the same, and the installers appear under the run's
-#   Artifacts for 5 days.
-#   Push a version tag (for example: git tag v0.9.3 && git push origin v0.9.3): the installers are
-#   attached to a draft GitHub Release named after the tag (Release files don't count towards Actions storage).
-#   Check it, then click Publish.
+#   Nothing is kept.
+#   Click "Run workflow" (Actions tab > Build): the same, and the installers are attached to a draft Release
+#   called "Test build N" (Releases page, visible only to people who can push to the repository). Only the
+#   newest 3 test builds are kept; older ones are deleted automatically.
+#   Push a version tag (for example: git tag v0.9.6 && git push origin v0.9.6): the installers are attached
+#   to a draft Release named after the tag. Check it, then click Publish.
 #
-# Storage: GitHub gives each account a fixed amount of Actions storage, and kept artifacts count towards it
-# until they expire. If a run says "Artifact storage quota has been hit", delete old runs or their artifacts
-# (Actions tab > a run > Artifacts > bin icon); GitHub recounts the space used every few hours.
+# Storage: installers never go into Actions "artifacts", because those count towards the account's Actions
+# storage quota ("Artifact storage quota has been hit"). Release files don't count. Each run also deletes the
+# repository's old artifacts from earlier runs, so the quota frees up again (GitHub recounts every 6-12 hours).
+# Only small build logs are kept as artifacts, for 3 days, when a build fails - and a full quota never fails
+# the build.
 #
 # Every action used here runs on Node.js 24 (GitHub removed Node 20 from its runners in September 2026),
 # and the app itself is built with Node.js 24 and Electron 44 (which also uses Node.js 24).
@@ -56,6 +58,56 @@ jobs:
       - name: Engine and exporter tests
         run: npm test
 
+  storage:
+    name: Free up Actions storage
+    # Deletes artifacts left by earlier runs (older than a day), which count towards the storage quota.
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    permissions:
+      actions: write
+    steps:
+      - name: Delete old artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cutoff=$(date -u -d '1 day ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh api --paginate "repos/${{ github.repository }}/actions/artifacts?per_page=100" \
+            --jq ".artifacts[] | select(.created_at < \"$cutoff\") | \"\(.id) \(.name) \(.size_in_bytes)\"" |
+          while read -r id name size; do
+            echo "Deleting artifact $name ($((size / 1048576)) MB)"
+            gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/$id" || true
+          done
+
+  release:
+    name: Prepare the draft release
+    # Only for "Run workflow" and version tags. Made once here, so the three builds all add to the same draft.
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.make.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: make
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            TAG="$GITHUB_REF_NAME"
+            gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --verify-tag --generate-notes --title "Pocket-Game-Maker $TAG"
+          else
+            TAG="test-build-${{ github.run_number }}"
+            VERSION=$(node -p "require('./package.json').version")
+            gh release create "$TAG" --draft --target "$GITHUB_SHA" --title "Test build ${{ github.run_number }} (v$VERSION, ${GITHUB_REF_NAME}, ${GITHUB_SHA::7})" \
+              --notes "Installers from a manual run of the Build workflow (run ${{ github.run_id }}). Draft: only people who can push to this repository can see it. Only the newest 3 test builds are kept."
+            # keep the newest 3 test builds
+            gh release list --limit 100 --json tagName,isDraft,createdAt --jq '[.[] | select(.isDraft and (.tagName | startswith("test-build-")))] | sort_by(.createdAt) | reverse | .[3:] | .[].tagName' |
+              while read -r old; do echo "Deleting old test build $old"; gh release delete "$old" --yes || true; done
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
   smoke:
     # Opens the editor and plays the sample game on a virtual screen. It doesn't hold up the builds:
     # if it fails, the installers are still made, and the screenshots show what happened.
@@ -89,7 +141,11 @@ jobs:
 
   build:
     name: Build (${{ matrix.name }})
-    needs: test
+    needs: [test, release]
+    # Runs after "Prepare the draft release", or without it when that job is skipped (pushes and pull requests).
+    if: always() && needs.test.result == 'success' && needs.release.result != 'failure'
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -99,20 +155,15 @@ jobs:
           - name: Windows
             os: windows-2025
             args: --win --x64 -c.win.signAndEditExecutable=true
-            files: |
-              dist/*.exe
+            files: dist/*.exe
           - name: macOS
             os: macos-15
             args: --mac --x64 --arm64
-            files: |
-              dist/*.dmg
-              dist/*-mac-*.zip
+            files: dist/*.dmg dist/*-mac-*.zip
           - name: Linux
             os: ubuntu-24.04
             args: --linux --x64
-            files: |
-              dist/*.AppImage
-              dist/*.deb
+            files: dist/*.AppImage dist/*.deb
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -181,33 +232,17 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: if ls dist/*.dmg >/dev/null 2>&1; then rm -f dist/*-mac-*.zip; fi
-      - name: Keep the installers
+      - name: Attach the installers to the draft release
         # Only for "Run workflow" and version tags; pushes and pull requests just check that everything builds.
-        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v7
-        with:
-          name: Pocket-Game-Maker-${{ matrix.name }}
-          path: ${{ matrix.files }}
-          if-no-files-found: error
-          compression-level: 0
-          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && 1 || 5 }}
-
-  release:
-    name: Draft release
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: release
-          pattern: Pocket-Game-Maker-*
-          merge-multiple: true
-      - uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          name: Pocket-Game-Maker ${{ github.ref_name }}
-          generate_release_notes: true
-          files: release/*
+        # Release files don't use the Actions storage quota.
+        if: needs.release.outputs.tag != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          files=(${{ matrix.files }})
+          if [ ${#files[@]} -eq 0 ]; then echo "::error title=No installers::No installer files were found in dist/"; exit 1; fi
+          ls -la "${files[@]}"
+          gh release upload "${{ needs.release.outputs.tag }}" "${files[@]}" --clobber
+          echo "::notice title=Installers ready (${{ matrix.name }})::Attached to the draft release ${{ needs.release.outputs.tag }}: Releases page > Draft."
