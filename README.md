@@ -1,3 +1,8 @@
+<div align="center">
+<img width="224" height="224" alt="Pocket -Game-Maker" src="https://github.com/user-attachments/assets/1518b8b9-ee81-4c17-bed3-7bd0bea3f878" />
+
+</div>
+
 # Pocket-Game-Maker
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
