@@ -1,7 +1,3 @@
-<div align="center">
-
-</div>
-
 # Pocket-Game-Maker
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
@@ -350,6 +346,6 @@ The library lives in `Documents/Pocket-Game-Maker/Asset Library`, so you can edi
 
 ## Licence
 
-Pocket-Game-Maker is © 2026 Pocket-Designs (pocket-designs@proton.me) and released under the MIT Licence (see `LICENSE`). Games you make with it are yours. Bundled third-party components are listed in `THIRD-PARTY-NOTICES.txt`.
+Pocket-Game-Maker is © 2026 Pocket-Designs (pocket-designs@proton.me) and released under the MIT Licence (see `LICENSE`). Games you make with it are yours. Bundled third-party components are listed in `THIRD-PARTY-NOTICES.md`.
 
 The product icon is by MJO-Art (workmjo@gmail.com). It is not covered by the MIT Licence and can't be altered or used without the artist's permission; see `LICENSE`.

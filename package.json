@@ -107,8 +107,8 @@
         "to": "LICENSE.txt"
       },
       {
-        "from": "THIRD-PARTY-NOTICES.txt",
-        "to": "THIRD-PARTY-NOTICES.txt"
+        "from": "THIRD-PARTY-NOTICES.md",
+        "to": "THIRD-PARTY-NOTICES.md"
       }
     ],
     "copyright": "Copyright \u00a9 2026 Pocket-Designs",
