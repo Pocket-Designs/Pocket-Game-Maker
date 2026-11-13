@@ -192,6 +192,21 @@
         (enc.list || []).filter(e => !db.species(e.speciesId)).forEach(e => D.problem('error', 'Wild encounters include a monster that does not exist: "' + e.speciesId + '".', mWhere + ' › Wild encounters', 'Remove it from the list.'));
         if (enc.chance && !(enc.list || []).length) D.problem('warning', 'Wild encounters have a chance set but no monsters listed, so no battles happen.', mWhere + ' › Wild encounters', 'Add monsters to the list, or set the chance to 0.');
 
+        // 2.5D: stairs that join nothing, events that can't be reached, a start on a cliff-locked square
+        if (MF.Heights.hasHeights(map)) {
+          const H = MF.Heights, around = (x, y) => [[0, -1], [0, 1], [-1, 0], [1, 0]].map(([dx, dy]) => [x + dx, y + dy]).filter(([x2, y2]) => x2 >= 0 && y2 >= 0 && x2 < map.width && y2 < map.height);
+          let lonely = 0, lx = 0, ly = 0;
+          for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+            if (!H.isStairs(map, x, y)) continue;
+            if (!around(x, y).some(([x2, y2]) => Math.abs(H.get(map, x2, y2) - H.get(map, x, y)) === 1)) { if (!lonely++) { lx = x; ly = y; } }
+          }
+          if (lonely) D.problem('info', lonely + ' stair square' + (lonely > 1 ? 's don\'t' : ' doesn\'t') + ' join two height levels (first at (' + lx + ', ' + ly + ')), so ' + (lonely > 1 ? 'they work' : 'it works') + ' like flat ground.', mWhere, 'Stairs go between squares one level apart. Check the heights in Height mode.');
+          map.events.forEach(ev => {
+            const pg = ev.pages.find(p => p.trigger === 'action');
+            if (!pg || !pg.sprite || pg.through) return;
+            if (!around(ev.x, ev.y).some(([x2, y2]) => H.canReach(map, x2, y2, ev.x, ev.y) && D.walkable(map, x2, y2))) D.problem('warning', D.evName(ev) + ' can\'t be reached: every square next to it is on a different height level or blocked.', D.whereEv(map, ev), 'Move it, change the heights around it, or add stairs.');
+          });
+        }
         const names = {}, targeted = new Set();
         map.events.forEach(e => e.pages.forEach(p => walk(p.commands, c => { if ((c.cmd === 'moveRoute' || c.cmd === 'balloon') && c.target) targeted.add(c.target); })));
         map.events.forEach(ev => {
@@ -346,6 +361,8 @@
         if (G.page(f).frontOnly && p.dir !== 'up') { D.add('info', D.evName(f.data) + ' can only be used from the front: stand below it and face up.', { where: D.whereEv(G.map, f.data, f.page) }); return; }
         return; // runs normally; the event log follows
       }
+      const high = front.find(e => fires(e) && !MF.Heights.canReach(G.map, p.x, p.y, e.x, e.y));
+      if (high) return D.add('info', 'Action button at ' + sq + ': ' + D.evName(high.data) + ' is on a different height level (' + MF.Heights.get(G.map, high.x, high.y) + ', the player is on ' + MF.Heights.get(G.map, p.x, p.y) + '), so it can\'t be reached from here.', { where: D.whereEv(G.map, high.data, high.page), hint: 'Put the event on the same level as where the player stands, or add stairs (Height mode in the editor).' });
       if (here.find(e => e.page >= 0 && G.page(e).trigger === 'action')) return;
       const inactive = front.filter(e => e.page < 0);
       inactive.forEach(e => D.add('warning', 'Action button at ' + sq + ': ' + D.evName(e.data) + ' is there but has no active page, so nothing happened. ' + D.cap(D.whyNoPage(e)) + '.', { where: D.whereEv(G.map, e.data), hint: 'Check the page conditions, and whether a Set switch or Self switch command that should turn it on has run.' }));
@@ -369,6 +386,15 @@
       const x0 = Math.max(0, Math.floor(cx / T)), y0 = Math.max(0, Math.floor(cy / T));
       const x1 = Math.min(m.width, Math.ceil((cx + G.screen.width) / T)), y1 = Math.min(m.height, Math.ceil((cy + G.screen.height) / T));
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (!G.flagsAt(x, y).pass) g.fillRect(x * T - cx, y * T - cy, T, T);
+      if (MF.Heights.hasHeights(m)) { // 2.5D: each raised square's level, and stairs
+        g.font = 'bold 7px sans-serif'; g.textAlign = 'right'; g.textBaseline = 'top';
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+          const hh = MF.Heights.get(m, x, y), st = MF.Heights.isStairs(m, x, y);
+          if (!hh && !st) continue;
+          g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(x * T - cx + T - 8, y * T - cy, 8, 8);
+          g.fillStyle = st ? '#ffe680' : '#fff'; g.fillText(st ? '≡' : String(hh), x * T - cx + T - 1, y * T - cy + 1);
+        }
+      }
       const COL = { action: '#3ddc84', touch: '#4aa3ff', sight: '#ffa630', auto: '#c77dff', encounter: '#2ed3c6' };
       g.lineWidth = 1;
       const labels = D.labelBox(), used = [];

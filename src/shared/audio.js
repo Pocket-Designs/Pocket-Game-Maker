@@ -30,6 +30,7 @@
     ['encounter', 'Wild battle starts', 'sounds/encounter.mp3'],
     ['door', 'Door / exit', 'sounds/door.mp3'],
     ['bump', 'Walk into a wall', 'sounds/bump.mp3'],
+    ['jump', 'Jump down a ledge (2.5D)', 'sounds/jump.mp3'],
     ['coin', 'Buy or sell', 'sounds/coin.mp3'],
     ['heal', 'Use a healing item', 'sounds/heal.mp3'],
     ['save', 'Game saved', 'sounds/save.mp3']

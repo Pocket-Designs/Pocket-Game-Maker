@@ -85,6 +85,7 @@
       "encounter": "sounds/encounter.mp3",
       "door": "sounds/door.mp3",
       "bump": "sounds/bump.mp3",
+      "jump": "sounds/jump.mp3",
       "coin": "sounds/coin.mp3",
       "heal": "sounds/heal.mp3",
       "save": "sounds/save.mp3"
@@ -373,6 +374,22 @@
           "dir": "up"
         },
         "description": "A quiet lake in the north."
+      },
+      {
+        "id": "hilltop",
+        "name": "Hilltop Trail",
+        "x": 0.72,
+        "y": 0.3,
+        "maps": [
+          "map005"
+        ],
+        "dest": {
+          "mapId": "map005",
+          "x": 2,
+          "y": 11,
+          "dir": "right"
+        },
+        "description": "Hills, ledges and a lookout in the mountains."
       }
     ]
   },

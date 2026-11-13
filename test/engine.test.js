@@ -252,4 +252,47 @@ for (let i = 0; i < 3000; i++) {
   ['worldmap-island', 'worldmap-continent', 'worldmap-parchment'].forEach(f => assert.ok(fs.existsSync(path.join(__dirname, '..', 'library', 'pictures', f + '.png')), f));
 }
 
+
+// 0.9.7: 2.5D height levels, stairs, ledges and ready-made shapes
+{
+  const HG = require('../src/shared/heights');
+  const m = { width: 5, height: 5 };
+  assert.ok(!HG.hasHeights(m) && !HG.active(m), 'a map without heights is flat');
+  assert.deepStrictEqual(HG.step(m, 0, 0, 1, 0), { ok: true, jump: false });
+  HG.ensure(m);
+  m.heights[1 * 5 + 1] = 1; m.heights[1 * 5 + 2] = 2; m.heights[2 * 5 + 1] = 0;
+  assert.strictEqual(HG.get(m, 1, 1), 1); assert.strictEqual(HG.get(m, 9, 9), 0, 'outside the map is level 0');
+  assert.ok(!HG.step(m, 1, 2, 1, 1).ok, 'can\'t walk up a cliff');
+  assert.deepStrictEqual(HG.step(m, 1, 1, 1, 2), { ok: true, jump: true }, 'walking down the screen off a ledge is a jump');
+  assert.ok(!HG.step(m, 1, 1, 0, 1).ok, 'no jumping sideways off a ledge');
+  assert.ok(!HG.step(m, 1, 1, 2, 1).ok, 'two levels apart, no stairs: blocked');
+  m.stairs[2 * 5 + 1] = 1;
+  assert.deepStrictEqual(HG.step(m, 1, 2, 1, 1), { ok: true, jump: false }, 'stairs go up one level');
+  assert.deepStrictEqual(HG.step(m, 1, 1, 1, 2), { ok: true, jump: false }, 'and down again, without a jump');
+  assert.ok(HG.canReach(m, 1, 2, 1, 1) && !HG.canReach(m, 0, 1, 1, 1));
+  m.view = { ledges: false }; m.stairs[2 * 5 + 1] = 0;
+  assert.ok(!HG.step(m, 1, 1, 1, 2).ok, 'ledge jumps can be turned off');
+  // resizing: the map grows by one column on the left
+  HG.resize(m, 5, 5, 6, 5, 1, 0);
+  assert.strictEqual(m.heights.length, 30); assert.strictEqual(m.heights[1 * 6 + 2], 1, 'heights move with the tiles');
+  m.width = 6;
+  // shapes: a small hill dropped at (1, 1) on level 0
+  const flat = { width: 8, height: 8 };
+  HG.applyShape(flat, HG.SHAPES.find(s => s.id === 'hill'), 1, 1);
+  assert.strictEqual(HG.get(flat, 2, 2), 1); assert.ok(HG.isStairs(flat, 2, 3) && HG.get(flat, 2, 3) === 1, 'stairs on the front of the hill');
+  assert.ok(HG.step(flat, 2, 4, 2, 3).ok && !HG.step(flat, 1, 4, 1, 3).ok, 'the hill is climbed by its stairs only');
+  HG.applyShape(flat, HG.SHAPES.find(s => s.id === 'hill'), 0, 6); // partly off the map: no error
+  HG.tidy({ width: 2, height: 1, heights: [0, 0], stairs: [0, 0] });
+  const tidyMap = { width: 2, height: 1, heights: [0, 0], stairs: [0, 0] }; HG.tidy(tidyMap);
+  assert.ok(!tidyMap.heights && !tidyMap.stairs, 'flat maps drop their height lists');
+  assert.strictEqual(HG.view({}).camera, 'top'); assert.strictEqual(HG.view({ view: { camera: 'tilted' } }).tilt, 0.55);
+  // the sample's Hilltop Trail: tilted camera, three levels, every stair joins two levels
+  const m5 = read('maps/map005.json');
+  assert.ok(HG.active(m5) && HG.view(m5).camera === 'tilted' && HG.maxHeight(m5) === 3);
+  for (let y = 0; y < m5.height; y++) for (let x = 0; x < m5.width; x++) if (HG.isStairs(m5, x, y))
+    assert.ok([[0, -1], [0, 1]].some(([dx, dy]) => Math.abs(HG.get(m5, x + dx, y + dy) - HG.get(m5, x, y)) === 1), 'stairs at ' + x + ',' + y + ' join two levels');
+  assert.ok(read('maps/map003.json').edges.right.mapId === 'map005', 'Lakeside leads east to Hilltop Trail');
+  assert.ok(fs.existsSync(path.join(__dirname, '..', 'library', 'sounds', 'jump.mp3')), 'the jump sound is in the library');
+}
+
 console.log('All engine tests passed. Outcomes over 3000 battles:', tally, 'longest:', turnsMax, 'turns');

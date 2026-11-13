@@ -141,7 +141,8 @@ system.wardrobe = { enabled: true, start: {} };
 system.worldMap = Object.assign(system.worldMap, { enabled: true, image: 'pictures/worldmap-island.png', title: 'Sample Island', travel: true, showUnvisited: true, locations: [
   { id: 'starter-town', name: 'Starter Town', x: 0.5, y: 0.78, maps: ['map001', 'map004'], dest: { mapId: 'map001', x: 9, y: 10, dir: 'down' }, description: 'Your home town.' },
   { id: 'route-1', name: 'Route 1', x: 0.5, y: 0.5, maps: ['map002'], dest: null, description: 'Tall grass full of wild monsters.' },
-  { id: 'lakeside', name: 'Lakeside', x: 0.52, y: 0.25, maps: ['map003'], dest: { mapId: 'map003', x: 9, y: 12, dir: 'up' }, description: 'A quiet lake in the north.' }] });
+  { id: 'lakeside', name: 'Lakeside', x: 0.52, y: 0.25, maps: ['map003'], dest: { mapId: 'map003', x: 9, y: 12, dir: 'up' }, description: 'A quiet lake in the north.' },
+  { id: 'hilltop', name: 'Hilltop Trail', x: 0.72, y: 0.3, maps: ['map005'], dest: { mapId: 'map005', x: 2, y: 11, dir: 'right' }, description: 'Hills, ledges and a lookout in the mountains.' }] });
 // Saving: the menu's Save, plus an autosave each time the player arrives on a new map. The bed in Your Room is a save point.
 system.saving = Object.assign(system.saving, { slots: 4, autosave: true, autoOnMap: true });
 // Opening and ending scenes (Scenes → Opening & Ending Scenes). The ending is played by the "Play the ending" event command.
@@ -311,6 +312,36 @@ qev(m3, 'Lakeside arrival', 1, 1, { type: 'cutscene', start: 'map', commands: [
 m2.edges.up = { mapId: 'map003', offset: 0 };
 m3.edges.down = { mapId: 'map002', offset: 0 };
 
+// Map 5: Hilltop Trail, a 2.5D map (Height mode in the editor): raised ground, cliffs, stairs, a one-way ledge, a
+// hill with a lookout on top, and the tilted camera. East of Lakeside.
+const m5 = blankMap('map005', 'Hilltop Trail', 24, 18);
+m5.bgm = 'music/route-open-road.mp3';
+m5.view = { camera: 'tilted', tilt: 0.55, step: 0.75, cliff: 'rock', ledges: true, sky: '#9fd8ff', haze: 0.3, shadows: true };
+m5.heights = new Array(24 * 18).fill(0); m5.stairs = new Array(24 * 18).fill(0);
+const H5 = (x0, y0, w, h, v) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) m5.heights[y * 24 + x] = v; };
+const S5 = (x, y, v) => { m5.heights[y * 24 + x] = v; m5.stairs[y * 24 + x] = 1; };
+for (let x = 0; x < 24; x++) { setT(m5, 1, x, 0, 4); setT(m5, 1, x, 17, 4); }
+for (let y = 0; y < 18; y++) { setT(m5, 1, 0, y, 4); setT(m5, 1, 23, y, 4); }
+setT(m5, 1, 0, 10, -1); setT(m5, 1, 0, 11, -1); // the way in from Lakeside
+fillT(m5, 0, 0, 10, 12, 2, PATH); fillT(m5, 0, 11, 10, 2, 6, PATH);
+// the west plateau: one level up, a stair path at the front, and a ledge to jump down
+H5(2, 2, 9, 7, 1); fillT(m5, 0, 3, 3, 5, 3, 1); S5(5, 9, 0); S5(6, 9, 0); fillT(m5, 0, 5, 9, 2, 1, 18);
+// the east hill: three levels with stairs between them, and a lookout on top
+H5(13, 2, 9, 8, 1); H5(15, 3, 5, 5, 2); H5(16, 3, 3, 2, 3);
+S5(17, 10, 0); S5(17, 8, 1); S5(17, 5, 2); fillT(m5, 0, 17, 5, 1, 6, 18);
+fillT(m5, 0, 14, 7, 1, 2, 1); fillT(m5, 0, 20, 7, 1, 2, 1);
+[[3, 6], [9, 3], [14, 3], [21, 8], [4, 14], [19, 14], [7, 15]].forEach(([x, y]) => setT(m5, 1, x, y, 22)); // bushes
+[[8, 6], [20, 3], [3, 13], [15, 13]].forEach(([x, y]) => setT(m5, 2, x, y, 6)); // flowers
+setT(m5, 2, 2, 15, 20); setT(m5, 2, 3, 15, 21); setT(m5, 1, 2, 16, 28); setT(m5, 1, 3, 16, 29);
+m5.encounters = { chance: 12, list: [{ speciesId: 'pebblit', minLevel: 5, maxLevel: 7, weight: 40 }, { speciesId: 'zapmouse', minLevel: 5, maxLevel: 7, weight: 30 }, { speciesId: 'fluffkin', minLevel: 5, maxLevel: 6, weight: 30 }] };
+qev(m5, 'Trail sign', 12, 12, { type: 'sign', title: 'Hilltop Trail', text: 'Climb the stairs to the lookout!\n\nYou can jump down a ledge, but you can\'t climb back up it.', look: 'post', sprite: 'characters/sign-post.png', frontOnly: true });
+qev(m5, 'Hiker on the lookout', 17, 3, { type: 'npc', role: 'talk', sprite: 'characters/hiker.png', dir: 'down', speaker: 'Hiker', move: 'turn', speed: 'slow', text: 'What a view! From up here you can see the whole island.' });
+qev(m5, 'Lass on the plateau', 8, 4, { type: 'npc', role: 'talk', sprite: 'characters/lass.png', dir: 'left', speaker: 'Lass', move: 'random', speed: 'slow', text: 'The quick way down is to jump off the ledge. Wheee!' });
+qev(m5, 'Super Potion on the plateau', 3, 7, { type: 'item', itemId: 'super_potion', amount: 1, message: '', look: 'visible', sprite: 'characters/ball.png' });
+m3.edges.right = { mapId: 'map005', offset: 0 };
+m5.edges.left = { mapId: 'map003', offset: 0 };
+setT(m3, 1, 19, 10, -1); setT(m3, 1, 19, 11, -1); fillT(m3, 0, 18, 10, 2, 2, PATH); // Lakeside's way east
+
 // Map 4: Your Room. Players can decorate it (Decorating feature) and change clothes at the wardrobe.
 const m4 = blankMap('map004', 'Your Room', 10, 8);
 m4.tilesetId = 'interior'; m4.bgm = ''; m4.battleback = 'battlebacks/town.png';
@@ -327,7 +358,7 @@ setT(m4, 1, 8, 4, 10); setT(m4, 1, 8, 5, 11); // the bed (two tiles: top and bot
 qev(m4, 'Bed (save point)', 8, 5, { type: 'savepoint', sprite: '', dir: 'down', text: 'Your bed. Have a rest and save your progress?', heal: true, mode: 'screen', ask: true });
 ev(m4, 'Mum\'s note', 6, 2, [page({ sprite: 'characters/sign-post.png', commands: [{ cmd: 'text', speaker: 'Note', text: 'I put a bed, a plant and a rug in your bag. Open the menu (X) and choose Decorate to place them. Face anything you have placed and press Z to turn it, move it or put it away. Love, Mum' }] })]);
 
-const mapInfos = [{ id: 'map001', name: 'Starter Town' }, { id: 'map002', name: 'Route 1' }, { id: 'map003', name: 'Lakeside' }, { id: 'map004', name: 'Your Room' }];
+const mapInfos = [{ id: 'map001', name: 'Starter Town' }, { id: 'map002', name: 'Route 1' }, { id: 'map003', name: 'Lakeside' }, { id: 'map004', name: 'Your Room' }, { id: 'map005', name: 'Hilltop Trail' }];
 
 J('project.json', { name: 'Sample Monster Quest', engine: 'Pocket-Game-Maker', formatVersion: 1 });
 J('data/system.json', system);
@@ -341,6 +372,7 @@ J('data/maps/map001.json', m1);
 J('data/maps/map002.json', m2);
 J('data/maps/map003.json', m3);
 J('data/maps/map004.json', m4);
+J('data/maps/map005.json', m5);
 J('data/credits.json', sampleCredits);
 W('CREDITS.md', CR.toMarkdown('Sample Monster Quest asset credits', sampleCredits, 'Every image, music track and sound in this game with where it came from and its licence. Edit this list in Pocket-Game-Maker under Database > Credits.'));
 console.log('Sample project written to', OUT);

@@ -1,7 +1,7 @@
 {
   "name": "pocket-game-maker",
   "productName": "Pocket-Game-Maker",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "A game maker for monster-taming and monster-capturing RPGs.",
   "homepage": "https://github.com/Pocket-Designs/pocket-game-maker",
   "main": "main.js",
@@ -29,6 +29,7 @@
     "test:pixel": "electron test/pixel-editor-main.js",
     "test:cutscene": "electron test/cutscene-main.js",
     "test:features": "electron test/features-main.js",
+    "test:view25": "electron test/view25-main.js",
     "dist:mac": "electron-builder --mac --publish never"
   },
   "devDependencies": {

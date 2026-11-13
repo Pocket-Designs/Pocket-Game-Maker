@@ -429,3 +429,17 @@ table.credits tr.missing td { background: rgba(255,159,67,.06); }
 .sc-slide-ed { display: flex; gap: 8px; width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: var(--bg); }
 .sc-slide-num { display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: bold; min-width: 26px; }
 .sc-slide-body { flex: 1; min-width: 0; }
+
+/* Height mode (2.5D): levels, tools and draggable shapes */
+.ht-levels { display: flex; gap: 4px; }
+.ht-level { width: 34px; height: 30px; padding: 0; font-weight: bold; background: linear-gradient(var(--lv), var(--lv)), var(--bg); }
+.ht-level.on { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ht-tools, .ht-size { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; align-items: center; }
+.ht-size .muted { margin-right: 4px; font-size: 11px; }
+.ht-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; }
+.ht-shape { border: 1px solid var(--line); border-radius: 6px; padding: 6px 4px 4px; text-align: center; cursor: grab; background: var(--bg); user-select: none; }
+.ht-shape:hover { border-color: var(--accent); }
+.ht-shape:active { cursor: grabbing; }
+.ht-shape-pic { image-rendering: pixelated; display: block; margin: 0 auto 4px; max-width: 100%; }
+.ht-shape-name { font-size: 11px; line-height: 1.2; }
+.ht-shape.on { border-color: var(--accent); background: var(--bg4); }

@@ -255,6 +255,7 @@
       G.cols = G.tsImg ? Math.floor(G.tsImg.width / T) : 1;
       G.below = document.createElement('canvas'); G.above = document.createElement('canvas');
       G.below.width = G.above.width = m.width * T; G.below.height = G.above.height = m.height * T;
+      View25.prepare(G); // 2.5D: height levels and the tilted camera (view25.js)
       // Squares with an animated tile are redrawn whenever the animation frame changes.
       G.animCells = [];
       for (let yy = 0; yy < m.height; yy++) for (let xx = 0; xx < m.width; xx++) {
@@ -275,6 +276,7 @@
     },
     // Draw every layer of one map square onto the below/above canvases (tiles drawn above the player go on top).
     drawCell(xx, yy, timeMs) {
+      if (G.v25 && G.v25.hasH) return View25.drawCell(G, xx, yy, timeMs);
       const m = G.map, T = G.tileSize;
       const bg = G.below.getContext('2d'), ag = G.above.getContext('2d');
       bg.clearRect(xx * T, yy * T, T, T); ag.clearRect(xx * T, yy * T, T, T);
@@ -326,6 +328,7 @@
       if (x < 0 || y < 0 || x >= m.width || y >= m.height) return false;
       if (who === G.player && Input.held.through) return true;
       if (!G.flagsAt(x, y).pass) return false;
+      if (who && who.x != null && !MF.Heights.step(m, who.x, who.y, x, y).ok) return false; // 2.5D: cliffs and ledges
       if (G.blockingEventAt(x, y, who)) return false;
       if (window.Home && Home.blockedAt(G, x, y)) return false;
       if (who !== G.player && G.player.x === x && G.player.y === y) return false;
@@ -380,7 +383,7 @@
           const nx = p.x + dx, ny = p.y + dy, m = G.map;
           const off = nx < 0 || ny < 0 || nx >= m.width || ny >= m.height;
           if (off && (m.edges || {})[d] && G.db.maps[m.edges[d].mapId] && !Input.held.through) G.crossEdge(d);
-          else if (G.canMove(p, nx, ny)) G.movePlayerTo(nx, ny);
+          else if (G.canMove(p, nx, ny)) { if (!Input.held.through && MF.Heights.step(m, p.x, p.y, nx, ny).jump) GameAudio.se('jump'); G.movePlayerTo(nx, ny); }
           else {
             const ev = G.evs.find(e => e.x === nx && e.y === ny && e.page >= 0 && G.page(e).trigger === 'touch' && !G.page(e).area);
             if (ev) G.runEvent(ev);
@@ -518,7 +521,8 @@
       if (G.scene !== 'map' || G.busy || G.player.moving) return;
       if (a === 'ok') {
         const p = G.player, [dx, dy] = DIRV[p.dir];
-        const front = G.evs.find(e => e.x === p.x + dx && e.y === p.y + dy && e.page >= 0 && (G.page(e).trigger === 'action' || G.page(e).trigger === 'sight'));
+        // 2.5D: only events on the same level (or joined by stairs) can be reached
+        const front = G.evs.find(e => e.x === p.x + dx && e.y === p.y + dy && e.page >= 0 && (G.page(e).trigger === 'action' || G.page(e).trigger === 'sight') && MF.Heights.canReach(G.map, p.x, p.y, e.x, e.y));
         const here = G.evs.find(e => e.x === p.x && e.y === p.y && e.page >= 0 && G.page(e).trigger === 'action');
         // Signs can be marked readable only from the front (player below, facing up).
         const ev = (front && !(G.page(front).frontOnly && p.dir !== 'up')) ? front : here;
@@ -841,47 +845,62 @@
       const g = G.ctx, W = G.screen.width, H = G.screen.height;
       g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
       if (!G.map || !G.player || (G.scene !== 'map' && G.scene !== 'battle')) return;
-      const T = G.tileSize, p = G.player, m = G.map;
-      const centre = G.camCentre();
-      let cx = centre.x - W / 2, cy = centre.y - H / 2;
-      const mw = m.width * T, mh = m.height * T;
-      cx = mw <= W ? (mw - W) / 2 : Math.max(0, Math.min(mw - W, cx));
-      cy = mh <= H ? (mh - H) / 2 : Math.max(0, Math.min(mh - H, cy));
-      if (G.shake && performance.now() < G.shake.until) { cx += (Math.random() * 2 - 1) * G.shake.power; cy += (Math.random() * 2 - 1) * G.shake.power * 0.5; }
-      cx = Math.round(cx); cy = Math.round(cy);
-      G.camX = cx; G.camY = cy;
-      g.drawImage(G.below, -cx, -cy);
-      if (window.Home) Home.drawFloor(G, g, cx, cy);
+      const T = G.tileSize;
+      if (G.v25 && G.v25.on) View25.draw(G); // 2.5D: height levels and/or the tilted camera (view25.js)
+      else {
+        const m = G.map, centre = G.camCentre();
+        let cx = centre.x - W / 2, cy = centre.y - H / 2;
+        const mw = m.width * T, mh = m.height * T;
+        cx = mw <= W ? (mw - W) / 2 : Math.max(0, Math.min(mw - W, cx));
+        cy = mh <= H ? (mh - H) / 2 : Math.max(0, Math.min(mh - H, cy));
+        if (G.shake && performance.now() < G.shake.until) { cx += (Math.random() * 2 - 1) * G.shake.power; cy += (Math.random() * 2 - 1) * G.shake.power * 0.5; }
+        cx = Math.round(cx); cy = Math.round(cy);
+        G.camX = cx; G.camY = cy;
+        g.drawImage(G.below, -cx, -cy);
+        if (window.Home) Home.drawFloor(G, g, cx, cy);
+        const chars = G.charList(cx, cy);
+        chars.sort((a, b) => a.c.py - b.c.py);
+        chars.forEach(it => G.drawChar(g, it, cx, cy));
+        g.drawImage(G.above, -cx, -cy);
+        if (window.Home) Home.drawCursor(G, g, cx, cy);
+        if (window.Debug && Debug.overlay) Debug.drawOverlay(g, cx, cy);
+      }
+      // speech marks and balloons are page elements placed over the canvas
+      const lift = c => (G.v25 && G.v25.hasH ? View25.liftOf(G, c).ground : 0);
+      if (G.exclaim) {
+        const e = G.exclaim.ev, at = G.toScreen(e.px * T + T / 2, e.py * T - T - lift(e));
+        Object.assign(G.exclaim.el.style, { left: (at.x - 3) + 'px', top: at.y + 'px' });
+      }
+      (G.balloons || []).forEach(b => { const at = G.toScreen(b.ch.px * T + T / 2, b.ch.py * T - T - 4 - lift(b.ch)); Object.assign(b.el.style, { left: (at.x - 7) + 'px', top: at.y + 'px' }); });
+    },
+    toScreen(wx, wy) { return G.v25 && G.v25.on ? View25.toScreen(G, wx, wy) : { x: wx - G.camX, y: wy - G.camY }; },
+    // Everything that stands on the map: events with a sprite, the player, furniture, the following monster.
+    charList(cx, cy) {
+      const p = G.player;
       const chars = G.evs.filter(e => e.page >= 0 && G.page(e).sprite).map(e => ({ c: e, sprite: G.page(e).sprite }));
       chars.push({ c: p, sprite: p.sprite, sheet: window.Home && Home.playerSheet(G) });
       if (window.Home) chars.push(...Home.sprites(G, cx, cy));
       const fm = G.follower && G.followerMon();
       if (fm) { const sp = G.db.species(fm.speciesId); chars.push({ c: G.follower, sprite: sp && sp.overworld, mon: sp }); }
-      chars.sort((a, b) => a.c.py - b.c.py);
-      chars.forEach(({ c, sprite, mon, sheet, draw }) => {
-        if (draw) return draw(g);
-        if (mon && !sprite) { // no walking sprite: draw the monster's front picture, bobbing as it walks
-          const img = G.img(mon.front); if (!img) return;
-          const S = Math.round(T * 1.15), bob = c.moving ? Math.abs(Math.sin(c.anim * Math.PI)) * 2 : (Math.sin(performance.now() / 300) + 1) * 0.5;
-          const dx = Math.round(c.px * T + (T - S) / 2 - cx), dy = Math.round(c.py * T + T - S - cy - bob);
-          g.save(); if (c.dir === 'right') { g.translate(dx + S, dy); g.scale(-1, 1); g.drawImage(img, 0, 0, S, S); } else g.drawImage(img, dx, dy, S, S); g.restore();
-          return;
-        }
-        const img = sheet || G.img(sprite);
-        if (!img) return;
-        const fw = img.width / 3, fh = img.height / 4;
-        const frame = c.moving ? [1, 0, 1, 2][Math.floor(c.anim * 4) % 4] : 1;
-        const dx = Math.round(c.px * T + (T - fw) / 2 - cx), dy = Math.round(c.py * T + T - fh - cy);
-        g.drawImage(img, frame * fw, (DIR_ROW[c.dir] || 0) * fh, fw, fh, dx, dy, fw, fh);
-      });
-      g.drawImage(G.above, -cx, -cy);
-      if (window.Home) Home.drawCursor(G, g, cx, cy);
-      if (window.Debug && Debug.overlay) Debug.drawOverlay(g, cx, cy);
-      if (G.exclaim) {
-        const e = G.exclaim.ev;
-        Object.assign(G.exclaim.el.style, { left: (e.px * T + T / 2 - cx - 3) + 'px', top: (e.py * T - T - cy) + 'px' });
+      return chars;
+    },
+    // Draw one character; cy is already lowered by however high it stands (2.5D).
+    drawChar(g, { c, sprite, mon, sheet, draw }, cx, cy) {
+      const T = G.tileSize;
+      if (draw) return draw(g);
+      if (mon && !sprite) { // no walking sprite: draw the monster's front picture, bobbing as it walks
+        const img = G.img(mon.front); if (!img) return;
+        const S = Math.round(T * 1.15), bob = c.moving ? Math.abs(Math.sin(c.anim * Math.PI)) * 2 : (Math.sin(performance.now() / 300) + 1) * 0.5;
+        const dx = Math.round(c.px * T + (T - S) / 2 - cx), dy = Math.round(c.py * T + T - S - cy - bob);
+        g.save(); if (c.dir === 'right') { g.translate(dx + S, dy); g.scale(-1, 1); g.drawImage(img, 0, 0, S, S); } else g.drawImage(img, dx, dy, S, S); g.restore();
+        return;
       }
-      (G.balloons || []).forEach(b => Object.assign(b.el.style, { left: (b.ch.px * T + T / 2 - cx - 7) + 'px', top: (b.ch.py * T - T - 4 - cy) + 'px' }));
+      const img = sheet || G.img(sprite);
+      if (!img) return;
+      const fw = img.width / 3, fh = img.height / 4;
+      const frame = c.moving ? [1, 0, 1, 2][Math.floor(c.anim * 4) % 4] : 1;
+      const dx = Math.round(c.px * T + (T - fw) / 2 - cx), dy = Math.round(c.py * T + T - fh - cy);
+      g.drawImage(img, frame * fw, (DIR_ROW[c.dir] || 0) * fh, fw, fh, dx, dy, fw, fh);
     }
   };
 

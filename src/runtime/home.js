@@ -54,10 +54,15 @@
       g.restore();
     },
     // Rugs and other walk-over items are drawn on the floor; furniture is sorted with the characters.
-    drawFloor(G, g, cx, cy) {
+    // row: only the items whose bottom edge is on that map row (2.5D maps draw the floor one row at a time)
+    drawFloor(G, g, cx, cy, row) {
       if (!G.state || !G.state.decor || !G.map) return;
       const T = G.tileSize;
-      (G.state.decor[G.map.id] || []).forEach(e => { const d = Home.info(G, e.item); if (d && !d.blocks) Home.drawItem(G, g, d, e.rot || 0, e.x * T - cx, e.y * T - cy); });
+      (G.state.decor[G.map.id] || []).forEach(e => {
+        const d = Home.info(G, e.item); if (!d || d.blocks) return;
+        if (row != null && e.y + Home.size(d, e.rot || 0).h - 1 !== row) return;
+        Home.drawItem(G, g, d, e.rot || 0, e.x * T - cx, e.y * T - cy);
+      });
     },
     sprites(G, cx, cy) {
       if (!G.state || !G.state.decor || !G.map) return [];

@@ -37,7 +37,7 @@
     async action(a) {
       if (a === 'new') return App.newProjectDialog();
       if (a === 'open') return App.openProject();
-      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.6 · © 2026 Pocket-Designs\nContact: pocket-designs@proton.me\nReleased under the MIT Licence.');
+      if (a === 'about') return UI.alert('About Pocket-Game-Maker', 'Pocket-Game-Maker — a game maker for monster-taming and monster-capturing RPGs.\n\nVersion 0.9.7 · © 2026 Pocket-Designs\nContact: pocket-designs@proton.me\nReleased under the MIT Licence.');
       if (!App.proj) return UI.toast('Open or create a project first');
       if (a === 'save') return App.save();
       if (a === 'playtest') return App.playtest();
@@ -64,7 +64,7 @@
         return;
       }
       const k = e.key.toLowerCase();
-      const map = { m: () => App.setMode('map'), e: () => App.setMode('event'), b: () => App.setTool('pencil'), r: () => App.setTool('rect'), f: () => App.setTool('fill'), x: () => App.setTool('erase'),
+      const map = { m: () => App.setMode('map'), e: () => App.setMode('event'), h: () => App.setMode('height'), b: () => App.setTool('pencil'), r: () => App.setTool('rect'), f: () => App.setTool('fill'), x: () => App.setTool('erase'),
         d: () => { const c = $('#chk-dim'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); }, p: () => { const c = $('#chk-pass'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); } };
       if (/^[1-9]$/.test(k) && App.map() && +k <= App.map().layers.length) { App.setLayer(+k - 1); e.preventDefault(); return; }
       if (map[k]) { map[k](); e.preventDefault(); }
@@ -89,6 +89,7 @@
       $('#tool-seg').style.opacity = m === 'map' ? 1 : .35;
       $('#layer-seg').style.opacity = m === 'map' ? 1 : .35;
       if (m === 'map') App.selectedEventId = null;
+      if (m === 'height') { App.insp.closed.heights = false; if (App.insp.one) App.insp.current = 'heights'; } // show the height tools
       MapEditor.render(); App.renderInspector();
     },
     setTool(t) { App.tool = t; App.setMode('map'); document.querySelectorAll('[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === t)); },
@@ -389,6 +390,7 @@
         }
         return out;
       });
+      MF.Heights.resize(m, ow, oh, w, hh, dx, dy); // 2.5D heights and stairs move with the tiles
       m.width = w; m.height = hh;
       const before = m.events.length;
       m.events.forEach(e => { e.x += dx; e.y += dy; });
@@ -498,6 +500,7 @@
           pg.commands && pg.commands.length ? h('ol', { style: { paddingLeft: '18px', margin: 0 } }, pg.commands.map(c => h('li', null, EventEditor.summary(c)))) : h('div', { class: 'muted' }, 'No commands'))));
         return;
       }
+      if (App.mode === 'height') box.appendChild(HeightTools.panel()); // 2.5D height painting (heights-panel.js)
       const KEY = { 'Map properties': 'map', 'Music': 'music', 'Map edges': 'edges', 'Wild encounters': 'encounters', 'Tips': 'tips' };
       const sec = (title, ...kids) => App.inspSection(KEY[title] || title, title, ...kids);
       box.appendChild(sec('Map properties',
@@ -510,6 +513,7 @@
         (App.proj.system.decorating || {}).enabled ? field('Players can decorate this map (their home)', m, 'decoratable', { type: 'checkbox' }) : null,
         h('div', { class: 'row', style: { marginTop: '6px' } }, h('button', { class: 'danger small', disabled: App.proj.mapInfos.length <= 1, title: App.proj.mapInfos.length <= 1 ? 'A project needs at least one map' : 'Delete this map', onclick: () => App.deleteMap(m.id) }, 'Delete map…'))));
 
+      box.appendChild(HeightTools.viewSection(m));
       box.appendChild(sec('Music', UI.audioPicker('Background music', m, 'bgm', 'music', { none: 'Keep the music that\'s playing', specials: [['none', 'Silence (stop the music)']] }),
         h('p', { class: 'muted' }, 'Plays when the player enters this map. Import your own MP3 or FLAC files, or manage music in Database → Music & sounds.')));
 
@@ -557,7 +561,8 @@
       box.appendChild(sec('Tips', h('ul', { class: 'muted', style: { paddingLeft: '16px', margin: 0 } },
         h('li', null, 'Right-click on the map picks a tile (Map mode) or opens the event menu (Events mode).'),
         h('li', null, 'Each layer has its own settings (Layers panel, double-click a layer): walkable or blocking, drawn above the player, wild encounters. If any layer blocks a square, it is blocked.'),
-        h('li', null, 'Shortcuts: B/R/F/X tools, 1–9 layers, D dim other layers, M/E modes, P passability, + / − zoom, Ctrl+Z/Y undo/redo. In a playtest: F9 debugger, F10 event overlay.'),
+        h('li', null, 'Height mode (H): raise the ground into hills, cliffs and ledges for a 2.5D look, and drag ready-made shapes onto the map.'),
+        h('li', null, 'Shortcuts: B/R/F/X tools, 1–9 layers, D dim other layers, M/E/H modes, P passability, + / − zoom, Ctrl+Z/Y undo/redo. In a playtest: F9 debugger, F10 event overlay.'),
         h('li', null, 'Events mode: right-click an empty square for quick events (treasure chest, item on the ground, sign, shopkeeper, exit / door, monster encounter area).'),
         h('li', null, 'Need more tiles or sprites? Click Assets (F10) to add free pixel art from the asset library.'))));
     }

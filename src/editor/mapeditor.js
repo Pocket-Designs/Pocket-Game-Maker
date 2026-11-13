@@ -22,6 +22,7 @@
       c.addEventListener('dblclick', e => this.onDbl(e));
       c.addEventListener('contextmenu', e => e.preventDefault());
       c.addEventListener('mouseleave', () => { this.hover = null; this.render(); });
+      HeightTools.initDrop(c); // drag hills and cliffs onto the map (Height mode)
       this.pal.addEventListener('mousedown', e => this.palDown(e));
       this.pal.addEventListener('contextmenu', e => e.preventDefault());
       this.pal.addEventListener('mousemove', e => {
@@ -123,6 +124,7 @@
           else if (f.enc) { g.fillStyle = 'rgba(80,255,120,.28)'; g.fillRect(x * S, y * S, S, S); }
         }
       }
+      HeightTools.drawOverlay(g, m, S); // 2.5D height levels and cliff edges
       if (App.mode === 'map' && (m.layerInfo[App.layer] || {}).above) { g.fillStyle = 'rgba(60,120,255,.08)'; g.fillRect(0, 0, c.width, c.height); }
 
       if (App.showGrid && z >= 1) {
@@ -233,6 +235,8 @@
           g.strokeStyle = App.tool === 'erase' ? '#ff5c6c' : '#ff9f43'; g.lineWidth = 2;
           g.strokeRect(this.hover.x * S + 1, this.hover.y * S + 1, bw * S - 2, bh * S - 2);
         }
+      } else if (App.mode === 'height') {
+        HeightTools.drawCursor(g, m, S, this.hover);
       } else if (this.hover && App.mode === 'event') {
         g.strokeStyle = 'rgba(255,159,67,.8)'; g.setLineDash([4, 3]); g.lineWidth = 1;
         g.strokeRect(this.hover.x * S + .5, this.hover.y * S + .5, S - 1, S - 1); g.setLineDash([]);
@@ -308,6 +312,7 @@
     onDown(e) {
       const c = this.cellAt(e); if (!c || !c.inside) return;
       const m = App.map();
+      if (App.mode === 'height') return HeightTools.down(c, e);
       if (App.mode === 'map') {
         if (e.button === 2) { this.pickTile(c.x, c.y); return; }
         if (e.button !== 0) return;
@@ -354,14 +359,17 @@
         document.getElementById('st-pos').textContent = 'X ' + c.x + '  Y ' + c.y + '   (' + m.name + ')';
         const ev = this.eventAt(c.x, c.y);
         const tname = tsd && tsd.names && t >= 0 && tsd.names[t] ? ' ' + tsd.names[t] : '';
-        document.getElementById('st-tile').textContent = 'Layer ' + (App.layer + 1) + ' (' + ((m.layerInfo[App.layer] || {}).name || '') + ') tile ' + (t < 0 ? '—' : t + tname) + '  ·  ' + (f.pass ? 'passable' : 'blocked') + (f.enc ? ' · encounters' : '') + (ev ? '  ·  event: ' + ev.name : '');
+        if (App.mode === 'height') document.getElementById('st-tile').textContent = HeightTools.status(m, c.x, c.y) + (ev ? '  ·  event: ' + ev.name : '');
+        else document.getElementById('st-tile').textContent = 'Layer ' + (App.layer + 1) + ' (' + ((m.layerInfo[App.layer] || {}).name || '') + ') tile ' + (t < 0 ? '—' : t + tname) + '  ·  ' + (f.pass ? 'passable' : 'blocked') + (f.enc ? ' · encounters' : '') + (ev ? '  ·  event: ' + ev.name : '');
       }
       if (this.drag && this.drag.kind === 'paint' && c.inside) this.paintAt(c.x, c.y);
+      if (this.drag && this.drag.kind === 'height' && c.inside) HeightTools.paint(c.x, c.y);
       if (!prev || !this.hover || prev.x !== this.hover.x || prev.y !== this.hover.y || this.drag) this.render();
     },
     onUp(e) {
       const d = this.drag; this.drag = null;
       if (!d) return;
+      if (d.kind === 'height') { HeightTools.up(); this.render(); return; }
       const m = App.map();
       if (d.kind === 'rect' && this.hover) {
         this.pushUndo();
@@ -435,10 +443,12 @@
     },
 
     /* ---------- history ---------- */
-    snapshot() { const m = App.map(); return m ? { mapId: m.id, w: m.width, h: m.height, layers: m.layers.map(l => l.slice()), info: JSON.stringify(m.layerInfo), events: JSON.stringify(m.events) } : null; },
+    snapshot() { const m = App.map(); return m ? this.snapOf(m) : null; },
+    snapOf(m) { return { mapId: m.id, w: m.width, h: m.height, layers: m.layers.map(l => l.slice()), info: JSON.stringify(m.layerInfo), events: JSON.stringify(m.events), hts: JSON.stringify({ heights: m.heights, stairs: m.stairs }) }; },
     restore(s) {
       const m = App.proj.maps[s.mapId]; if (!m) return;
       m.layers = s.layers; m.width = s.w; m.height = s.h; m.events = JSON.parse(s.events); if (s.info) m.layerInfo = JSON.parse(s.info);
+      if (s.hts) { const o = JSON.parse(s.hts); if (o.heights) m.heights = o.heights; else delete m.heights; if (o.stairs) m.stairs = o.stairs; else delete m.stairs; }
       if (App.layer >= m.layers.length) App.layer = m.layers.length - 1;
       if (App.mapId !== s.mapId) App.selectMap(s.mapId);
       this.cacheMapId = null; App.markDirty(); this.render(); App.renderInspector(); App.renderMapList(); if (window.LayersPanel) LayersPanel.render();
@@ -447,13 +457,13 @@
     undo() {
       const s = this.undoStack.pop(); if (!s) return UI.toast('Nothing to undo');
       const cur = App.proj.maps[s.mapId];
-      if (cur) this.redoStack.push({ mapId: s.mapId, w: cur.width, h: cur.height, layers: cur.layers.map(l => l.slice()), info: JSON.stringify(cur.layerInfo), events: JSON.stringify(cur.events) });
+      if (cur) this.redoStack.push(this.snapOf(cur));
       this.restore(s);
     },
     redo() {
       const s = this.redoStack.pop(); if (!s) return UI.toast('Nothing to redo');
       const cur = App.proj.maps[s.mapId];
-      if (cur) this.undoStack.push({ mapId: s.mapId, w: cur.width, h: cur.height, layers: cur.layers.map(l => l.slice()), info: JSON.stringify(cur.layerInfo), events: JSON.stringify(cur.events) });
+      if (cur) this.undoStack.push(this.snapOf(cur));
       this.restore(s);
     },
     resetHistory() { this.undoStack = []; this.redoStack = []; this.sprites = {}; }

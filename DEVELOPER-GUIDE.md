@@ -1,10 +1,10 @@
 # Pocket-Game-Maker Developer Guide
 
-Version 0.9.6 · 9 November 2026 · Pocket-Designs
+Version 0.9.7 · 13 November 2026 · Pocket-Designs
 
 ## About this guide
 
-This guide is for anyone changing Pocket-Game-Maker's own code. It describes version 0.9.6. If you make games with Pocket-Game-Maker, read the User Guide instead.
+This guide is for anyone changing Pocket-Game-Maker's own code. It describes version 0.9.7. If you make games with Pocket-Game-Maker, read the User Guide instead.
 
 It covers setting up, how the code is laid out, the tests, the asset generators, building installers, **every place the version number is written**, a release checklist, and recipes for adding features.
 
@@ -51,9 +51,9 @@ The code is plain JavaScript with no bundler: the editor and the game load their
 | --- | --- |
 | `main.js` | Electron main process: windows, the menu bar, file access, projects, saves, the asset library, playtest and export (IPC handlers) |
 | `preload.js` | The safe bridge `window.api` that the editor and playtest pages call |
-| `src/editor/` | The editor page (`index.html`, `editor.css`) and its modules: `editor.js` (App, toolbar, actions), `mapeditor.js`, `layers-panel.js`, `events.js` (event commands), `quickevents.js`, `database.js`, `library.js`, `importer.js`, `export.js`, `pixel-editor.js`, `scenes-editor.js`, `ui.js` (the UI toolkit) |
-| `src/runtime/` | The game engine that playtests and exported games run: `play.html`, `play.css`, `game.js`, `menus.js`, `battleScene.js`, `shop.js`, `home.js`, `scenes.js`, `worldmap.js`, `touch.js`, `audio.js`, `ui.js`, `web-api.js`, `debugger.js` (playtest only) |
-| `src/shared/` | Code used by both the editor and the game: `core.js`, `battle.js`, `tiles.js`, `layers.js`, `quick.js` (quick event builders), `gameconfig.js` (Database defaults), `credits.js`, `audio.js` |
+| `src/editor/` | The editor page (`index.html`, `editor.css`) and its modules: `editor.js` (App, toolbar, actions), `mapeditor.js`, `layers-panel.js`, `events.js` (event commands), `quickevents.js`, `database.js`, `library.js`, `importer.js`, `export.js`, `pixel-editor.js`, `scenes-editor.js`, `heights-panel.js` (Height mode, 2.5D), `ui.js` (the UI toolkit) |
+| `src/runtime/` | The game engine that playtests and exported games run: `play.html`, `play.css`, `game.js`, `menus.js`, `battleScene.js`, `shop.js`, `home.js`, `scenes.js`, `worldmap.js`, `view25.js` (2.5D drawing), `touch.js`, `audio.js`, `ui.js`, `web-api.js`, `debugger.js` (playtest only) |
+| `src/shared/` | Code used by both the editor and the game: `core.js`, `battle.js`, `tiles.js`, `layers.js`, `heights.js` (2.5D height levels and walking rules), `quick.js` (quick event builders), `gameconfig.js` (Database defaults), `credits.js`, `audio.js` |
 | `lib/exporter.js` | Exports a game for Windows, macOS, Linux, the web and Android, plus store upload scripts |
 | `library/` | The built-in Asset Library (tilesets, characters, monsters, pictures, music, sounds) with `library.json`, `CREDITS.md` and `credits.csv` |
 | `templates/sample/` | The sample project, made by `tools/gen-sample.js` |
@@ -98,6 +98,7 @@ Pocket-Game-Maker has one Electron main process and two kinds of window, the edi
 - **Main process (`main.js`):** creates the windows and the menu bar, and handles every file job through IPC: projects, saves (slot 0 is the autosave), the Asset Library, imports and exports. A menu item sends an action string (such as `'scenes'`) to the editor, which handles it in `App.action`.
 - **Editor (`src/editor`):** one page, `index.html`. `editor.js` holds `App` and the project in memory (`App.proj`); other modules add global objects such as `DB`, `QuickEvent` and `ScenesEditor`. `ui.js` provides `UI.field`, `UI.modal`, the pickers and `h()` for building elements.
 - **Playtest (`src/runtime`):** `play.html` loads the engine. `game.js` holds `G` (the game state, maps, events and commands); other files add `Menus`, `BattleScene`, `Scenes`, `WorldMap`, `Home` and the UI helpers `RUI`. `debugger.js` (F9, F10) is only loaded for playtests.
+- **2.5D:** `src/shared/heights.js` holds the height data, the walking rules (`step`, `canReach`), the ready-made shapes and the view settings. `src/runtime/view25.js` draws maps with heights or the tilted camera: each map row is pre-drawn into a strip, strips are drawn back to front with each row's characters after it, and the tilted camera draws the frame into a larger canvas then squeezes it onto the screen line by line. Maps without heights and with the top-down camera use the original drawing in `game.js`.
 - **Shared (`src/shared`):** code both sides need, loaded as `MF.*` in the browser and with `require` in Node tests. `gameconfig.js` (`withDefaults`) is where every Database setting gets its default.
 - **Exported games:** `lib/exporter.js` copies the runtime and shared files listed in `RUNTIME_FILES` into a small Electron app, a web folder or an Android project. In the web version, `web-api.js` provides its own `window.api` that saves to browser storage.
 
@@ -115,6 +116,7 @@ Run `npm test` after every change; run the Electron tests before a release. `npm
 | Pixel editor | `npm run test:pixel` | Tools, layers, saving pictures |
 | Cut scenes | `npm run test:cutscene` | The Cut scene quick event and movies |
 | Features (0.9.6) | `npm run test:features` | Scenes window, World map tab, pockets, Options, saving, autosave, world map travel, the bed save point, the ending, Continue |
+| 2.5D (0.9.7) | `npm run test:view25` | Height mode tools, dragging shapes, undo, resize, the 2.5D view settings; in the game: tilted camera, cliffs, stairs, ledge jumps, talking on the lookout, debugger checks |
 | Export | `npx electron test/export-main.js export-out` | Exports the sample to every platform |
 
 On Linux without a screen, put `xvfb-run -a` in front and add `--no-sandbox --disable-gpu`, for example:
@@ -134,7 +136,7 @@ All the built-in art, music and the sample game are made by scripts in `tools/`,
 | Script | Run it with | Makes |
 | --- | --- | --- |
 | `gen-library.js` + `gen-library-sprites.js` | `npm run gen-library` | The Asset Library: tilesets, characters, monsters, battle backgrounds, `library.json` and its credits |
-| `gen-audio.js` | `npm run gen-audio` (needs ffmpeg with MP3) | The preset music and sound effects |
+| `gen-audio.js` | `npm run gen-audio` (needs ffmpeg with MP3); `node tools/gen-audio.js --only jump` remakes just the named sound effects | The preset music and sound effects |
 | `gen-worldmaps.py` | `python3 tools/gen-worldmaps.py` | The three world map pictures and their `library.json` entries |
 | `gen-movie.py` | `python3 tools/gen-movie.py` | The *Monster News* movie and the TV sprite |
 | `gen-art-templates.py` | `python3 tools/gen-art-templates.py` | The tileset and sprite art templates |
@@ -165,7 +167,7 @@ Windows installers can be built on Linux with `build/build-win.sh` (it needs win
 
 - **Push to main or a pull request:** tests, then a build on all three systems. Nothing is kept.
 - **Actions → Build → Run workflow:** the installers go to a draft release called *Test build N* on the Releases page. Only the newest 3 are kept.
-- **Push a version tag** (`git tag v0.9.6 && git push origin v0.9.6`): the installers go to a draft release named after the tag. Check it, then click **Publish**.
+- **Push a version tag** (`git tag v0.9.7 && git push origin v0.9.7`): the installers go to a draft release named after the tag. Check it, then click **Publish**.
 
 Installers are never stored as Actions artifacts, so they don't use the account's Actions storage. Each run also deletes old artifacts. To sign builds, add the secrets listed at the top of the workflow: `WIN_CSC_LINK`, `WIN_CSC_KEY_PASSWORD`, `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`.
 
@@ -175,19 +177,19 @@ The app's version is in **six places**. Places 1–4 must change for every relea
 
 | # | File | Where | Example | How to change it |
 | --- | --- | --- | --- | --- |
-| 1 | `package.json` | Line 4, `"version"` | `"version": "0.9.6"` | By hand, or `npm version 0.9.7 --no-git-tag-version` (also does #2) |
-| 2 | `package-lock.json` | The first two `"version"` lines (top level and `packages[""]`) | `"version": "0.9.6"` | `npm install` after #1, or by hand. Leave the other `"version"` lines alone: they belong to dependencies |
-| 3 | `src/editor/editor.js` | Line 40, the **Help → About** message | `Version 0.9.6 · © 2026 Pocket-Designs` | By hand (also update the year when it changes) |
-| 4 | User Guide doc | The line under the title | `Version 0.9.6 · date · author` | By hand in the doc, and update the date |
-| 5 | `README.md` | Line 28, the example tag | `git tag v0.9.6` | Optional: it is only an example |
-| 6 | `.github/workflows/build.yml` | Line 8, a comment with the example tag | `git tag v0.9.6` | Optional: it is only an example |
+| 1 | `package.json` | Line 4, `"version"` | `"version": "0.9.7"` | By hand, or `npm version 0.9.8 --no-git-tag-version` (also does #2) |
+| 2 | `package-lock.json` | The first two `"version"` lines (top level and `packages[""]`) | `"version": "0.9.7"` | `npm install` after #1, or by hand. Leave the other `"version"` lines alone: they belong to dependencies |
+| 3 | `src/editor/editor.js` | Line 40, the **Help → About** message | `Version 0.9.7 · © 2026 Pocket-Designs` | By hand (also update the year when it changes) |
+| 4 | User Guide doc | The line under the title | `Version 0.9.7 · date · author` | By hand in the doc, and update the date |
+| 5 | `README.md` | Line 28, the example tag | `git tag v0.9.7` | Optional: it is only an example |
+| 6 | `.github/workflows/build.yml` | Line 8, a comment with the example tag | `git tag v0.9.7` | Optional: it is only an example |
 
 This guide's own version line (at the top) is worth updating too.
 
 **What reads the version for you:**
 
-- **Installer file names**, through `${version}` in package.json's `build` section (for example `Pocket-Game-Maker-Setup-0.9.6.exe`).
-- **The GitHub release:** a tag release is named after the tag (`v0.9.6`), and a test build's title shows `v` + package.json's version.
+- **Installer file names**, through `${version}` in package.json's `build` section (for example `Pocket-Game-Maker-Setup-0.9.7.exe`).
+- **The GitHub release:** a tag release is named after the tag (`v0.9.7`), and a test build's title shows `v` + package.json's version.
 - **The app at run time:** Electron's `app.getVersion()` returns package.json's version (nothing uses it yet; the About box has its own copy, place 3).
 
 **Version numbers that are not the app's version** (don't change these for a release):
@@ -200,7 +202,7 @@ This guide's own version line (at the top) is worth updating too.
 | Node.js | package.json `engines` and `NODE_VERSION` in build.yml | 24 | The Node.js the build uses |
 | Electron / electron-builder | package.json `devDependencies` | ^44.9.3 / ^26.15.3 | Tool versions |
 
-Test comments such as "Electron test for 0.9.6" in `test/features-main.js` and `test/engine.test.js` record when a test was added; leave them.
+Test comments such as "Electron test for 0.9.6" in `test/features-main.js`, `test/view25-main.js` and `test/engine.test.js` record when a test was added; leave them.
 
 ## Release checklist
 
@@ -209,10 +211,10 @@ A release is a version bump, a full test run, a tag push and a check of the draf
 - [ ] Bump the version in places 1–4 (see [Where the version number is](#where-the-version-number-is)), and 5–6 if you like
 - [ ] Update the README, the User Guide and this guide for anything new
 - [ ] `npm test` passes
-- [ ] Every Electron test passes and its screenshots look right (smoke, editing, home, debugger, pixel editor, cut scenes, features, export)
+- [ ] Every Electron test passes and its screenshots look right (smoke, editing, home, debugger, pixel editor, cut scenes, features, 2.5D, export)
 - [ ] If a generator changed, re-run it and commit what it made
 - [ ] Commit, push to main and check the GitHub build is green on all three systems
-- [ ] Tag and push: `git tag v0.9.7 && git push origin v0.9.7`
+- [ ] Tag and push: `git tag v0.9.8 && git push origin v0.9.8`
 - [ ] Open the draft release, try the installers, then click **Publish**
 
 To try installers before tagging, use **Actions → Build → Run workflow** and download them from the *Test build N* draft.

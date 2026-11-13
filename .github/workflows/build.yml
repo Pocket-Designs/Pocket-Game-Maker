@@ -5,7 +5,7 @@
 #   Click "Run workflow" (Actions tab > Build): the same, and the installers are attached to a draft Release
 #   called "Test build N" (Releases page, visible only to people who can push to the repository). Only the
 #   newest 3 test builds are kept; older ones are deleted automatically.
-#   Push a version tag (for example: git tag v0.9.6 && git push origin v0.9.6): the installers are attached
+#   Push a version tag (for example: git tag v0.9.7 && git push origin v0.9.7): the installers are attached
 #   to a draft Release named after the tag. Check it, then click Publish.
 #
 # Storage: installers never go into Actions "artifacts", because those count towards the account's Actions

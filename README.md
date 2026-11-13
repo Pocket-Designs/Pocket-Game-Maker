@@ -1,8 +1,3 @@
-<div align="center">
-<img width="224" height="224" alt="Pocket -Game-Maker" src="https://github.com/user-attachments/assets/1518b8b9-ee81-4c17-bed3-7bd0bea3f878" />
-
-</div>
-
 # Pocket-Game-Maker
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
@@ -30,7 +25,7 @@ Choose **New project…**, pick *Sample project* (playable immediately) or *Blan
 1. Push the project to a GitHub repository (the `homepage` in package.json assumes `Pocket-Designs/pocket-game-maker`; change it if yours is different).
 2. Every push to `main` and every pull request runs the tests and builds on Windows, macOS and Linux, to check everything still builds. These runs don't keep the installers, so they don't use up the account's Actions storage.
 3. To download installers, use **Actions → Build → Run workflow**. When it finishes, the installers are on the repository's **Releases** page as a draft called **Test build N** (drafts are only visible to people who can push to the repository). The newest 3 test builds are kept; older ones are deleted automatically.
-4. To make a release, push a version tag: `git tag v0.9.6` then `git push origin v0.9.6`. The installers are attached to a **draft release**; check it and click **Publish**.
+4. To make a release, push a version tag: `git tag v0.9.7` then `git push origin v0.9.7`. The installers are attached to a **draft release**; check it and click **Publish**.
 
 Installers are never stored as Actions "artifacts", so they don't use the account's Actions storage quota (release files don't count). Each run also deletes artifacts left by earlier runs. If you ever see **"Artifact storage quota has been hit"** again, it only affects the small build logs kept when a build fails, and it won't stop the build; GitHub recounts the space used every 6–12 hours. To free it at once, delete old runs (Actions → a run → **…** → Delete workflow run).
 
@@ -43,13 +38,14 @@ The builds are unsigned unless you add certificates as repository secrets (liste
 | Area | What it does |
 |---|---|
 | **Map mode** | Paint with Pencil, Rect, Fill, Erase on the layer selected in the **Layers** panel (see below). Drag in the tileset palette to pick a multi-tile stamp. Right-click the map to pick a tile. Ctrl+Z / Ctrl+Y undo/redo. |
+| **Height mode (2.5D)** | Raise the ground into hills, cliffs and ledges, add stairs, and drag ready-made shapes onto the map. See *2.5D: height levels and the tilted camera* below. |
 | **Events mode** | Double-click a tile to create an event, drag to move, Enter to edit, Ctrl+C then right-click to paste. Right-click → *Set player start here* or *Playtest from here*. |
 | **Inspector** | Map name, size (**Change size…**), tileset, battle background, **music**, **map edges** and the **wild encounter table** (monster, level range, weight, chance per step). Click a section's heading to fold it away. Tick **One at a time** to keep just one section open (opening one closes the others), or use **Expand all** / **Collapse all**. The editor remembers your choice. |
 | **Database (F9, or the Database menu)** | Monsters (types, base stats, growth, catch rate, sprites, learnset, evolution), Moves (power, accuracy, EP, priority, targets, status/stat/heal/drain/recoil effects), Types (click-to-cycle effectiveness chart), Items (balls, healing, revives, EP restores, evolution stones, tools, key items), Tilesets (passability, encounter, autotile and animation settings), **Music & sounds** (game music, jingles, sound effects, volumes), Menus & screens, System (screen size, start, blackout point, starting party/bag, battle rules, switches) and Credits. The **Database** menu in the menu bar opens any tab directly (Ctrl+Shift+1 to 9). |
 | **Passability** toggle | Red = blocked, green = wild-encounter tiles. |
 | **Zoom** | **−** and **+** either side of the zoom box (100–400%), the **−** / **+** keys, or Ctrl + mouse wheel over the map. Zoom only changes how big the map looks while you edit. |
 
-Keyboard: `M`/`E` modes · `B` `R` `F` `X` tools · `1`–`9` layers · `D` dim other layers · `P` passability · `Ctrl+S` save · `F5` playtest · `F9` database.
+Keyboard: `M`/`E`/`H` modes · `B` `R` `F` `X` tools · `1`–`9` layers · `D` dim other layers · `P` passability · `Ctrl+S` save · `F5` playtest · `F9` database.
 
 ### Layers
 
@@ -74,6 +70,19 @@ Each layer has its own properties:
 ### Map sizes
 
 **New map** asks for a name, tileset and size: pick Small (20×15), Medium (30×20), Large (40×30), Huge (64×48) or type any width and height from 5 to 256 squares. **Change size…** (map properties, or right-click a map in the Maps list) resizes a map later. **Delete map…** (the **－** button in the Maps panel, the map properties, or right-click a map) removes a map after listing anything that leads to it; if the game started there, the start and blackout points move to the next map. A project always keeps at least one map. A 3×3 anchor chooses which side stays put; events, the start position and encounter areas move with the map, the ground is extended from the nearest edge, and Ctrl+Z undoes it.
+
+### 2.5D: height levels and the tilted camera
+
+Any map can have **height levels** (0 is the ground, up to 4) and a **tilted camera** that leans the ground away from the player.
+
+- **Height mode** (`H`, or **Height** on the toolbar) paints levels. Pick a level and paint, or use **Raise**, **Lower**, **Stairs** and **Flatten**, with a 1×1, 2×2 or 3×3 brush. Right-click a square to pick its level. Levels are coloured (blue 1, yellow 2, orange 3, red 4) and cliff faces show as thick dark lines; the cliff lines stay visible in Map and Events mode.
+- **Drag and drop shapes** from the Height panel onto the map: small hill, big hill, plateau, cliff wall, jump-down ledge, stairs up and lookout. Each is placed relative to the level of the square it lands on. Or click a shape, then click the map.
+- **Walking:** players walk between squares of the same level; **stairs** join squares one level apart; walking down the screen off a ledge is a one-way **jump** (with its own sound); anything else is a cliff. Events can only be talked to from the same level or across stairs.
+- **Map properties → 2.5D view:** the camera (**Top-down** or **Tilted 2.5D**), how far it tilts, mist in the distance, how tall each level is, the look of cliff faces (rock, earth, stone wall, wood, grassy bank), the colour beyond the map's edge, ledge jumps on or off, and character shadows. **▶ Preview in 2.5D** playtests the map straight away.
+- In the game, raised ground is drawn with cliff faces and shading, characters stand on it and walk behind higher ground, and everyone casts a small shadow. The playtest debugger warns about stairs that join nothing and events nobody can reach, and its F10 overlay shows each square's level.
+- Undo, redo and **Change size…** all keep the heights. Maps without heights and with the top-down camera look and play exactly as before.
+
+The sample game's **Hilltop Trail** (east of Lakeside) shows it all: a plateau with a jump-down ledge, a three-level hill with a lookout, and the tilted camera.
 
 ### Autotiles and animated tiles
 
@@ -296,6 +305,9 @@ src/runtime/               Game runtime: map, events, battle scene, menus, shop,
 src/runtime/debugger.js    Playtest debugger (F9 panel, F10 overlay); left out of exported games
 src/runtime/scenes.js      Opening, new-game and ending scenes (movies, slides, text, credits roll)
 src/runtime/worldmap.js    The world map screen and fast travel
+src/shared/heights.js      2.5D: height levels, stairs, ledges, shapes and view settings (editor, game and tests)
+src/runtime/view25.js      2.5D drawing: raised ground, cliff faces, shadows, ledge jumps, the tilted camera
+src/editor/heights-panel.js  Height mode: painting levels, dragging shapes, the 2.5D view settings
 src/editor/scenes-editor.js  The Opening & Ending Scenes window
 templates/sample/          Sample project (regenerate with npm run gen-sample)
 test/                      Engine and exporter tests, an Electron smoke test and an export test
@@ -318,7 +330,7 @@ Pocket-Game-Maker comes with a free library of original pixel art, music and sou
 | Monsters | 16 species, front and back sprites |
 | Battle backgrounds | Field, forest, town, beach, cave, indoor |
 | Music | 7 looping tracks (title, town, route, cave, wild battle, trainer battle, victory) and 3 jingles |
-| Sound effects | 19 effects for menus, battles, capture, doors, shops and saving |
+| Sound effects | 20 effects for menus, battles, capture, doors, shops, saving and jumping down ledges |
 | Movies | *Monster News*, a 7-second TV clip (MP4 with sound) for cut scenes; remake it with `python3 tools/gen-movie.py` |
 
 Every tileset has a `.tiles.json` **mapping file** naming each tile and saying whether it's walkable, has wild encounters, is drawn above the player and which layer it belongs on. Adding a tileset to a project copies those settings in.
