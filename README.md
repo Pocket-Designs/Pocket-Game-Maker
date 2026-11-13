@@ -1,8 +1,17 @@
+<div align="center">
+
+</div>
+
 # Pocket-Game-Maker
 
 A desktop game maker for monster-taming and monster-capturing RPGs, in the spirit of RPG Maker MZ but built around wild encounters, capture, parties and turn-based monster battles.
 
 Pocket-Game-Maker was called MonsterForge before version 0.8.1. Projects made under the old name open as they are, and on first start it moves the old `Documents/MonsterForge` asset library folder and recent projects list across.
+
+## Guides
+
+- **[User Guide](docs/USER-GUIDE.md)**: everything about making games with Pocket-Game-Maker, with pictures.
+- **[Developer Guide](docs/DEVELOPER-GUIDE.md)**: for changing Pocket-Game-Maker itself: setup, code layout, tests, building, where the version number is, and how to add features.
 
 ## Run it
 

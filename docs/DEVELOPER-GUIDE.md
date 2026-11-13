@@ -4,7 +4,7 @@ Version 0.9.7 · 13 November 2026 · Pocket-Designs
 
 ## About this guide
 
-This guide is for anyone changing Pocket-Game-Maker's own code. It describes version 0.9.7. If you make games with Pocket-Game-Maker, read the User Guide instead.
+This guide is for anyone changing Pocket-Game-Maker's own code. It describes version 0.9.7. If you make games with Pocket-Game-Maker, read the [User Guide](USER-GUIDE.md) instead.
 
 It covers setting up, how the code is laid out, the tests, the asset generators, building installers, **every place the version number is written**, a release checklist, and recipes for adding features.
 
@@ -62,6 +62,7 @@ The code is plain JavaScript with no bundler: the editor and the game load their
 | `test/` | Node tests and Electron tests (see [Tests](#tests)) |
 | `build/` | Icons, `adhoc-sign.js` (macOS ad-hoc signing) and `build-win.sh` |
 | `.github/workflows/build.yml` | Tests and installers on GitHub |
+| `docs/` | This guide and the User Guide (`USER-GUIDE.md`, with its pictures in `docs/images/user-guide/`) |
 
 ## How it fits together
 
@@ -180,11 +181,11 @@ The app's version is in **six places**. Places 1–4 must change for every relea
 | 1 | `package.json` | Line 4, `"version"` | `"version": "0.9.7"` | By hand, or `npm version 0.9.8 --no-git-tag-version` (also does #2) |
 | 2 | `package-lock.json` | The first two `"version"` lines (top level and `packages[""]`) | `"version": "0.9.7"` | `npm install` after #1, or by hand. Leave the other `"version"` lines alone: they belong to dependencies |
 | 3 | `src/editor/editor.js` | Line 40, the **Help → About** message | `Version 0.9.7 · © 2026 Pocket-Designs` | By hand (also update the year when it changes) |
-| 4 | User Guide doc | The line under the title | `Version 0.9.7 · date · author` | By hand in the doc, and update the date |
-| 5 | `README.md` | Line 28, the example tag | `git tag v0.9.7` | Optional: it is only an example |
+| 4 | User Guide | The line under the title, in the User Guide doc and in `docs/USER-GUIDE.md` | `Version 0.9.7 · date · author` | By hand, and update the date |
+| 5 | `README.md` | The example tag under "Building on GitHub" | `git tag v0.9.7` | Optional: it is only an example |
 | 6 | `.github/workflows/build.yml` | Line 8, a comment with the example tag | `git tag v0.9.7` | Optional: it is only an example |
 
-This guide's own version line (at the top) is worth updating too.
+This guide's own version line (at the top) and the User Guide's (`docs/USER-GUIDE.md`) are worth updating too.
 
 **What reads the version for you:**
 
@@ -209,7 +210,7 @@ Test comments such as "Electron test for 0.9.6" in `test/features-main.js`, `tes
 A release is a version bump, a full test run, a tag push and a check of the draft release.
 
 - [ ] Bump the version in places 1–4 (see [Where the version number is](#where-the-version-number-is)), and 5–6 if you like
-- [ ] Update the README, the User Guide and this guide for anything new
+- [ ] Update the README, the User Guide and this guide for anything new (the docs and the `.md` copies in `docs/`)
 - [ ] `npm test` passes
 - [ ] Every Electron test passes and its screenshots look right (smoke, editing, home, debugger, pixel editor, cut scenes, features, 2.5D, export)
 - [ ] If a generator changed, re-run it and commit what it made
