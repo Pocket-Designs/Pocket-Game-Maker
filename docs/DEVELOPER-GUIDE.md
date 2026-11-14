@@ -1,3 +1,8 @@
+<div align="center">
+  <img width="224" height="224" alt="Pocket -Game-Maker" src="https://github.com/user-attachments/assets/72d57ac2-fc6c-46dc-b7f6-18336f057398" />
+
+</div>
+
 # Pocket-Game-Maker Developer Guide
 
 Version 0.9.7 · 13 November 2026 · Pocket-Designs
