@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="224" height="224" alt="Pocket -Game-Maker" src="../build/icon.png" />
+  <img width="224" height="224" alt="Pocket -Game-Maker" src="./build/icon.png" />
 
 </div>
 
